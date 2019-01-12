@@ -1,4 +1,5 @@
 # reimbursinator
-Jack Shuaiyi
+
 Open source expense management solution
-Logan Miller
+
+Daniel Dupriest, Logan Miller, Jack, Joe, Preston, Rupika, Liang Shuaiyi 
