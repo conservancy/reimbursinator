@@ -18,18 +18,5 @@
     <a class="nav-link" href="index.html">Return to main menu</a>
 </form>
 </body>
-<script type = "text/JavaScript">
-    var password = document.getElementById("password");
-    var confirm_password = document.getElementById("confirmPassword");
-    function validatePassword(){
-        if(password.value != confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
-        }
-        else {
-            confirm_password.setCustomValidity('');
-        }
-    }
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-</script>
+<script type = "text/JavaScript" src="signupPage.js"></script>
 </html>
