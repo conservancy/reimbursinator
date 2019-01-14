@@ -8,4 +8,28 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>Sign up</title>
 </head>
+<body>
+<h1>Sign up page</h1>
+<form id="signup">
+    User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
+    Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
+    Confirm Password: <input type="password" id="confirmPassword"><br>
+    <input type="submit" value="Submit" formaction="index.html">
+    <a class="nav-link" href="index.html">Return to main menu</a>
+</form>
+</body>
+<script type = "text/JavaScript">
+    var password = document.getElementById("password");
+    var confirm_password = document.getElementById("confirmPassword");
+    function validatePassword(){
+        if(password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords Don't Match");
+        }
+        else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
 </html>
