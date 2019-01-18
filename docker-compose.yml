@@ -1,8 +1,9 @@
-version: '3.3'
+version: '2.0'
 
 services:
   api:
     build: ./back
+    image: reimbursinator_back
     command: gunicorn --bind 0.0.0.0:444 --keyfile /etc/ssl/private/selfsigned.key --certfile /etc/ssl/private/selfsigned.crt reimbursinator.wsgi:application 
     #volumes:
     #  - ./app/:/usr/src/back/
@@ -12,6 +13,7 @@ services:
       - SECRET_KEY=please_change
   web:
     build: ./front
+    image: reimbursinator_front
     image: nginx:1.10.3
     ports:
       - "8443:443"
