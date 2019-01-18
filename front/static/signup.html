@@ -7,25 +7,30 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="signup.css">
     <title>Sign up</title>
 </head>
-<style>
-    .signup
-    {
-        margin-left: auto;
-        margin-right: auto;
-        text-align:left;
-        width:60%;
-    }
-</style>
+
 <body>
-    <div class="container">
-        <form class="signup">
-            <h1>Sign up page</h1>
+    <div class="form-group"; style="text-align:center";>
+        <h1>Reimbursinator</h1>
+    </div>
+    <form class="signup">
+        <div class="form-group">
+            <h3>Sign up page</h3>
+        </div>
+        <div class="form-group">
             User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
+        </div>
+        <div class="form-group">
             Email: <input type="email" id="email" required="required"><br>
+        </div>
+        <div class="form-group">
             Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
+        </div>
+        <div class="form-group">
             Confirm Password: <input type="password" id="confirmPassword"><br>
+        </div>
             <input type="submit" value="Submit" formaction="index.html">
             <a class="nav-link" href="index.html">Return to main menu</a>
         </form>
