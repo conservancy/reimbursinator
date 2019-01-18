@@ -9,15 +9,28 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <title>Sign up</title>
 </head>
+<style>
+    .signup
+    {
+        margin-left: auto;
+        margin-right: auto;
+        text-align:left;
+        width:60%;
+    }
+</style>
 <body>
-<h1>Sign up page</h1>
-<form id="signup">
-    User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
-    Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
-    Confirm Password: <input type="password" id="confirmPassword"><br>
-    <input type="submit" value="Submit" formaction="index.html">
-    <a class="nav-link" href="index.html">Return to main menu</a>
-</form>
+    <div class="container">
+        <form class="signup">
+            <h1>Sign up page</h1>
+            User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
+            Email: <input type="email" id="email" required="required"><br>
+            Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
+            Confirm Password: <input type="password" id="confirmPassword"><br>
+            <input type="submit" value="Submit" formaction="index.html">
+            <a class="nav-link" href="index.html">Return to main menu</a>
+        </form>
+    </div>
 </body>
 <script src="signupPage.js"></script>
+    <!--Still need to check if user exist and if email exist-->
 </html>
