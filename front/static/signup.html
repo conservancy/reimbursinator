@@ -7,35 +7,35 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="css/signup.css">
     <title>Sign up</title>
 </head>
 
-<body>
-    <div class="form-group"; style="text-align:center";>
-        <h1>Reimbursinator</h1>
-    </div>
+<body style="background-color: lightgreen">
     <form class="signup">
+        <div class="form-group">
+            <h1>Reimbursinator</h1>
+        </div>
         <div class="form-group">
             <h3>Sign up page</h3>
         </div>
         <div class="form-group">
-            User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
+            User Name: <input type="text" id="userName" minlength="4" size="10" required="required" class="border"><br>
         </div>
         <div class="form-group">
-            Email: <input type="email" id="email" required="required"><br>
+            Email: <input type="email" id="email" required="required" class="border"><br>
         </div>
         <div class="form-group">
-            Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
+            Password: <input type="password" id="password" minlength="4" size="10" required="required" class="border"><br>
         </div>
         <div class="form-group">
-            Confirm Password: <input type="password" id="confirmPassword"><br>
+            Confirm Password: <input type="password" id="confirmPassword" class="border"><br>
         </div>
-            <input type="submit" value="Submit" formaction="index.html">
+            <input type="submit" value="Submit" formaction="index.html" class="border">
             <a class="nav-link" href="index.html">Return to main menu</a>
         </form>
     </div>
 </body>
-<script src="signupPage.js"></script>
+<script src="js/signupPage.js"></script>
     <!--Still need to check if user exist and if email exist-->
 </html>
