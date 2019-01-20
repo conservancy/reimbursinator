@@ -10,18 +10,30 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <title>Sign up</title>
 </head>
-<body>
+<body style="background-color: lightgreen">
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <a class="navbar-brand" href="index.html">Reimbursinator</a>
     </nav>
-    <h1>Sign up page</h1>
-    <form id="signup">
-        User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
-        Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
-        Confirm Password: <input type="password" id="confirmPassword"><br>
-        <input type="submit" value="Submit" formaction="index.html">
+    <form class="signup">
+        <div class="form-group">
+            <h3>Sign up page</h3>
+        </div>
+        <div class="form-group">
+            User Name: <input type="text" id="userName" minlength="4" size="10" required="required" class="border"><br>
+        </div>
+        <div class="form-group">
+            Email: <input type="email" id="email" required="required" class="border"><br>
+        </div>
+        <div class="form-group">
+            Password: <input type="password" id="password" minlength="4" size="10" required="required" class="border"><br>
+        </div>
+        <div class="form-group">
+            Confirm Password: <input type="password" id="confirmPassword" class="border"><br>
+        </div>
+        <input type="submit" value="Submit" formaction="index.html" class="border">
         <a class="nav-link" href="index.html">Return to main menu</a>
     </form>
 </body>
-<script src="signupPage.js"></script>
+<script src="js/signupPage.js"></script>
+    <!--Still need to check if user exist and if email exist test-->
 </html>
