@@ -33,25 +33,23 @@
         </div>
         <nav class="navbar">
             <ul class="nav nav-tabs mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">New</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Unfinished</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">History</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Others</a>
-                </li>
-            </ul>
-            <ul class="nav justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link log-out-link" href="#">Log out</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#New">New</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Unfinished">Unfinished</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#History">History</a></li>
+                <li class="nav-item"><a class="nav-link disabled" href="#">Others</a></li>
             </ul>
         </nav>
+        <div class="tab-content">
+            <div id="New" class="tab-pane fade in active">
+                <h1>New report</h1>
+            </div>
+            <div id="Unfinished" class="tab-pane fade">
+                <h1>List of Unfinished report</h1>
+            </div>
+            <div id="History" class="tab-pane fade">
+                <h1>Report history</h1>
+            </div>
+        </div>
     </div>
     <script src="js/logout.js"></script>
 </body>
