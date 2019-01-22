@@ -29,6 +29,5 @@ function postToLogoutEndpoint(event) {
     xhr.send();
 }
 
-const logoutLinks = document.querySelectorAll(".log-out-link");
-logoutLinks[0].addEventListener("click", postToLogoutEndpoint);
-logoutLinks[1].addEventListener("click", postToLogoutEndpoint);
+const logoutLink = document.querySelector(".log-out-link");
+logoutLink.addEventListener("click", postToLogoutEndpoint);
