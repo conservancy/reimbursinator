@@ -23,5 +23,5 @@ from django.urls import path, include
 # add urls to this array
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('backend/v1/', include("backend.urls")),
+    path('backend/', include("backend.urls")),
 ]
