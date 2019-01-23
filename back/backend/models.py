@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 class Report(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
     date_created = models.DateTimeField('date created')
-    date_submitted = models.DateTimeField('date submitted')
-    submitted = models.BooleanField()
+    date_submitted = models.DateTimeField('date submitted', null=True, blank=True)
+    submitted = models.BooleanField(default=False)
 
 class Section(models.Model):
     report_id = models.ForeignKey(Report, on_delete=models.CASCADE)
@@ -20,28 +20,28 @@ class Field(models.Model):
     label = models.CharField(max_length=256)
     number = models.IntegerField()
     type = models.CharField(max_length=128)
-    completed = models.BooleanField()
+    completed = models.BooleanField(default=False)
 
 class DataBool(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.BooleanField()
+    data = models.BooleanField(default=False)
 
 class DataDecimal(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.DecimalField(max_digits=9,decimal_places=2)
+    data = models.DecimalField(max_digits=9,decimal_places=2, null=True, blank=True)
 
 class DataDate(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.DateField()
+    data = models.DateField(null=True, blank=True)
 
 class DataFile(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.FileField()
-
+    data = models.FileField(null=True, blank=True)
+    
 class DataString(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.TextField()
+    data = models.TextField(default='')
 
 class DataInteger(models.Model):
     field_id = models.ForeignKey(Field, on_delete=models.CASCADE)
-    data = models.IntegerField()
+    data = models.IntegerField(null=True, blank=True)
