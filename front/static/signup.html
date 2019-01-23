@@ -10,29 +10,45 @@
     <link rel="shortcut icon" href="img/favicon.ico">
     <title>Sign up</title>
 </head>
-<body style="background-color: lightgreen">
+<body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <a class="navbar-brand" href="index.html">Reimbursinator</a>
     </nav>
-    <form class="signup">
-        <div class="form-group">
-            <h3>Sign up page</h3>
+    <div class="container pt-5">
+        <div class="row">
+            <div class="col-sm-6 mx-auto">
+                <div class="card bg-light text-dark">
+                    <div class="card-header">
+                        <h3>Please Sign Up</h3>
+                    </div>
+                    <div class="card-body">
+                        <form class="form signup" autocomplete="off" action="index.html">
+                            <div class="form-group">
+                                <label for="userName">Username:</label>
+                                <input class="form-control" id="userName" type="text" name="username" minlength="4" size="10" required autofocus>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input class="form-control" type="email" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input class="form-control" type="password" id="password" minlength="4" size="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password:</label>
+                                <input class="form-control" type="password" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        Already registered? <a href="login.html">Log In</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            User Name: <input type="text" id="userName" minlength="4" size="10" required="required" class="border"><br>
-        </div>
-        <div class="form-group">
-            Email: <input type="email" id="email" required="required" class="border"><br>
-        </div>
-        <div class="form-group">
-            Password: <input type="password" id="password" minlength="4" size="10" required="required" class="border"><br>
-        </div>
-        <div class="form-group">
-            Confirm Password: <input type="password" id="confirmPassword" class="border"><br>
-        </div>
-        <input type="submit" value="Submit" formaction="index.html" class="border">
-        <a class="nav-link" href="index.html">Return to main menu</a>
-    </form>
+    </div>
 </body>
 <script src="js/signupPage.js"></script>
     <!--Still need to check if user exist and if email exist test-->
