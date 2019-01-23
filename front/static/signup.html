@@ -7,21 +7,49 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="img/favicon.ico">
     <title>Sign up</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
         <a class="navbar-brand" href="index.html">Reimbursinator</a>
     </nav>
-    <h1>Sign up page</h1>
-    <form id="signup">
-        User Name: <input type="text" id="userName" minlength="4" size="10" required="required"><br>
-        Password: <input type="password" id="password" minlength="4" size="10" required="required"><br>
-        Confirm Password: <input type="password" id="confirmPassword"><br>
-        <input type="submit" value="Submit" formaction="index.html">
-        <a class="nav-link" href="index.html">Return to main menu</a>
-    </form>
+    <div class="container pt-5">
+        <div class="row">
+            <div class="col-sm-6 mx-auto">
+                <div class="card bg-light text-dark">
+                    <div class="card-header">
+                        <h3>Please Sign Up</h3>
+                    </div>
+                    <div class="card-body">
+                        <form class="form signup" autocomplete="off" action="index.html">
+                            <div class="form-group">
+                                <label for="userName">Username:</label>
+                                <input class="form-control" id="userName" type="text" name="username" minlength="4" size="10" required autofocus>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input class="form-control" type="email" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input class="form-control" type="password" id="password" minlength="4" size="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password:</label>
+                                <input class="form-control" type="password" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        Already registered? <a href="login.html">Log In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-<script src="signupPage.js"></script>
+<script src="js/signupPage.js"></script>
+    <!--Still need to check if user exist and if email exist test-->
 </html>

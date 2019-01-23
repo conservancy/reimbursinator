@@ -1,0 +1,13 @@
+.signup
+{
+    height: 200px;
+    width: 400px;
+    position: fixed;
+    left: 50%;
+    margin-left: -150px;
+    width:60%;
+}
+.border
+{
+    border-color:black;
+}

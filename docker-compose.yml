@@ -14,7 +14,6 @@ services:
   web:
     build: ./front
     image: reimbursinator_front
-    image: nginx:1.10.3
     ports:
       - "8443:443"
     environment:
