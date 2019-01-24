@@ -8,28 +8,17 @@ from . import models
 
 # serializer for reports
 class ReportSerializer(serializers.ModelSerializer):
-    # user id is foreign key...? fix this
+    # user id is foreign key
     user_id = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
     class Meta:
-        fields = list()
-        model = models.Report
-
-        if model.submitted:
-            fields = (
-                'user_id',
-                'title',
-                'date_created',
-                'data_submitted',
-                'submitted',
-            )
-        else:
-            fields = (
-                'user_id',
-                'title',
-                'date_created',
-                'submitted',
-            )
+        fields = (
+            'user_id',
+            'title',
+            'date_created',
+            # 'data_submitted',
+            'submitted',
+        )
 
 
 # section serializer
