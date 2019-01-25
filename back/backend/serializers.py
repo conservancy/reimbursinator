@@ -19,6 +19,7 @@ class ReportSerializer(serializers.ModelSerializer):
             # 'data_submitted',
             'submitted',
         )
+        model = models.Report
 
 
 # section serializer
