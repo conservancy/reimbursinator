@@ -5,7 +5,23 @@
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from .models import *
+from .serializers import *
 
+from rest_framework import generics
+
+
+# create sample view
+class List(generics.ListCreateAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+class Detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+
+#######################################
 
 # Create Report
 def create_report(request):

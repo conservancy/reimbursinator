@@ -7,6 +7,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.List.as_view()),
+    path('<int:pk>/', views.Detail.as_view()),
+
     path('create_report/', views.create_report),
     path('delete_report/', views.delete_report),
     path('get_report/', views.get_report),
