@@ -19,10 +19,7 @@
         <div class="collapse navbar-collapse" id="collapsing-dashboard-navbar">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link log-out-link" href="#">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Log Out
-                    </a>
+                    <a class="nav-link log-out-link" href="#"><i class="fas fa-sign-out-alt"></i>Log Out</a>
                 </li>
             </ul>
         </div>
@@ -31,23 +28,26 @@
         <div class="jumbotron">
             <h1>Reimbursinator Report</h1>
         </div>
-        <nav class="navbar">
-            <ul class="nav nav-tabs mr-auto">
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#New">New</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Unfinished">Unfinished</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#History">History</a></li>
-                <li class="nav-item"><a class="nav-link disabled" href="#">Others</a></li>
-            </ul>
-        </nav>
-        <div class="tab-content">
-            <div id="New" class="tab-pane fade in active">
-                <h1>New report</h1>
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-pills card-header-pills">
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#New">New</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Unfinished" id="unfinished-link">Unfinished</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#History">History</a></li>
+                </ul>
             </div>
-            <div id="Unfinished" class="tab-pane fade">
-                <h1>List of Unfinished report</h1>
-            </div>
-            <div id="History" class="tab-pane fade">
-                <h1>Report history</h1>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div id="New" class="tab-pane fade in active">
+                        <h1 class="card-title">New report</h1>
+                    </div>
+                    <div id="Unfinished" class="tab-pane fade">
+                        <h1 class="card-title">Unfinished Reports</h1>
+                    </div>
+                    <div id="History" class="tab-pane fade">
+                        <h1 class="card-title">Report history</h1>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
