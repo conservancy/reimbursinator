@@ -2,4 +2,4 @@
 
 Open source expense management solution
 
-Daniel Dupriest, Logan Miller, Jack, Joe, Preston, Rupika, Liang Shuaiyi 
+Daniel Dupriest, Logan Miller, Jack, Joe Arriaga, Preston, Rupika, Liang Shuaiyi 
