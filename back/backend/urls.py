@@ -1,23 +1,20 @@
-# Rupika Dikkala
-# January 19, 2019
-# Add urls and link to the
-# views
+# Link report and account functionality to views
 
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
 urlpatterns = [
-    path('', views.List.as_view()),
-    path('<int:pk>/', views.Detail.as_view()),
+	#path('', views.List.as_view()),
+	#path('<int:pk>/', views.Detail.as_view()),
 
-    path('create_report/', views.create_report),
-    path('delete_report/', views.delete_report),
-    path('get_report/', views.get_report),
-    path('list_report/', views.list_report),
-    path('update_report/', views.update_report),
-    path('submit_report/', views.submit_report),
-    path('update_section/', views.update_section),
-    path('create_account/', views.create_account),
-    path('login/', views.login),
-    path('logout/', views.logout),
+    path('report', views.report),
+    path('reports', views.reports),
+    path('report/<int:report_pk>', views.report_detail),
+    path('report/<int:report_pk>/section/<int:section_pk>', views.section),
+    path('account', views.account),
+    path('account/login', views.account_login),
+    path('account/logout', views.account_logout),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
