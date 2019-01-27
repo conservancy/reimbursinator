@@ -10,3 +10,11 @@ function validatePassword(){
 }
 password.onchange = validatePassword;
 confirm_password.onkeyup = validatePassword;
+
+function validateEmail(email)
+{
+    if(email.validity.patternMismatch)
+        email.setCustomValidity('Please input correct email');
+    else
+        email.setCustomValidity('');
+}
