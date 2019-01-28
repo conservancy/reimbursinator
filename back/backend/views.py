@@ -90,18 +90,21 @@ def reports(request):
     data = {
         "reports": [
             {
+                "report_pk": 1,
                 "title": "2018 Portland trip",
                 "date_created": "2018-05-22T14:56:28.000Z",
                 "state": "created",
                 "date_submitted": "0000-00-00T00:00:00.000Z"
             },
             {
+                "report_pk": 2,
                 "title": "2017 Los Angeles trip",
                 "date_created": "2017-05-22T14:56:28.000Z",
                 "state": "submitted",
                 "date_submitted": "2017-07-22T14:56:28.000Z"
             },
             {
+                "report_pk": 3,
                 "title": "2017 Denver trip",
                 "date_created": "2015-04-22T14:56:28.000Z",
                 "state": "accepted",
