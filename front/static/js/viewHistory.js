@@ -1,3 +1,30 @@
+// Hack to change endpoint url for each OS
+function getEndpointDomain() {
+    let OSName;
+    let domain;
+
+    if (navigator.appVersion.indexOf("Win") !== -1)
+        OSName = "Windows";
+    else if (navigator.appVersion.indexOf("Mac") !== -1)
+        OSName = "MacOS";
+    else if (navigator.appVersion.indexOf("X11") !== -1)
+        OSName = "UNIX";
+    else if (navigator.appVersion.indexOf("Linux") !== -1)
+        OSName = "Linux";
+    else
+        OSName = "Unknown OS";
+
+    console.log(`Detected operating system: ${OSName}`);
+
+    if (OSName === "Windows") {
+        domain = "https://192.168.99.100:8444/";
+    } else {
+        domain = "https://localhost:8444/"
+    }
+
+    return domain;
+}
+
 function displayListOfReports(listOfReports) {
     const cardBody = document.querySelector(".card-body");
     const table = document.createElement("table");
@@ -53,8 +80,10 @@ function displayListOfReports(listOfReports) {
 
 function getReportHistory(event) {
     const token = localStorage.getItem("token");
-    const url = "https://localhost:8444/backend/list_report"
+    const url = getEndpointDomain() + "backend/list_report";
     const xhr = new XMLHttpRequest();
+
+    console.log(`Attempting a connection to the following endpoint: ${url}`);
 
     xhr.open("GET", url, true);
     xhr.setRequestHeader("Authorization", `Token  ${token}`);
