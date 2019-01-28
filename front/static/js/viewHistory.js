@@ -86,7 +86,7 @@ function getReportHistory(event) {
     console.log(`Attempting a connection to the following endpoint: ${url}`);
 
     xhr.open("GET", url, true);
-    xhr.setRequestHeader("Authorization", `Token  ${token}`);
+    //xhr.setRequestHeader("Authorization", `Token  ${token}`);
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
