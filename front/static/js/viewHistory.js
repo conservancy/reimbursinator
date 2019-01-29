@@ -29,22 +29,29 @@ function displayListOfReports(listOfReports) {
     const cardBody = document.querySelector(".card-body");
     const table = document.createElement("table");
     const reports = listOfReports.reports;
-    let rowsInserted = 0;
+    let reportsAdded = 0;
 
+    // Create report table
     for (let i = 0; i < reports.length; i++) {
         let title = reports[i].title;
         let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
         let state = reports[i].state;
         let dateSubmitted;
 
+        // Create edit/view button
         let actionButton = document.createElement("button");
         actionButton.type = "submit";
+        actionButton.setAttribute("data-toggle", "modal");
         actionButton.classList.add("btn");
+
         if (state === "created") {
+            // Edit button
             dateSubmitted = "TBD";
             actionButton.classList.add("btn-primary");
             actionButton.innerHTML = "Edit";
+            actionButton.setAttribute("data-target", "#editReportModal");
         } else {
+            // View button
             dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
             actionButton.classList.add("btn-success");
             actionButton.innerHTML = "View";
@@ -64,16 +71,17 @@ function displayListOfReports(listOfReports) {
         dateSubmittedCell.classList.add("d-none", "d-md-table-cell");
 
         bodyRow.insertCell(4).appendChild(actionButton);
-        rowsInserted++;
+        reportsAdded++;
     }
 
-    if (rowsInserted === 0) {
-        // Empty report list
+    if (reportsAdded === 0) {
+        // Report list is empty
         const p = document.createElement("p");
         p.innerHTML = "No reports found.";
         cardBody.appendChild(p);
     } else {
-        // Create table header, add to table, and append result to the card body
+        // Report list exists and table rows have been created
+        // Create table header, add it to the table, and append the result to the card body
         const thead = document.createElement("thead");
         const tr = document.createElement("tr");
 
@@ -87,12 +95,12 @@ function displayListOfReports(listOfReports) {
 
         const headState = document.createElement("th");
         headState.innerHTML = "State";
-        headState.classList.add("d-none", "d-lg-table-cell");
+        headState.classList.add("d-none", "d-lg-table-cell"); // Column shown only on large displays
         tr.appendChild(headState);
 
         const headDateSubmitted = document.createElement("th")
         headDateSubmitted.innerHTML = "Date Submitted";
-        headDateSubmitted.classList.add("d-none", "d-md-table-cell");
+        headDateSubmitted.classList.add("d-none", "d-md-table-cell"); // Column only shown on medium and larger displays
         tr.appendChild(headDateSubmitted);
 
         const headAction = document.createElement("th")
