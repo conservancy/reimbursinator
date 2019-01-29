@@ -32,17 +32,39 @@ function displayListOfReports(listOfReports) {
     let rowsInserted = 0;
 
     for (let i = 0; i < reports.length; i++) {
-            let title = reports[i].title;
-            let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
-            let state = reports[i].state;
-            let dateSubmitted = (state === "created") ? "TBD": new Date(reports[i].date_submitted).toLocaleDateString("en-US");
-            let bodyRow = table.insertRow(i); 
-            
-            bodyRow.insertCell(0).innerHTML = title;
-            bodyRow.insertCell(1).innerHTML = dateCreated; 
-            bodyRow.insertCell(2).innerHTML = state;
-            bodyRow.insertCell(3).innerHTML = dateSubmitted;
-            rowsInserted++;
+        let title = reports[i].title;
+        let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
+        let state = reports[i].state;
+        let dateSubmitted;
+
+        let actionButton = document.createElement("button");
+        actionButton.type = "submit";
+        actionButton.classList.add("btn");
+        if (state === "created") {
+            dateSubmitted = "TBD";
+            actionButton.classList.add("btn-primary");
+            actionButton.innerHTML = "Edit";
+        } else {
+            dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
+            actionButton.classList.add("btn-success");
+            actionButton.innerHTML = "View";
+        }
+
+        let bodyRow = table.insertRow(i); 
+        bodyRow.insertCell(0).innerHTML = title;
+        bodyRow.insertCell(1).innerHTML = dateCreated; 
+
+        let stateCell = bodyRow.insertCell(2);
+        stateCell.innerHTML = state;
+        stateCell.classList.add("d-none", "d-lg-table-cell");
+
+
+        let dateSubmittedCell = bodyRow.insertCell(3);
+        dateSubmittedCell.innerHTML = dateSubmitted;
+        dateSubmittedCell.classList.add("d-none", "d-md-table-cell");
+
+        bodyRow.insertCell(4).appendChild(actionButton);
+        rowsInserted++;
     }
 
     if (rowsInserted === 0) {
@@ -65,11 +87,17 @@ function displayListOfReports(listOfReports) {
 
         const headState = document.createElement("th");
         headState.innerHTML = "State";
+        headState.classList.add("d-none", "d-lg-table-cell");
         tr.appendChild(headState);
 
         const headDateSubmitted = document.createElement("th")
         headDateSubmitted.innerHTML = "Date Submitted";
+        headDateSubmitted.classList.add("d-none", "d-md-table-cell");
         tr.appendChild(headDateSubmitted);
+
+        const headAction = document.createElement("th")
+        headAction.innerHTML = "Action";
+        tr.appendChild(headAction);
 
         thead.appendChild(tr);
         table.prepend(thead);
