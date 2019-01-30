@@ -144,7 +144,7 @@ function displayListOfReports(parsedData) {
 }
 
 function getReportHistory(event) {
-    const url = getEndpointDomain() + "backend/list_report";
+    const url = getEndpointDomain() + "api/v1/reports";
     getDataFromEndpoint(url, displayListOfReports);
 }
 
