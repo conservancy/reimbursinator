@@ -25,6 +25,46 @@ function getEndpointDomain() {
     return domain;
 }
 
+function getDataFromEndpoint(url, callback) {
+    const token = localStorage.getItem("token");
+    const xhr = new XMLHttpRequest();
+
+    console.log(`Attempting a connection to the following endpoint: ${url}`);
+
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("GET SUCCESS!");
+                console.log(`Server response:\n${this.response}`);
+                parsedData = JSON.parse(this.response);
+                callback(parsedData);
+            } else {
+                console.log("GET FAILURE!");
+                console.log(`Server status: ${this.status}`);
+                console.log(`Server response:\n${this.response}`);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        alert("Connection error!");
+    };
+
+    xhr.send();
+}
+
+function buildEditReportForm(parsedReport) {
+    const modalTitle = document.querySelector("#editReportModalLabel"); 
+    console.log("In buildEditReportForm");
+    console.log(JSON.stringify(parsedReport));
+}
+
+function editReportFormClickHandler(event) {
+    const url = getEndpointDomain() + "backend/get_report";
+    getDataFromEndpoint(url, buildEditReportForm);
+}
+
 function displayListOfReports(listOfReports) {
     const cardBody = document.querySelector(".card-body");
     const table = document.createElement("table");
@@ -50,6 +90,7 @@ function displayListOfReports(listOfReports) {
             actionButton.classList.add("btn-primary");
             actionButton.innerHTML = "Edit";
             actionButton.setAttribute("data-target", "#editReportModal");
+            actionButton.addEventListener("click", editReportFormClickHandler);
         } else {
             // View button
             dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
@@ -115,6 +156,7 @@ function displayListOfReports(listOfReports) {
 }
 
 function getReportHistory(event) {
+    /*
     const token = localStorage.getItem("token");
     const url = getEndpointDomain() + "backend/list_report";
     const xhr = new XMLHttpRequest();
@@ -143,6 +185,9 @@ function getReportHistory(event) {
     };
 
     xhr.send();
+    */
+    const url = getEndpointDomain() + "backend/list_report";
+    getDataFromEndpoint(url, displayListOfReports);
 }
 
 document.addEventListener("DOMContentLoaded", getReportHistory);
