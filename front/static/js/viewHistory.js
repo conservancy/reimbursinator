@@ -25,34 +25,131 @@ function getEndpointDomain() {
     return domain;
 }
 
-function displayListOfReports(listOfReports) {
-    const cardBody = document.querySelector(".card-body");
-    const table = document.createElement("table");
-    const reports = listOfReports.reports;
-    let rowsInserted = 0;
+function getDataFromEndpoint(url, callback) {
+    const token = localStorage.getItem("token");
+    const xhr = new XMLHttpRequest();
 
-    for (let i = 0; i < reports.length; i++) {
-            let title = reports[i].title;
-            let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
-            let state = reports[i].state;
-            let dateSubmitted = (state === "created") ? "TBD": new Date(reports[i].date_submitted).toLocaleDateString("en-US");
-            let bodyRow = table.insertRow(i); 
-            
-            bodyRow.insertCell(0).innerHTML = title;
-            bodyRow.insertCell(1).innerHTML = dateCreated; 
-            bodyRow.insertCell(2).innerHTML = state;
-            bodyRow.insertCell(3).innerHTML = dateSubmitted;
-            rowsInserted++;
+    console.log(`Attempting a connection to the following endpoint: ${url}`);
+
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("GET SUCCESS!");
+                console.log(`Server response:\n${this.response}`);
+                parsedData = JSON.parse(this.response);
+                callback(parsedData);
+            } else {
+                console.error("GET FAILURE!");
+                console.error(`Server status: ${this.status}`);
+                console.error(`Server response:\n${this.response}`);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        alert("Connection error!");
+    };
+
+    xhr.send();
+}
+
+function createEditReportForm(parsedData) {
+    console.log("In createEditReportForm");
+    console.log(JSON.stringify(parsedData));
+    const cardBody = document.querySelector(".card-body");
+    const fragment = document.createDocumentFragment();
+    const title = parsedData.title;
+    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-us");
+    
+
+    if (cardBody.hasChildNodes() === true && cardBody.childNodes[1]) {
+       cardBody.removeChild(cardBody.childNodes[1]); 
     }
 
-    if (rowsInserted === 0) {
-        // Empty report list
+    console.log(`Title: ${title}`);
+    console.log(`Date Created: ${dateCreated}`);
+    const form = document.createElement("form");
+
+    const sections = parsedData.sections;
+    for (let section in sections) {
+        console.log(`Section title: ${sections[section].title}`);
+        console.log(`Section html description: ${sections[section].html_description}`);
+
+        let sectionTitle = document.createElement("p").innerHTML = sections[section].title;
+        form.appendChild(title);
+        let sectionDescription = sections[section].html_description; 
+        form.appendChild(sectionDescription);
+        
+        for (let field in sections[section].fields) {
+            console.log(`Field label: ${sections[section].fields[field].label}`); 
+            console.log(`Field type: ${sections[section].fields[field].type}`); 
+            console.log(`Field value: ${sections[section].fields[field].value}`); 
+            
+
+        }
+    }
+}
+
+function displayListOfReports(parsedData) {
+    const cardBody = document.querySelector(".card-body");
+    const table = document.createElement("table");
+    const reports = parsedData.reports;
+    let reportsAdded = 0;
+
+    // Create report table
+    for (let i = 0; i < reports.length; i++) {
+        let title = reports[i].title;
+        let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
+        let state = reports[i].state;
+        let dateSubmitted;
+        let rid = reports[i].report_pk;
+
+        // Create edit/view button
+        let actionButton = document.createElement("button");
+        actionButton.type = "submit";
+        actionButton.setAttribute("data-rid", rid);
+        actionButton.classList.add("btn");
+
+        if (state === "created") {
+            // Edit button
+            dateSubmitted = "TBD";
+            actionButton.classList.add("btn-primary");
+            actionButton.innerHTML = "Edit";
+            actionButton.addEventListener("click", openEditReportForm);
+        } else {
+            // View button
+            dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
+            actionButton.classList.add("btn-success");
+            actionButton.innerHTML = "View";
+        }
+
+        // Insert data into the table object
+        let bodyRow = table.insertRow(i); 
+        bodyRow.insertCell(0).innerHTML = title;
+        bodyRow.insertCell(1).innerHTML = dateCreated; 
+
+        let stateCell = bodyRow.insertCell(2);
+        stateCell.innerHTML = state;
+        stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
+
+        let dateSubmittedCell = bodyRow.insertCell(3);
+        dateSubmittedCell.innerHTML = dateSubmitted;
+        dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
+
+        bodyRow.insertCell(4).appendChild(actionButton);
+        reportsAdded++;
+    }
+
+    if (reportsAdded === 0) {
+        // Report list is empty
         const p = document.createElement("p");
         p.innerHTML = "No reports found.";
         cardBody.appendChild(p);
     } else {
-        // Create table header, add to table, and append result to the card body
-        const thead = document.createElement("thead");
+        // Report list exists and table rows have been created
+        // Create table header, add it to the table, and append the result to the card body
+
         const tr = document.createElement("tr");
 
         const headTitle = document.createElement("th");
@@ -65,12 +162,19 @@ function displayListOfReports(listOfReports) {
 
         const headState = document.createElement("th");
         headState.innerHTML = "State";
+        headState.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
         tr.appendChild(headState);
 
         const headDateSubmitted = document.createElement("th")
         headDateSubmitted.innerHTML = "Date Submitted";
+        headDateSubmitted.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
         tr.appendChild(headDateSubmitted);
 
+        const headAction = document.createElement("th")
+        headAction.innerHTML = "Action";
+        tr.appendChild(headAction);
+
+        const thead = document.createElement("thead");
         thead.appendChild(tr);
         table.prepend(thead);
         table.classList.add("table", "table-striped", "table-responsive-sm");
@@ -79,34 +183,16 @@ function displayListOfReports(listOfReports) {
 }
 
 function getReportHistory(event) {
-    const token = localStorage.getItem("token");
-    const url = getEndpointDomain() + "backend/list_report";
-    const xhr = new XMLHttpRequest();
-
-    console.log(`Attempting a connection to the following endpoint: ${url}`);
-
-    xhr.open("GET", url, true);
-    //xhr.setRequestHeader("Authorization", `Token  ${token}`);
-    xhr.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) {
-                console.log("GET list_report SUCCESS!");
-                console.log(`Server response:\n${this.response}`);
-                listOfReports = JSON.parse(this.response);
-                displayListOfReports(listOfReports);
-            } else {
-                console.log("GET list_report FAILURE!");
-                console.log(`Server status: ${this.status}`);
-                console.log(`Server response:\n${this.response}`);
-            }
-        }
-    };
-
-    xhr.onerror = function() {
-        alert("Connection error!");
-    };
-
-    xhr.send();
+    const url = getEndpointDomain() + "api/v1/reports";
+    getDataFromEndpoint(url, displayListOfReports);
 }
 
+function openEditReportForm(event) {
+    const url = getEndpointDomain() + "api/v1/report/" + this.dataset.rid;
+    getDataFromEndpoint(url, createEditReportForm);
+}
+
+
 document.addEventListener("DOMContentLoaded", getReportHistory);
+
+
