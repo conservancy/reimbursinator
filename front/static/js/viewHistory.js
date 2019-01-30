@@ -55,9 +55,24 @@ function getDataFromEndpoint(url, callback) {
 }
 
 function buildEditReportForm(parsedReport) {
-    const modalTitle = document.querySelector("#editReportModalLabel"); 
-    console.log("In buildEditReportForm");
-    console.log(JSON.stringify(parsedReport));
+    const modalHeader = document.querySelector(".modal-header"); 
+    const h5 = document.createElement("h5");
+    h5.classList.add("modal-title", "text-center");
+    const date = new Date(parsedReport.date_created).toLocaleDateString("en-US");
+    h5.innerHTML = `${parsedReport.title}, ${date}`;
+    modalHeader.prepend(h5);
+    
+    const sections = parsedReport.sections;
+    for (let i = 0; i < sections.length; i++) {
+        console.log(sections[i].title);
+        console.log(sections[i].html_description);
+        console.log(sections[i].fields);
+        for (field in sections[i].fields) {
+            console.log(sections[i].fields[field].label);
+            console.log(sections[i].fields[field].type);
+            console.log(sections[i].fields[field].value);
+        }
+    }
 }
 
 function editReportFormClickHandler(event) {
