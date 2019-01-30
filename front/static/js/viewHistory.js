@@ -40,9 +40,9 @@ function getDataFromEndpoint(url, callback) {
                 parsedData = JSON.parse(this.response);
                 callback(parsedData);
             } else {
-                console.log("GET FAILURE!");
-                console.log(`Server status: ${this.status}`);
-                console.log(`Server response:\n${this.response}`);
+                console.error("GET FAILURE!");
+                console.error(`Server status: ${this.status}`);
+                console.error(`Server response:\n${this.response}`);
             }
         }
     };
@@ -55,10 +55,10 @@ function getDataFromEndpoint(url, callback) {
 }
 
 
-function displayListOfReports(listOfReports) {
+function displayListOfReports(parsedData) {
     const cardBody = document.querySelector(".card-body");
     const table = document.createElement("table");
-    const reports = listOfReports.reports;
+    const reports = parsedData.reports;
     let reportsAdded = 0;
 
     // Create report table
@@ -85,6 +85,7 @@ function displayListOfReports(listOfReports) {
             actionButton.innerHTML = "View";
         }
 
+        // Insert data into the table object
         let bodyRow = table.insertRow(i); 
         bodyRow.insertCell(0).innerHTML = title;
         bodyRow.insertCell(1).innerHTML = dateCreated; 
@@ -92,7 +93,6 @@ function displayListOfReports(listOfReports) {
         let stateCell = bodyRow.insertCell(2);
         stateCell.innerHTML = state;
         stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
-
 
         let dateSubmittedCell = bodyRow.insertCell(3);
         dateSubmittedCell.innerHTML = dateSubmitted;
@@ -111,7 +111,6 @@ function displayListOfReports(listOfReports) {
         // Report list exists and table rows have been created
         // Create table header, add it to the table, and append the result to the card body
 
-        const thead = document.createElement("thead");
         const tr = document.createElement("tr");
 
         const headTitle = document.createElement("th");
@@ -136,6 +135,7 @@ function displayListOfReports(listOfReports) {
         headAction.innerHTML = "Action";
         tr.appendChild(headAction);
 
+        const thead = document.createElement("thead");
         thead.appendChild(tr);
         table.prepend(thead);
         table.classList.add("table", "table-striped", "table-responsive-sm");
