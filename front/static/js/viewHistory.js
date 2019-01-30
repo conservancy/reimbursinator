@@ -54,31 +54,6 @@ function getDataFromEndpoint(url, callback) {
     xhr.send();
 }
 
-function buildEditReportForm(parsedReport) {
-    const modalHeader = document.querySelector(".modal-header"); 
-    const h5 = document.createElement("h5");
-    h5.classList.add("modal-title", "text-center");
-    const date = new Date(parsedReport.date_created).toLocaleDateString("en-US");
-    h5.innerHTML = `${parsedReport.title}, ${date}`;
-    modalHeader.prepend(h5);
-    
-    const sections = parsedReport.sections;
-    for (let i = 0; i < sections.length; i++) {
-        console.log(sections[i].title);
-        console.log(sections[i].html_description);
-        console.log(sections[i].fields);
-        for (field in sections[i].fields) {
-            console.log(sections[i].fields[field].label);
-            console.log(sections[i].fields[field].type);
-            console.log(sections[i].fields[field].value);
-        }
-    }
-}
-
-function editReportFormClickHandler(event) {
-    const url = getEndpointDomain() + "backend/get_report";
-    getDataFromEndpoint(url, buildEditReportForm);
-}
 
 function displayListOfReports(listOfReports) {
     const cardBody = document.querySelector(".card-body");
@@ -96,7 +71,6 @@ function displayListOfReports(listOfReports) {
         // Create edit/view button
         let actionButton = document.createElement("button");
         actionButton.type = "submit";
-        actionButton.setAttribute("data-toggle", "modal");
         actionButton.classList.add("btn");
 
         if (state === "created") {
@@ -104,8 +78,6 @@ function displayListOfReports(listOfReports) {
             dateSubmitted = "TBD";
             actionButton.classList.add("btn-primary");
             actionButton.innerHTML = "Edit";
-            actionButton.setAttribute("data-target", "#editReportModal");
-            actionButton.addEventListener("click", editReportFormClickHandler);
         } else {
             // View button
             dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
@@ -119,12 +91,12 @@ function displayListOfReports(listOfReports) {
 
         let stateCell = bodyRow.insertCell(2);
         stateCell.innerHTML = state;
-        stateCell.classList.add("d-none", "d-lg-table-cell");
+        stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
 
 
         let dateSubmittedCell = bodyRow.insertCell(3);
         dateSubmittedCell.innerHTML = dateSubmitted;
-        dateSubmittedCell.classList.add("d-none", "d-md-table-cell");
+        dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
 
         bodyRow.insertCell(4).appendChild(actionButton);
         reportsAdded++;
@@ -138,6 +110,7 @@ function displayListOfReports(listOfReports) {
     } else {
         // Report list exists and table rows have been created
         // Create table header, add it to the table, and append the result to the card body
+
         const thead = document.createElement("thead");
         const tr = document.createElement("tr");
 
@@ -151,12 +124,12 @@ function displayListOfReports(listOfReports) {
 
         const headState = document.createElement("th");
         headState.innerHTML = "State";
-        headState.classList.add("d-none", "d-lg-table-cell"); // Column shown only on large displays
+        headState.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
         tr.appendChild(headState);
 
         const headDateSubmitted = document.createElement("th")
         headDateSubmitted.innerHTML = "Date Submitted";
-        headDateSubmitted.classList.add("d-none", "d-md-table-cell"); // Column only shown on medium and larger displays
+        headDateSubmitted.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
         tr.appendChild(headDateSubmitted);
 
         const headAction = document.createElement("th")
@@ -171,36 +144,6 @@ function displayListOfReports(listOfReports) {
 }
 
 function getReportHistory(event) {
-    /*
-    const token = localStorage.getItem("token");
-    const url = getEndpointDomain() + "backend/list_report";
-    const xhr = new XMLHttpRequest();
-
-    console.log(`Attempting a connection to the following endpoint: ${url}`);
-
-    xhr.open("GET", url, true);
-    //xhr.setRequestHeader("Authorization", `Token  ${token}`);
-    xhr.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) {
-                console.log("GET list_report SUCCESS!");
-                console.log(`Server response:\n${this.response}`);
-                listOfReports = JSON.parse(this.response);
-                displayListOfReports(listOfReports);
-            } else {
-                console.log("GET list_report FAILURE!");
-                console.log(`Server status: ${this.status}`);
-                console.log(`Server response:\n${this.response}`);
-            }
-        }
-    };
-
-    xhr.onerror = function() {
-        alert("Connection error!");
-    };
-
-    xhr.send();
-    */
     const url = getEndpointDomain() + "backend/list_report";
     getDataFromEndpoint(url, displayListOfReports);
 }
