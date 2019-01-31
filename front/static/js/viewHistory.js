@@ -54,15 +54,16 @@ function getDataFromEndpoint(url, callback) {
     xhr.send();
 }
 
-function createFormGroup(fieldKey, field) {
+function createFormGroup(key, field) {
     let formGroup = document.createElement("div")
     formGroup.classList.add("form-group");
 
     let label = document.createElement("label");
     label.innerHTML = field.label;
-    label.setAttribute("for", fieldKey);
+    label.setAttribute("for", key);
     let input = document.createElement("input");
-    input.name = fieldKey;
+    input.name = key;
+    input.id = key;
 
     switch(field.type) {
         case "boolean":
@@ -100,10 +101,43 @@ function createFormGroup(fieldKey, field) {
     return formGroup;
 }
 
-function createEditReportForm(parsedData) {
-    console.log("In createEditReportForm");
-    console.log(JSON.stringify(parsedData));
+function createCollapsibleCard(key, sectionTitle) {
+    // Create card and header
+    const card = document.createElement("div");
+    card.classList.add("card");
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
 
+    // Create h2, button. Append button to h2, h2 to header, and header to card
+    const h2 = document.createElement("h2");
+    h2.classList.add("mb-0");
+    const button = document.createElement("button");
+    button.classList.add("btn", "btn-link");
+    button.type = "button";
+    button.setAttribute("data-toggle", "collapse");
+    button.setAttribute("data-target", "#collapse" + key);
+    button.innerHTML = sectionTitle;
+    h2.appendChild(button);
+    cardHeader.appendChild(h2);
+    card.appendChild(cardHeader);
+
+    return card;
+}
+
+function createCollapsibleCardBody(key, form) {
+    const div = document.createElement("div");
+    div.classList.add("collapse", "show");
+    div.setAttribute("data-parent", "#editReportAccordion");
+    div.id = "collapse" + key;
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
+    cardBody.appendChild(form);
+    div.appendChild(cardBody);
+    
+    return div;
+}
+
+function createEditReportForm(parsedData) {
     const cardBody = document.querySelector(".card-body");
     const cardHeader = document.querySelector(".card-header");
     const fragment = document.createDocumentFragment();
@@ -113,40 +147,61 @@ function createEditReportForm(parsedData) {
        cardBody.removeChild(cardBody.childNodes[1]); 
     }
 
-    const reportTitle = document.createElement("h4");
-    reportTitle.innerHTML = parsedData.title;
-    fragment.appendChild(reportTitle);
+    // Add report title and date to card header
+    let reportTitle = parsedData.title;
+    let dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
+    cardHeader.innerHTML = `${reportTitle}  ${dateCreated}`;
 
-    const dateCreated = document.createElement("p");
-    dateCreated.innerHTML = new Date(parsedData.date_created).toLocaleDateString("en-US");
-    fragment.appendChild(dateCreated);
+    // Create accordion
+    const accordion = document.createElement("div");
+    accordion.classList.add("accordion");
+    accordion.id = "editReportAccordion";
 
-    const form = document.createElement("form");
 
+    // Traverse report sections
     const sections = parsedData.sections;
-    for (let section in sections) {
-        console.log(`Section title: ${sections[section].title}`);
-        console.log(`Section html description: ${sections[section].html_description}`);
+    for (let key in sections) {
 
-        // Add section title and description
-        let sectionTitle = document.createElement("p");
-        sectionTitle.innerHTML = sections[section].title;
-        form.appendChild(sectionTitle);
-        let sectionDescription = sections[section].html_description;  // html_description should be updated to a standard string
-        form.insertAdjacentHTML("beforeend", sectionDescription); 
+        let section = sections[key];
 
-        //for (let field in sections[section].fields) {
-        for (let fieldKey in sections[section].fields) {
-            console.log(`Field label: ${sections[section].fields[fieldKey].label}`); 
-            console.log(`Field type: ${sections[section].fields[fieldKey].type}`); 
-            console.log(`Field value: ${sections[section].fields[fieldKey].value}`); 
+        console.log(`Section title: ${section.title}`);
+        console.log(`Section html description: ${section.html_description}`);
+
+        // Create a new collapsible card
+        let card = createCollapsibleCard(key, section.title)
+
+        // Add the section title and description to the card
+        let sectionDescription = section.html_description;  // html_description should be updated to a standard string
+        card.insertAdjacentHTML("beforeend", sectionDescription); 
+
+        // Create a new form with the section key index as id
+        let form = document.createElement("form");
+        form.classList.add("form");
+        form.id = "form" + key;
+
+
+        // Traverse the fields of this section
+        let fields = section.fields;
+        for (let key in fields) {
+
+            // Create a form group for each field and add it to the form
+            let field = fields[key];
+            console.log(`Field label: ${field.label}`); 
+            console.log(`Field type: ${field.type}`); 
+            console.log(`Field value: ${field.value}`); 
             
-            let formGroup = createFormGroup(fieldKey, sections[section].fields[fieldKey]);
+            let formGroup = createFormGroup(key, field);
             form.appendChild(formGroup);
         }
-    }
 
-    fragment.appendChild(form);
+        // Create collapsible card body and append the form to it
+        let cardBody = createCollapsibleCardBody(key, form);
+        card.appendChild(cardBody); 
+
+        accordion.appendChild(card);
+    }
+   
+    fragment.appendChild(accordion) 
     cardBody.appendChild(fragment);
 }
 
