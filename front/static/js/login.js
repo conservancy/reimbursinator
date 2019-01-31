@@ -24,11 +24,11 @@ function postToLoginEndpoint(event) {
                 console.log(`Server response:\n${this.response}`);
                 token = JSON.parse(this.response).token;
                 localStorage.setItem("token", token);
-                window.location.replace("dashboard.html");
+                window.location.replace("home.html");
             } else {
-                console.log("LOGIN FAILURE!");
-                console.log(`Server status: ${this.status}`);
-                console.log(`Server response:\n${this.response}`);
+                console.error("LOGIN FAILURE!");
+                console.error(`Server status: ${this.status}`);
+                console.error(`Server response:\n${this.response}`);
                 displayErrorMessage(this.response);
             }
         }

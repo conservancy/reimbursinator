@@ -76,11 +76,12 @@ function createEditReportForm(parsedData) {
         console.log(`Section title: ${sections[section].title}`);
         console.log(`Section html description: ${sections[section].html_description}`);
 
-        let sectionTitle = document.createElement("p").innerHTML = sections[section].title;
-        form.appendChild(title);
-        let sectionDescription = sections[section].html_description; 
-        form.appendChild(sectionDescription);
-        
+        let sectionTitle = document.createElement("p");
+        sectionTitle.innerHTML = sections[section].title;
+        form.appendChild(sectionTitle);
+        let sectionDescription = sections[section].html_description;  // html_description should be updated to a standard string
+        form.insertAdjacentHTML("beforeend", sectionDescription); 
+
         for (let field in sections[section].fields) {
             console.log(`Field label: ${sections[section].fields[field].label}`); 
             console.log(`Field type: ${sections[section].fields[field].type}`); 
@@ -194,5 +195,3 @@ function openEditReportForm(event) {
 
 
 document.addEventListener("DOMContentLoaded", getReportHistory);
-
-
