@@ -54,21 +54,73 @@ function getDataFromEndpoint(url, callback) {
     xhr.send();
 }
 
+function createFormGroup(fieldKey, field) {
+    let formGroup = document.createElement("div")
+    formGroup.classList.add("form-group");
+
+    let label = document.createElement("label");
+    label.innerHTML = field.label;
+    label.setAttribute("for", fieldKey);
+    let input = document.createElement("input");
+    input.name = fieldKey;
+
+    switch(field.type) {
+        case "boolean":
+            input.type = "checkbox";
+            if (field.value === true)
+                input.setAttribute("checked", "checked");
+            formGroup.appendChild(input);
+            formGroup.appendChild(label);
+            break;
+        case "date":
+            input.type = "datetime";
+            input.value = field.value;
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            break;
+        case "decimal":
+            input.type = "text";
+            input.value = field.value;
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            break;
+        case "file":
+            input.type = "file";
+            const link = document.createElement("a");
+            link.href = field.value;
+            link.innerHTML = field.value;
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            formGroup.appendChild(link);
+            break;
+        default:
+            break;
+    }
+
+    return formGroup;
+}
+
 function createEditReportForm(parsedData) {
     console.log("In createEditReportForm");
     console.log(JSON.stringify(parsedData));
+
     const cardBody = document.querySelector(".card-body");
+    const cardHeader = document.querySelector(".card-header");
     const fragment = document.createDocumentFragment();
-    const title = parsedData.title;
-    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-us");
     
 
     if (cardBody.hasChildNodes() === true && cardBody.childNodes[1]) {
        cardBody.removeChild(cardBody.childNodes[1]); 
     }
 
-    console.log(`Title: ${title}`);
-    console.log(`Date Created: ${dateCreated}`);
+    const reportTitle = document.createElement("h4");
+    reportTitle.innerHTML = parsedData.title;
+    fragment.appendChild(reportTitle);
+
+    const dateCreated = document.createElement("p");
+    dateCreated.innerHTML = new Date(parsedData.date_created).toLocaleDateString("en-US");
+    fragment.appendChild(dateCreated);
+
     const form = document.createElement("form");
 
     const sections = parsedData.sections;
@@ -76,20 +128,26 @@ function createEditReportForm(parsedData) {
         console.log(`Section title: ${sections[section].title}`);
         console.log(`Section html description: ${sections[section].html_description}`);
 
+        // Add section title and description
         let sectionTitle = document.createElement("p");
         sectionTitle.innerHTML = sections[section].title;
         form.appendChild(sectionTitle);
         let sectionDescription = sections[section].html_description;  // html_description should be updated to a standard string
         form.insertAdjacentHTML("beforeend", sectionDescription); 
 
-        for (let field in sections[section].fields) {
-            console.log(`Field label: ${sections[section].fields[field].label}`); 
-            console.log(`Field type: ${sections[section].fields[field].type}`); 
-            console.log(`Field value: ${sections[section].fields[field].value}`); 
+        //for (let field in sections[section].fields) {
+        for (let fieldKey in sections[section].fields) {
+            console.log(`Field label: ${sections[section].fields[fieldKey].label}`); 
+            console.log(`Field type: ${sections[section].fields[fieldKey].type}`); 
+            console.log(`Field value: ${sections[section].fields[fieldKey].value}`); 
             
-
+            let formGroup = createFormGroup(fieldKey, sections[section].fields[fieldKey]);
+            form.appendChild(formGroup);
         }
     }
+
+    fragment.appendChild(form);
+    cardBody.appendChild(fragment);
 }
 
 function displayListOfReports(parsedData) {
