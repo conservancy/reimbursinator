@@ -135,7 +135,6 @@ function createCollapsibleCard(key, sectionTitle) {
 }
 
 function createCollapsibleCardBody(key, form, sectionDescription, sectionCompleted) {
-    console.log(sectionCompleted);
     // Create wrapper div
     const div = document.createElement("div");
     sectionCompleted ? div.classList.add("collapse") : div.classList.add("collapse", "show");
@@ -174,17 +173,11 @@ function createEditReportForm(parsedData) {
     accordion.id = "editReportAccordion";
 
 
-    // Traverse report sections
+    // Traverse the report's sections array
     const sections = parsedData.sections;
     for (let key in sections) {
-
         let section = sections[key];
-
-        console.log(`Section title: ${section.title}`);
-        console.log(`Section html description: ${section.html_description}`);
-
-        // Create a new collapsible card
-        let card = createCollapsibleCard(key, section.title)
+        let collapsibleCard = createCollapsibleCard(key, section.title)
 
         // Create a new form with the section key index as id
         let form = document.createElement("form");
@@ -194,18 +187,18 @@ function createEditReportForm(parsedData) {
         // Traverse the fields of this section
         let fields = section.fields;
         for (let key in fields) {
-
-            // Create a form group for each field and add it to the form
             let field = fields[key];
+
             console.log(`Field label: ${field.label}`); 
             console.log(`Field type: ${field.type}`); 
             console.log(`Field value: ${field.value}`); 
             
+            // Create a form group for each field and add it to the form
             let formGroup = createFormGroup(key, field);
             form.appendChild(formGroup);
         }
 
-        // Add save button to form
+        // Add save button to the current form
         let saveButton = document.createElement("button");
         saveButton.innerHTML = "Save";
         saveButton.type = "submit";
@@ -214,8 +207,8 @@ function createEditReportForm(parsedData) {
 
         // Create collapsible card body, append form to it, append card to accordion
         let cardBody = createCollapsibleCardBody(key, form, section.html_description, section.completed);
-        card.appendChild(cardBody); 
-        accordion.appendChild(card);
+        collapsibleCard.appendChild(cardBody); 
+        accordion.appendChild(collapsibleCard);
     }
    
     // Add submit button to accordion
