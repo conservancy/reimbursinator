@@ -55,13 +55,13 @@ function getDataFromEndpoint(url, callback) {
 }
 
 function createFormGroup(key, field) {
-    let formGroup = document.createElement("div")
+    const formGroup = document.createElement("div")
     formGroup.classList.add("form-group");
 
-    let label = document.createElement("label");
+    const label = document.createElement("label");
     label.innerHTML = field.label;
     label.setAttribute("for", key);
-    let input = document.createElement("input");
+    const input = document.createElement("input");
     input.name = key;
     input.id = key;
 
@@ -70,20 +70,25 @@ function createFormGroup(key, field) {
             input.type = "checkbox";
             if (field.value === true)
                 input.setAttribute("checked", "checked");
-            formGroup.appendChild(input);
+            formGroup.appendChild(input); // Reversed order compared to others
             formGroup.appendChild(label);
+            formGroup.classList.add("form-check");
+            label.classList.add("form-check-label");
+            input.classList.add("form-check-input");
             break;
         case "date":
             input.type = "datetime";
             input.value = field.value;
             formGroup.appendChild(label);
             formGroup.appendChild(input);
+            input.classList.add("form-control");
             break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
             formGroup.appendChild(label);
             formGroup.appendChild(input);
+            input.classList.add("form-control");
             break;
         case "file":
             input.type = "file";
@@ -93,6 +98,7 @@ function createFormGroup(key, field) {
             formGroup.appendChild(label);
             formGroup.appendChild(input);
             formGroup.appendChild(link);
+            input.classList.add("form-control-file");
             break;
         default:
             break;
@@ -110,7 +116,7 @@ function createCollapsibleCard(key, sectionTitle) {
 
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
-    h2.classList.add("mb-0");
+    //h2.classList.add("mb-0");
     const button = document.createElement("button");
     button.classList.add("btn", "btn-link");
     button.type = "button";
@@ -124,13 +130,17 @@ function createCollapsibleCard(key, sectionTitle) {
     return card;
 }
 
-function createCollapsibleCardBody(key, form) {
+function createCollapsibleCardBody(key, form, sectionDescription) {
+    // Create wrapper div
     const div = document.createElement("div");
     div.classList.add("collapse", "show");
     div.setAttribute("data-parent", "#editReportAccordion");
     div.id = "collapse" + key;
+
+    // Create card body. Append form to body, body to wrapper div
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
+    cardBody.insertAdjacentHTML("beforeend", sectionDescription); 
     cardBody.appendChild(form);
     div.appendChild(cardBody);
     
@@ -170,10 +180,6 @@ function createEditReportForm(parsedData) {
         // Create a new collapsible card
         let card = createCollapsibleCard(key, section.title)
 
-        // Add the section title and description to the card
-        let sectionDescription = section.html_description;  // html_description should be updated to a standard string
-        card.insertAdjacentHTML("beforeend", sectionDescription); 
-
         // Create a new form with the section key index as id
         let form = document.createElement("form");
         form.classList.add("form");
@@ -194,10 +200,9 @@ function createEditReportForm(parsedData) {
             form.appendChild(formGroup);
         }
 
-        // Create collapsible card body and append the form to it
-        let cardBody = createCollapsibleCardBody(key, form);
+        // Create collapsible card body, append form to it, append card to accordion
+        let cardBody = createCollapsibleCardBody(key, form, section.html_description);
         card.appendChild(cardBody); 
-
         accordion.appendChild(card);
     }
    
