@@ -70,35 +70,35 @@ function createFormGroup(key, field) {
             input.type = "checkbox";
             if (field.value === true)
                 input.setAttribute("checked", "checked");
-            formGroup.appendChild(input); // Reversed order compared to others
-            formGroup.appendChild(label);
+            input.classList.add("form-check-input");
             formGroup.classList.add("form-check");
             label.classList.add("form-check-label");
-            input.classList.add("form-check-input");
+            formGroup.appendChild(input); // Reversed order compared to others
+            formGroup.appendChild(label);
             break;
         case "date":
             input.type = "datetime";
             input.value = field.value;
+            input.classList.add("form-control");
             formGroup.appendChild(label);
             formGroup.appendChild(input);
-            input.classList.add("form-control");
             break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
+            input.classList.add("form-control");
             formGroup.appendChild(label);
             formGroup.appendChild(input);
-            input.classList.add("form-control");
             break;
         case "file":
             input.type = "file";
+            input.classList.add("form-control-file");
             const link = document.createElement("a");
             link.href = field.value;
             link.innerHTML = field.value;
             formGroup.appendChild(label);
             formGroup.appendChild(input);
             formGroup.appendChild(link);
-            input.classList.add("form-control-file");
             break;
         default:
             break;
@@ -116,7 +116,6 @@ function createCollapsibleCard(key, sectionTitle) {
 
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
-    //h2.classList.add("mb-0");
     const button = document.createElement("button");
     button.classList.add("btn", "btn-link");
     button.type = "button";
@@ -148,19 +147,20 @@ function createCollapsibleCardBody(key, form, sectionDescription) {
 }
 
 function createEditReportForm(parsedData) {
-    const cardBody = document.querySelector(".card-body");
-    const cardHeader = document.querySelector(".card-header");
+    const col = document.querySelector(".col-sm-8");
     const fragment = document.createDocumentFragment();
-    
 
-    if (cardBody.hasChildNodes() === true && cardBody.childNodes[1]) {
-       cardBody.removeChild(cardBody.childNodes[1]); 
+    while (col.firstChild) {
+        col.removeChild(col.firstChild)
     }
 
     // Add report title and date to card header
-    let reportTitle = parsedData.title;
-    let dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
-    cardHeader.innerHTML = `${reportTitle}  ${dateCreated}`;
+    const reportTitle = parsedData.title;
+    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
+    const h3 = document.createElement("h3"); 
+    h3.innerHTML = `${reportTitle}  ${dateCreated}`;
+    h3.classList.add("text-center");
+    fragment.appendChild(h3);
 
     // Create accordion
     const accordion = document.createElement("div");
@@ -200,14 +200,29 @@ function createEditReportForm(parsedData) {
             form.appendChild(formGroup);
         }
 
+        // Add save button to form
+        let saveButton = document.createElement("button");
+        saveButton.innerHTML = "Save";
+        saveButton.type = "submit";
+        saveButton.classList.add("btn", "btn-primary"); // TODO: add eventListener
+        form.appendChild(saveButton);
+
         // Create collapsible card body, append form to it, append card to accordion
         let cardBody = createCollapsibleCardBody(key, form, section.html_description);
         card.appendChild(cardBody); 
         accordion.appendChild(card);
     }
    
+    // Add submit button to accordion
+    let submitButton = document.createElement("button");
+    submitButton.innerHTML = "Submit Report";
+    submitButton.type = "submit";
+    submitButton.classList.add("btn", "btn-primary", "btn-lg", "btn-block"); // TODO: add eventListener
+    accordion.appendChild(submitButton);
+
     fragment.appendChild(accordion) 
-    cardBody.appendChild(fragment);
+    col.appendChild(fragment);
+
 }
 
 function displayListOfReports(parsedData) {
