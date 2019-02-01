@@ -25,6 +25,7 @@ function getEndpointDomain() {
     return domain;
 }
 
+// Make a GET request to url and pass response to callback function
 function getDataFromEndpoint(url, callback) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
@@ -54,6 +55,7 @@ function getDataFromEndpoint(url, callback) {
     xhr.send();
 }
 
+// Wraps a Bootstrap form group around a field
 function createFormGroup(key, field) {
     const formGroup = document.createElement("div")
     formGroup.classList.add("form-group");
@@ -61,6 +63,7 @@ function createFormGroup(key, field) {
     const label = document.createElement("label");
     label.innerHTML = field.label;
     label.setAttribute("for", key);
+
     const input = document.createElement("input");
     input.name = key;
     input.id = key;
@@ -93,11 +96,13 @@ function createFormGroup(key, field) {
         case "file":
             input.type = "file";
             input.classList.add("form-control-file");
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            let uploadMessage = document.createTextNode("Uploaded file:");
+            formGroup.appendChild(uploadMessage);
             const link = document.createElement("a");
             link.href = field.value;
             link.innerHTML = field.value;
-            formGroup.appendChild(label);
-            formGroup.appendChild(input);
             formGroup.appendChild(link);
             break;
         default:
@@ -129,10 +134,11 @@ function createCollapsibleCard(key, sectionTitle) {
     return card;
 }
 
-function createCollapsibleCardBody(key, form, sectionDescription) {
+function createCollapsibleCardBody(key, form, sectionDescription, sectionCompleted) {
+    console.log(sectionCompleted);
     // Create wrapper div
     const div = document.createElement("div");
-    div.classList.add("collapse", "show");
+    sectionCompleted ? div.classList.add("collapse") : div.classList.add("collapse", "show");
     div.setAttribute("data-parent", "#editReportAccordion");
     div.id = "collapse" + key;
 
@@ -185,7 +191,6 @@ function createEditReportForm(parsedData) {
         form.classList.add("form");
         form.id = "form" + key;
 
-
         // Traverse the fields of this section
         let fields = section.fields;
         for (let key in fields) {
@@ -208,7 +213,7 @@ function createEditReportForm(parsedData) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(key, form, section.html_description);
+        let cardBody = createCollapsibleCardBody(key, form, section.html_description, section.completed);
         card.appendChild(cardBody); 
         accordion.appendChild(card);
     }
@@ -222,7 +227,6 @@ function createEditReportForm(parsedData) {
 
     fragment.appendChild(accordion) 
     col.appendChild(fragment);
-
 }
 
 function displayListOfReports(parsedData) {
