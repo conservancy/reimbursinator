@@ -80,12 +80,6 @@ function createFormGroup(key, field) {
             formGroup.appendChild(label);
             break;
         case "date":
-            input.type = "datetime";
-            input.value = field.value;
-            input.classList.add("form-control");
-            formGroup.appendChild(label);
-            formGroup.appendChild(input);
-            break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
@@ -171,7 +165,6 @@ function createEditReportForm(parsedData) {
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
     accordion.id = "editReportAccordion";
-
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
@@ -259,9 +252,9 @@ function displayListOfReports(parsedData) {
             if (state === "created") {
                 // Edit button
                 dateSubmitted = "TBD";
-                actionButton.classList.add("btn-primary");
+                actionButton.classList.add("btn-primary", "edit-report-button"); // Add event listener class
                 actionButton.innerHTML = "Edit";
-                actionButton.addEventListener("click", openEditReportForm);
+                //actionButton.addEventListener("click", openEditReportForm);
             } else {
                 // View button
                 dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
@@ -279,15 +272,17 @@ function displayListOfReports(parsedData) {
     }
 }
 
-function getReportHistory(event) {
+document.addEventListener("DOMContentLoaded", function(event) {
     const url = getEndpointDomain() + "api/v1/reports";
     getDataFromEndpoint(url, displayListOfReports);
-}
+});
 
-function openEditReportForm(event) {
-    const url = getEndpointDomain() + "api/v1/report/" + this.dataset.rid;
-    getDataFromEndpoint(url, createEditReportForm);
-}
+document.addEventListener("click", function(event) {
+    if (event.target && event.target.classList.contains("edit-report-button")) {
+        console.log("Edit button clicked");
+        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+        getDataFromEndpoint(url, createEditReportForm);
+    }
 
-
-document.addEventListener("DOMContentLoaded", getReportHistory);
+    // TODO: Add view report
+});
