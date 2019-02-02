@@ -6,18 +6,18 @@ function postToLogoutEndpoint(event) {
     const xhr = new XMLHttpRequest();
 
     xhr.open("POST", url, true);
-    xhr.setRequestHeader("Authorization", `Token  ${token}`);
+    xhr.setRequestHeader("Authorization", "Token  " + token);
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 console.log("LOGOUT SUCCESS!");
-                console.log(`Server response:\n${this.response}`);
+                console.log("Server response:\n" + this.response);
                 localStorage.removeItem("token");
                 window.location.replace("index.html");
             } else {
-                console.log("LOGOUT FAILURE!");
-                console.log(`Server status: ${this.status}`);
-                console.log(`Server response:\n${this.response}`);
+                console.error("LOGOUT FAILURE!");
+                console.error("Server status: " + this.status);
+                console.error("Server response:\n" + this.response);
             }
         }
     };

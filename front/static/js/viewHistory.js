@@ -14,7 +14,7 @@ function getEndpointDomain() {
     else
         OSName = "Unknown OS";
 
-    console.log(`Detected operating system: ${OSName}`);
+    console.log("Detected operating system: " + OSName);
 
     if (OSName === "Windows") {
         domain = "https://192.168.99.100:8444/";
@@ -30,20 +30,20 @@ function getDataFromEndpoint(url, callback) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
-    console.log(`Attempting a connection to the following endpoint: ${url}`);
+    console.log("Attempting a connection to the following endpoint: " + url);
 
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 console.log("GET SUCCESS!");
-                console.log(`Server response:\n${this.response}`);
+                console.log("Server response:\n" + this.response);
                 parsedData = JSON.parse(this.response);
                 callback(parsedData);
             } else {
                 console.error("GET FAILURE!");
-                console.error(`Server status: ${this.status}`);
-                console.error(`Server response:\n${this.response}`);
+                console.error("Server status: " + this.status);
+                console.error("Server response:\n" + this.response);
             }
         }
     };
@@ -163,7 +163,7 @@ function createEditReportForm(parsedData) {
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
     const h3 = document.createElement("h3"); 
-    h3.innerHTML = `${reportTitle}  ${dateCreated}`;
+    h3.innerHTML = reportTitle + " " + dateCreated;
     h3.classList.add("text-center");
     fragment.appendChild(h3);
 
@@ -189,9 +189,9 @@ function createEditReportForm(parsedData) {
         for (let key in fields) {
             let field = fields[key];
 
-            console.log(`Field label: ${field.label}`); 
-            console.log(`Field type: ${field.type}`); 
-            console.log(`Field value: ${field.value}`); 
+            console.log("Field label: " + field.label); 
+            console.log("Field type: " + field.type); 
+            console.log("Field value: " + field.value); 
             
             // Create a form group for each field and add it to the form
             let formGroup = createFormGroup(key, field);
