@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend',
+# 3rd party
     'rest_framework',
-    'users',
     'corsheaders',
+# local
+    'users',
+    'backend',
 ]
 
 REST_FRAMEWORK = {
@@ -52,6 +54,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
