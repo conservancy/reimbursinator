@@ -13,7 +13,7 @@ function postToLoginEndpoint(event) {
     const url = "https://reqres.in/api/login" // mock api service
     const xhr = new XMLHttpRequest();
 
-    console.log("User credentials:\n" + JSON.stringify(credentials)");
+    console.log("User credentials:\n" + JSON.stringify(credentials));
 
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
