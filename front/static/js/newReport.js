@@ -27,48 +27,42 @@ function getEndpointDomain() {
 
 function getNewReport(event) {
     const url = getEndpointDomain() + "api/v1/report";
-    fetDataFromEndpoint(url, displayListOfReports);
+    fetDataFromEndpoint(url);
 }
 
 // Make a GET request to url and pass response to callback function
-function fetDataFromEndpoint(url, event){
-  event.preventDefault();
-
-  const titleName = {
-      title: this.elements.title.value
-  }
+function fetDataFromEndpoint(url){
+    event.preventDefault();
+    const titleName = {
+        title: this.elements.title.value
+    }
   //const titleName = document.getElementById("title");
 
   //const url = "https://localhost:8444/api/v1/report" // mock api service
-  const xhr = new XMLHttpRequest();
-
-  console.log(`title:\n${JSON.stringify(titleName)}`);
-
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.onreadystatechange = function() {
-      if (this.readyState === 4) {
-          if (this.status === 200) {
-              console.log("GET SUCCESS!");
-              console.log(`Server response:\n${this.response}`);
-              parsedData = JSON.parse(this.response);
-              window.alert(parsedData);
-
-          } else {
-              console.error("GET FAILURE!");
-              console.error(`Server status: ${this.status}`);
-              console.error(`Server response:\n${this.response}`);
-          }
-      }
-  };
-
-  xhr.onerror = function() {
+    const xhr = new XMLHttpRequest();
+    console.log(`title:\n${JSON.stringify(titleName)}`);
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("POST SUCCESS!");
+                console.log(`Server response:\n${this.response}`);
+                parsedData = JSON.parse(this.response);
+            }
+            else {
+                console.error("POST FAILURE!");
+                console.error(`Server status: ${this.status}`);
+                console.error(`Server response:\n${this.response}`);
+            }
+        }
+    };
+    xhr.onerror = function() {
         alert("Connection error!");
     };
-
     xhr.send(JSON.stringify(titleName));
 }
-
+const form = document.querySelector("form");
 form.addEventListener("submit", fetDataFromEndpoint);
 
 /*
