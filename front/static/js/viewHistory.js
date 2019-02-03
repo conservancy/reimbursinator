@@ -16,10 +16,12 @@ function getEndpointDomain() {
 
     console.log("Detected operating system: " + OSName);
 
-    if (OSName === "Windows" || OSName === "MacOS") {
+    if (OSName === "Windows") {
         domain = "https://192.168.99.100:8444/";
+    } else if (OSName === "MacOS" && navigator.userAgent.includes("Firefox")) {
+        domain = "https://192.168.99.100:8444/"; // That's Shuaiyi
     } else {
-        domain = "https://localhost:8444/"
+        domain = "https://localhost:8444/"; // Jack, Preston
     }
 
     return domain;
@@ -61,12 +63,12 @@ function createFormGroup(key, field) {
     formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
-    label.classList.add("col-sm-2", "col-form");
-    label.innerHTML = field.label;
+    label.classList.add("col-sm-4", "col-form");
+    label.innerHTML = field.label + ": ";
     label.setAttribute("for", key);
     
     const div = document.createElement("div");
-    div.classList.add("col-sm-10");
+    div.classList.add("col-sm-6");
 
     const input = document.createElement("input");
     input.name = key;
@@ -81,8 +83,8 @@ function createFormGroup(key, field) {
             label.className = "";
             label.classList.add("form-check-label");
             outerLabel = document.createElement("div");
-            outerLabel.classList.add("col-sm-2");
-            outerLabel.innerHTML = "Flight type";
+            outerLabel.classList.add("col-sm-4");
+            outerLabel.innerHTML = "Flight type: ";
             formCheck = document.createElement("div");
             formCheck.classList.add("form-check");
             formCheck.appendChild(input);
