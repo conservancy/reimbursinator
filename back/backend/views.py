@@ -8,13 +8,78 @@ from .serializers import *
 
 # Sample view using generics
 
-class List(generics.ListCreateAPIView):
-    queryset = Report.objects.all()
-    serializer_class = ReportSerializer
+# class List(generics.ListCreateAPIView):
+#     queryset = Report.objects.all()
+#     serializer_class = ReportSerializer
+#
+# class Detail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Report.objects.all()
+#     serializer_class = ReportSerializer
 
-class Detail(generics.RetrieveUpdateDestroyAPIView):
+
+def print_all_reports(self):
+    data = {}
     queryset = Report.objects.all()
-    serializer_class = ReportSerializer
+    for i in queryset:
+        data = {
+                "title": i.title,
+                "date_created": i.date_created,
+                "submitted": i.submitted,
+                "date_submitted": i.date_submitted,
+                "sections": get_sections(i.id),
+        }
+
+    return JsonResponse(data)
+
+def get_sections(r_id):
+    section_set = {"section_set": []}
+    queryset = Section.objects.filter(report_id=r_id)
+    # queryset = Section.objects.all()
+    for i in queryset:
+        inner_section = {
+                        "id": i.id,
+                        "completed": i.completed,
+                        "title": i.title,
+                        "html_description": i.html_description,
+                        "fields": get_fields(i.id),
+        }
+        # section_set.update(inner_section)
+        section_set["section_set"].append(inner_section.copy())
+
+    return section_set
+    # return JsonResponse(full)
+
+
+def get_fields(s_id):
+    field_set = {"fields": []}
+    queryset = Field.objects.filter(section_id=s_id)
+    # queryset = Field.objects.all()
+    count = 0
+    for i in queryset:
+        temp = "field" + str(count)
+        inner_field = {i.label: {
+                                "label": i.label,
+                                "type": i.type,
+                                "value": i.number,
+        }}
+        print("PRINT FIELD")
+        print(i.label)
+        print(i.type)
+        print(i.number)
+        # field_set.append(inner_field)
+        field_set["fields"].append(inner_field.copy())
+        # field_set.update(inner_field)
+        count += 1
+
+    print("COUNT = {}".format(count))
+    return field_set
+    # return JsonResponse(field_set)
+
+
+
+
+
+
 
 # API Endpoints
 
@@ -85,6 +150,7 @@ def report(request):
     }
     return JsonResponse(data)
 
+# List of reports
 @api_view(['GET'])
 def reports(request):
     data = {
