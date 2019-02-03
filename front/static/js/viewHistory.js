@@ -16,7 +16,7 @@ function getEndpointDomain() {
 
     console.log("Detected operating system: " + OSName);
 
-    if (OSName === "Windows" || OSName === "Mac") {
+    if (OSName === "Windows" || OSName === "MacOS") {
         domain = "https://192.168.99.100:8444/";
     } else {
         domain = "https://localhost:8444/"
