@@ -39,17 +39,22 @@
         <div class="row">
             <div class="col-sm-6 mx-auto">
                 <div class="card bg-light text-dark">
-                    <div class="form-group">
-                        <label for="title">
-                           <h4>Name the report:</h4></label>
-                        <input type="text" class="form-control" id="title">
-                        <button type="button" class="btn btn-primary float-right">Create</button>
+                    <div class="card-header">
+                        <h3>Trip</h3>
                     </div>
-                    <div><p id="report"></p></div>
-               </div>
-           </div>
-       </div>
-   </div>
+                    <div class="card-body">
+                        <form class="form" autocomplete="off">
+                            <div class="form-group">
+                                <label for="tripName">Trip name: </label>
+                                <input class="form-control" id="tripName" type="text" name="title" required autofocus>
+                            </div>
+                            <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
    <script src="js/logout.js"></script>
    <script src="js/newReport.js"></script>
 </body>

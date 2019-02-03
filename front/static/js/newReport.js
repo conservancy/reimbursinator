@@ -1,10 +1,45 @@
+// Hack to change endpoint url for each OS
+function getEndpointDomain() {
+    let OSName;
+    let domain;
+
+    if (navigator.appVersion.indexOf("Win") !== -1)
+        OSName = "Windows";
+    else if (navigator.appVersion.indexOf("Mac") !== -1)
+        OSName = "MacOS";
+    else if (navigator.appVersion.indexOf("X11") !== -1)
+        OSName = "UNIX";
+    else if (navigator.appVersion.indexOf("Linux") !== -1)
+        OSName = "Linux";
+    else
+        OSName = "Unknown OS";
+
+    console.log(`Detected operating system: ${OSName}`);
+
+    if (OSName === "Windows") {
+        domain = "https://192.168.99.100:8444/";
+    } else {
+        domain = "https://localhost:8444/"
+    }
+
+    return domain;
+}
+
+function getNewReport(event) {
+    const url = getEndpointDomain() + "api/v1/report";
+    fetDataFromEndpoint(url, displayListOfReports);
+}
+
 // Make a GET request to url and pass response to callback function
-function fetDataFromEndpoint(event){
+function fetDataFromEndpoint(url, event){
   event.preventDefault();
 
-  const titleName = document.getElementById("title");
+  const titleName = {
+      title: this.elements.title.value
+  }
+  //const titleName = document.getElementById("title");
 
-  const url = "https://reqres.in/api/createReport" // mock api service
+  //const url = "https://localhost:8444/api/v1/report" // mock api service
   const xhr = new XMLHttpRequest();
 
   console.log(`title:\n${JSON.stringify(titleName)}`);
@@ -17,7 +52,8 @@ function fetDataFromEndpoint(event){
               console.log("GET SUCCESS!");
               console.log(`Server response:\n${this.response}`);
               parsedData = JSON.parse(this.response);
-              callback(parsedData);
+              window.alert(parsedData);
+
           } else {
               console.error("GET FAILURE!");
               console.error(`Server status: ${this.status}`);
@@ -30,9 +66,12 @@ function fetDataFromEndpoint(event){
         alert("Connection error!");
     };
 
-    xhr.send();
+    xhr.send(JSON.stringify(titleName));
 }
 
+form.addEventListener("submit", fetDataFromEndpoint);
+
+/*
 // Wraps a Bootstrap form group around a field
 function createFormGroup(key, field) {
     const formGroup = document.createElement("div")
@@ -182,3 +221,4 @@ function createEmptyReportForm(parsedData){
     col.appendChild(fragment);
 
 }
+*/
