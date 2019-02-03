@@ -58,11 +58,15 @@ function getDataFromEndpoint(url, callback) {
 // Wraps a Bootstrap form group around a field
 function createFormGroup(key, field) {
     const formGroup = document.createElement("div")
-    formGroup.classList.add("form-group");
+    formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
+    label.classList.add("col-sm-2", "col-form");
     label.innerHTML = field.label;
     label.setAttribute("for", key);
+    
+    const div = document.createElement("div");
+    div.classList.add("col-sm-10");
 
     const input = document.createElement("input");
     input.name = key;
@@ -74,10 +78,18 @@ function createFormGroup(key, field) {
             if (field.value === true)
                 input.setAttribute("checked", "checked");
             input.classList.add("form-check-input");
-            formGroup.classList.add("form-check");
+            label.className = "";
             label.classList.add("form-check-label");
-            formGroup.appendChild(input); // Reversed order compared to others
-            formGroup.appendChild(label);
+            outerLabel = document.createElement("div");
+            outerLabel.classList.add("col-sm-2");
+            outerLabel.innerHTML = "Flight type";
+            formCheck = document.createElement("div");
+            formCheck.classList.add("form-check");
+            formCheck.appendChild(input);
+            formCheck.appendChild(label);
+            div.appendChild(formCheck);
+            formGroup.appendChild(outerLabel);
+            formGroup.appendChild(div);
             break;
         case "date":
         case "decimal":
@@ -85,19 +97,19 @@ function createFormGroup(key, field) {
             input.value = field.value;
             input.classList.add("form-control");
             formGroup.appendChild(label);
-            formGroup.appendChild(input);
+            div.appendChild(input)
+            formGroup.appendChild(div);
             break;
         case "file":
             input.type = "file";
             input.classList.add("form-control-file");
+            let uploadMessage = document.createElement("p");
+            uploadMessage.classList.add("form-text");
+            uploadMessage.innerHTML = field.value;
+            div.appendChild(input)
+            div.appendChild(uploadMessage);
             formGroup.appendChild(label);
-            formGroup.appendChild(input);
-            let uploadMessage = document.createTextNode("Uploaded file:");
-            formGroup.appendChild(uploadMessage);
-            const link = document.createElement("a");
-            link.href = field.value;
-            link.innerHTML = field.value;
-            formGroup.appendChild(link);
+            formGroup.appendChild(div);
             break;
         default:
             break;
@@ -153,7 +165,7 @@ function createEditReportForm(parsedData) {
         col.removeChild(col.firstChild)
     }
 
-    // Add report title and date to card header
+    // Add report title and date
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
     const h3 = document.createElement("h3"); 
