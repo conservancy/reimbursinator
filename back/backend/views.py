@@ -4,7 +4,6 @@ from rest_framework.decorators import api_view
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import *
-from .serializers import *
 
 
 # function that prints all the reports
@@ -249,9 +248,8 @@ def report_detail(request, report_pk):
     elif request.method == 'DELETE':
         return JsonResponse({"message": "Deleted report {0}.".format(report_pk)})
 
-# change this api view again!!
 @api_view(['PUT'])
-def section(report_pk, section_pk):
+def section(request, report_pk, section_pk):
     '''
     Update a section with new data.
     '''
@@ -264,6 +262,7 @@ def section(report_pk, section_pk):
             "lowest_fare_screenshot": "image",
         }
     }
+
     return JsonResponse(data)
 
 @api_view(['POST'])
