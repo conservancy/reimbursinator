@@ -4,7 +4,7 @@ function getEndpointDomain() {
 }
 
 // Make a GET request to url and pass response to callback function
-function getDataFromEndpoint(url, callback) {
+function getDataFromEndpoint(url, callback, optional) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
@@ -16,8 +16,8 @@ function getDataFromEndpoint(url, callback) {
             if (this.status === 200) {
                 console.log("GET SUCCESS!");
                 console.log("Server response:\n" + this.response);
-                parsedData = JSON.parse(this.response);
-                callback(parsedData);
+                let parsedData = JSON.parse(this.response);
+                optional === undefined ? callback(parsedData) : callback(parsedData, optional);
             } else {
                 console.error("GET FAILURE!");
                 console.error("Server status: " + this.status);
@@ -118,10 +118,13 @@ function createCollapsibleCard(key, sectionTitle) {
     return card;
 }
 
-function createCollapsibleCardBody(key, form, sectionDescription, sectionCompleted) {
+function createCollapsibleCardBody(key, form, type, sectionDescription, sectionCompleted) {
     // Create wrapper div
     const div = document.createElement("div");
+    div.id = "collapse" + key;
     const sectionAlert = document.createElement("div");
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
 
     if (sectionCompleted) {
         div.classList.add("collapse");
@@ -133,12 +136,13 @@ function createCollapsibleCardBody(key, form, sectionDescription, sectionComplet
         sectionAlert.innerHTML = "This section is not complete";
     }
 
-    div.setAttribute("data-parent", "#editReportAccordion");
-    div.id = "collapse" + key;
+    if (type === reportType.EDIT) {
+        div.setAttribute("data-parent", "#editReportAccordion");
+    } else {
+        div.setAttribute("data-parent", "#newReportAccordion");
+    }
 
     // Create card body. Append form to body, body to wrapper div
-    const cardBody = document.createElement("div");
-    cardBody.classList.add("card-body");
     cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription); 
     cardBody.appendChild(form);
@@ -147,9 +151,23 @@ function createCollapsibleCardBody(key, form, sectionDescription, sectionComplet
     return div;
 }
 
-function createEditReportForm(parsedData) {
-    const modalBody = document.querySelector(".modal-body");
-    const modalLabel = document.querySelector("#editReportModalLabel");
+function createReportForm(parsedData, type) {
+    let modalBody;
+    let modalLabl;
+    const accordion = document.createElement("div");
+    accordion.classList.add("accordion");
+
+    if (type === reportType.EDIT) {
+        modalBody = document.querySelector("#editReportModalBody");
+        modalLabel = document.querySelector("#editReportModalLabel");
+        accordion.id = "editReportAccordion";
+    } else if (type === reportType.NEW) {
+        modalBody = document.querySelector("#newReportModalBody");
+        modalLabel = document.querySelector("#newReportModalLabel");
+        accordion.id = "newReportAccordion";
+    } else {
+        return;
+    }
 
     while (modalBody.firstChild) {
         modalBody.removeChild(modalBody.firstChild);
@@ -159,11 +177,6 @@ function createEditReportForm(parsedData) {
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
     modalLabel.innerHTML = reportTitle + " " + dateCreated;
-
-    // Create accordion
-    const accordion = document.createElement("div");
-    accordion.classList.add("accordion");
-    accordion.id = "editReportAccordion";
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
@@ -198,7 +211,7 @@ function createEditReportForm(parsedData) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(key, form, section.html_description, section.completed);
+        let cardBody = createCollapsibleCardBody(key, form, type, section.html_description, section.completed);
         collapsibleCard.appendChild(cardBody); 
         accordion.appendChild(collapsibleCard);
     }
@@ -265,15 +278,32 @@ function displayListOfReports(parsedData) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    const url = getEndpointDomain() + "api/v1/reports";
-    getDataFromEndpoint(url, displayListOfReports);
+    if (window.location.pathname === "/edit_report.html") {
+        const url = getEndpointDomain() + "api/v1/reports";
+        getDataFromEndpoint(url, displayListOfReports);
+    }
 });
 
+const reportType = {
+    EDIT : 1,
+    VIEW : 2,
+    NEW : 3
+};
+
 document.addEventListener("click", function(event) {
-    if (event.target && event.target.classList.contains("edit-report-button")) {
-        console.log("Edit button clicked");
-        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-        getDataFromEndpoint(url, createEditReportForm);
+    if (event.target) {
+        if (event.target.classList.contains("edit-report-button")) {
+            console.log("Edit button clicked");
+            console.log(event);
+            const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+            const type = reportType.EDIT;
+            getDataFromEndpoint(url, createReportForm, type);
+        } else if (event.target.classList.contains("new-report-button")) {
+            //const url = getEndpointDomain() + "api/v1/report";
+            const type = reportType.NEW;
+            //getDataFromEndpoint(url, createReportForm, type);
+            createReportForm(newReport, type);
+        }
     }
 
     // TODO: Add view report
