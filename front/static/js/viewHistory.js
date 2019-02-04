@@ -1,30 +1,6 @@
-// Hack to change endpoint url for each OS
+// Hack to change endpoint url
 function getEndpointDomain() {
-    let OSName;
-    let domain;
-
-    if (navigator.appVersion.indexOf("Win") !== -1)
-        OSName = "Windows";
-    else if (navigator.appVersion.indexOf("Mac") !== -1)
-        OSName = "MacOS";
-    else if (navigator.appVersion.indexOf("X11") !== -1)
-        OSName = "UNIX";
-    else if (navigator.appVersion.indexOf("Linux") !== -1)
-        OSName = "Linux";
-    else
-        OSName = "Unknown OS";
-
-    console.log("Detected operating system: " + OSName);
-
-    if (OSName === "Windows") {
-        domain = "https://192.168.99.100:8444/";
-    } else if (OSName === "MacOS" && navigator.userAgent.includes("Firefox")) {
-        domain = "https://192.168.99.100:8444/"; // That's Shuaiyi
-    } else {
-        domain = "https://localhost:8444/"; // Jack, Preston
-    }
-
-    return domain;
+    return "https://" + window.location.hostname + ":8444/";
 }
 
 // Make a GET request to url and pass response to callback function
@@ -145,13 +121,25 @@ function createCollapsibleCard(key, sectionTitle) {
 function createCollapsibleCardBody(key, form, sectionDescription, sectionCompleted) {
     // Create wrapper div
     const div = document.createElement("div");
-    sectionCompleted ? div.classList.add("collapse") : div.classList.add("collapse", "show");
+    const sectionAlert = document.createElement("div");
+
+    if (sectionCompleted) {
+        div.classList.add("collapse");
+        sectionAlert.classList.add("alert", "alert-success");
+        sectionAlert.innerHTML = "This section is complete";
+    } else {
+        div.classList.add("collapse", "show");
+        sectionAlert.classList.add("alert", "alert-danger");
+        sectionAlert.innerHTML = "This section is not complete";
+    }
+
     div.setAttribute("data-parent", "#editReportAccordion");
     div.id = "collapse" + key;
 
     // Create card body. Append form to body, body to wrapper div
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
+    cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription); 
     cardBody.appendChild(form);
     div.appendChild(cardBody);
@@ -160,20 +148,17 @@ function createCollapsibleCardBody(key, form, sectionDescription, sectionComplet
 }
 
 function createEditReportForm(parsedData) {
-    const col = document.querySelector(".col-sm-8");
-    const fragment = document.createDocumentFragment();
+    const modalBody = document.querySelector(".modal-body");
+    const modalLabel = document.querySelector("#editReportModalLabel");
 
-    while (col.firstChild) {
-        col.removeChild(col.firstChild)
+    while (modalBody.firstChild) {
+        modalBody.removeChild(modalBody.firstChild);
     }
 
     // Add report title and date
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
-    const h3 = document.createElement("h3"); 
-    h3.innerHTML = reportTitle + " " + dateCreated;
-    h3.classList.add("text-center");
-    fragment.appendChild(h3);
+    modalLabel.innerHTML = reportTitle + " " + dateCreated;
 
     // Create accordion
     const accordion = document.createElement("div");
@@ -218,15 +203,7 @@ function createEditReportForm(parsedData) {
         accordion.appendChild(collapsibleCard);
     }
    
-    // Add submit button to accordion
-    let submitButton = document.createElement("button");
-    submitButton.innerHTML = "Submit Report";
-    submitButton.type = "submit";
-    submitButton.classList.add("btn", "btn-primary", "btn-lg", "btn-block"); // TODO: add eventListener
-    accordion.appendChild(submitButton);
-
-    fragment.appendChild(accordion) 
-    col.appendChild(fragment);
+    modalBody.appendChild(accordion);
 }
 
 function displayListOfReports(parsedData) {
@@ -268,7 +245,8 @@ function displayListOfReports(parsedData) {
                 dateSubmitted = "TBD";
                 actionButton.classList.add("btn-primary", "edit-report-button"); // Add event listener class
                 actionButton.innerHTML = "Edit";
-                //actionButton.addEventListener("click", openEditReportForm);
+                actionButton.setAttribute("data-toggle", "modal");
+                actionButton.setAttribute("data-target", "#editReportModal");
             } else {
                 // View button
                 dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
