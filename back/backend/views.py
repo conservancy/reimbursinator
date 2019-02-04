@@ -87,6 +87,8 @@ def report(request):
 
 @api_view(['GET'])
 def reports(request):
+    print("User: ", request.user)
+    print("User id: ", request.user.id)
     data = {
         "reports": [
             {
@@ -199,24 +201,3 @@ def section(request, report_pk, section_pk):
         }
     }
     return JsonResponse(data)
-
-@api_view(['POST'])
-def account(request):
-    '''
-    Create a new user account
-    '''
-    return JsonResponse({"message": "Account creation successful."})
-
-@api_view(['POST'])
-def account_login(request):
-    '''
-    Log in to a user account
-    '''
-    return JsonResponse({"message": "Successfully logged in."})
-
-@api_view(['DELETE'])
-def account_logout(request):
-    '''
-    Log out from a user account
-    '''
-    return JsonResponse({"message": "User logged out."})
