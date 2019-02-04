@@ -18,8 +18,10 @@ function getEndpointDomain() {
 
     if (OSName === "Windows") {
         domain = "https://192.168.99.100:8444/";
+    } else if (OSName === "MacOS" && navigator.userAgent.includes("Firefox")) {
+        domain = "https://192.168.99.100:8444/"; // That's Shuaiyi
     } else {
-        domain = "https://localhost:8444/"
+        domain = "https://localhost:8444/"; // Jack, Preston
     }
 
     return domain;
@@ -58,11 +60,15 @@ function getDataFromEndpoint(url, callback) {
 // Wraps a Bootstrap form group around a field
 function createFormGroup(key, field) {
     const formGroup = document.createElement("div")
-    formGroup.classList.add("form-group");
+    formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
-    label.innerHTML = field.label;
+    label.classList.add("col-sm-4", "col-form");
+    label.innerHTML = field.label + ": ";
     label.setAttribute("for", key);
+    
+    const div = document.createElement("div");
+    div.classList.add("col-sm-6");
 
     const input = document.createElement("input");
     input.name = key;
@@ -74,36 +80,38 @@ function createFormGroup(key, field) {
             if (field.value === true)
                 input.setAttribute("checked", "checked");
             input.classList.add("form-check-input");
-            formGroup.classList.add("form-check");
+            label.className = "";
             label.classList.add("form-check-label");
-            formGroup.appendChild(input); // Reversed order compared to others
-            formGroup.appendChild(label);
+            outerLabel = document.createElement("div");
+            outerLabel.classList.add("col-sm-4");
+            outerLabel.innerHTML = "Flight type: ";
+            formCheck = document.createElement("div");
+            formCheck.classList.add("form-check");
+            formCheck.appendChild(input);
+            formCheck.appendChild(label);
+            div.appendChild(formCheck);
+            formGroup.appendChild(outerLabel);
+            formGroup.appendChild(div);
             break;
         case "date":
-            input.type = "datetime";
-            input.value = field.value;
-            input.classList.add("form-control");
-            formGroup.appendChild(label);
-            formGroup.appendChild(input);
-            break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
             input.classList.add("form-control");
             formGroup.appendChild(label);
-            formGroup.appendChild(input);
+            div.appendChild(input)
+            formGroup.appendChild(div);
             break;
         case "file":
             input.type = "file";
             input.classList.add("form-control-file");
+            let uploadMessage = document.createElement("p");
+            uploadMessage.classList.add("form-text");
+            uploadMessage.innerHTML = field.value;
+            div.appendChild(input)
+            div.appendChild(uploadMessage);
             formGroup.appendChild(label);
-            formGroup.appendChild(input);
-            let uploadMessage = document.createTextNode("Uploaded file:");
-            formGroup.appendChild(uploadMessage);
-            const link = document.createElement("a");
-            link.href = field.value;
-            link.innerHTML = field.value;
-            formGroup.appendChild(link);
+            formGroup.appendChild(div);
             break;
         default:
             break;
@@ -159,7 +167,7 @@ function createEditReportForm(parsedData) {
         col.removeChild(col.firstChild)
     }
 
-    // Add report title and date to card header
+    // Add report title and date
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
     const h3 = document.createElement("h3"); 
@@ -171,7 +179,6 @@ function createEditReportForm(parsedData) {
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
     accordion.id = "editReportAccordion";
-
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
@@ -223,105 +230,73 @@ function createEditReportForm(parsedData) {
 }
 
 function displayListOfReports(parsedData) {
-    const cardBody = document.querySelector(".card-body");
-    const table = document.createElement("table");
     const reports = parsedData.reports;
-    let reportsAdded = 0;
 
-    // Create report table
-    for (let i = 0; i < reports.length; i++) {
-        let title = reports[i].title;
-        let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
-        let state = reports[i].state;
-        let dateSubmitted;
-        let rid = reports[i].report_pk;
-
-        // Create edit/view button
-        let actionButton = document.createElement("button");
-        actionButton.type = "submit";
-        actionButton.setAttribute("data-rid", rid);
-        actionButton.classList.add("btn");
-
-        if (state === "created") {
-            // Edit button
-            dateSubmitted = "TBD";
-            actionButton.classList.add("btn-primary");
-            actionButton.innerHTML = "Edit";
-            actionButton.addEventListener("click", openEditReportForm);
-        } else {
-            // View button
-            dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
-            actionButton.classList.add("btn-success");
-            actionButton.innerHTML = "View";
-        }
-
-        // Insert data into the table object
-        let bodyRow = table.insertRow(i); 
-        bodyRow.insertCell(0).innerHTML = title;
-        bodyRow.insertCell(1).innerHTML = dateCreated; 
-
-        let stateCell = bodyRow.insertCell(2);
-        stateCell.innerHTML = state;
-        stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
-
-        let dateSubmittedCell = bodyRow.insertCell(3);
-        dateSubmittedCell.innerHTML = dateSubmitted;
-        dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
-
-        bodyRow.insertCell(4).appendChild(actionButton);
-        reportsAdded++;
-    }
-
-    if (reportsAdded === 0) {
-        // Report list is empty
+    if (reports.length === 0) {
+        const cardBody = document.querySelector(".card-body");
         const p = document.createElement("p");
         p.innerHTML = "No reports found.";
         cardBody.appendChild(p);
     } else {
-        // Report list exists and table rows have been created
-        // Create table header, add it to the table, and append the result to the card body
+        const table = document.querySelector("table");
+        const tbody = document.querySelector("tbody");
 
-        const tr = document.createElement("tr");
+        // Insert data into the table row
+        for (let i = 0; i < reports.length; i++) {
+            let title = reports[i].title;
+            let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
+            let state = reports[i].state;
+            let dateSubmitted;
+            let rid = reports[i].report_pk;
 
-        const headTitle = document.createElement("th");
-        headTitle.innerHTML = "Title";
-        tr.appendChild(headTitle);
+            let bodyRow = tbody.insertRow(i); 
+            bodyRow.insertCell(0).innerHTML = title;
+            bodyRow.insertCell(1).innerHTML = dateCreated; 
 
-        const headDateCreated = document.createElement("th");
-        headDateCreated.innerHTML = "Date Created";
-        tr.appendChild(headDateCreated);
+            let stateCell = bodyRow.insertCell(2);
+            stateCell.innerHTML = state;
+            stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
 
-        const headState = document.createElement("th");
-        headState.innerHTML = "State";
-        headState.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
-        tr.appendChild(headState);
+            // Create edit/view button
+            let actionButton = document.createElement("button");
+            actionButton.type = "submit";
+            actionButton.setAttribute("data-rid", rid);
+            actionButton.classList.add("btn");
 
-        const headDateSubmitted = document.createElement("th")
-        headDateSubmitted.innerHTML = "Date Submitted";
-        headDateSubmitted.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
-        tr.appendChild(headDateSubmitted);
+            if (state === "created") {
+                // Edit button
+                dateSubmitted = "TBD";
+                actionButton.classList.add("btn-primary", "edit-report-button"); // Add event listener class
+                actionButton.innerHTML = "Edit";
+                //actionButton.addEventListener("click", openEditReportForm);
+            } else {
+                // View button
+                dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
+                actionButton.classList.add("btn-success");
+                actionButton.innerHTML = "View";
+            }
 
-        const headAction = document.createElement("th")
-        headAction.innerHTML = "Action";
-        tr.appendChild(headAction);
+            let dateSubmittedCell = bodyRow.insertCell(3);
+            dateSubmittedCell.innerHTML = dateSubmitted;
+            dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
+            bodyRow.insertCell(4).appendChild(actionButton);
+        }
 
-        const thead = document.createElement("thead");
-        thead.appendChild(tr);
-        table.prepend(thead);
-        table.classList.add("table", "table-striped", "table-responsive-sm");
-        cardBody.appendChild(table);
+        table.style.visibility = "visible";
     }
 }
 
-function getReportHistory(event) {
+document.addEventListener("DOMContentLoaded", function(event) {
     const url = getEndpointDomain() + "api/v1/reports";
     getDataFromEndpoint(url, displayListOfReports);
-}
+});
 
-function openEditReportForm(event) {
-    const url = getEndpointDomain() + "api/v1/report/" + this.dataset.rid;
-    getDataFromEndpoint(url, createEditReportForm);
-}
+document.addEventListener("click", function(event) {
+    if (event.target && event.target.classList.contains("edit-report-button")) {
+        console.log("Edit button clicked");
+        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+        getDataFromEndpoint(url, createEditReportForm);
+    }
 
-
-document.addEventListener("DOMContentLoaded", getReportHistory);
+    // TODO: Add view report
+});
