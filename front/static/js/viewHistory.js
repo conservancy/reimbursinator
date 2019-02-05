@@ -252,7 +252,7 @@ function displayListOfReports(parsedData) {
             } else {
                 // View button
                 dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
-                actionButton.classList.add("btn-success");
+                actionButton.classList.add("btn-success", "view-report-button");
                 actionButton.innerHTML = "View";
             }
 
@@ -266,6 +266,11 @@ function displayListOfReports(parsedData) {
     }
 }
 
+function displayReport(parsedData){
+    window.alert(parsedData.date_created); //Able to get the correct report ID now just needs to display the
+    //report as an modual
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     const url = getEndpointDomain() + "api/v1/reports";
     getDataFromEndpoint(url, displayListOfReports);
@@ -277,6 +282,11 @@ document.addEventListener("click", function(event) {
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
         getDataFromEndpoint(url, createEditReportForm);
     }
-
+    if(event.target && event.target.classList.contains("view-report-button"))
+    {
+        console.log("View button clicked");
+        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+        getDataFromEndpoint(url, displayReport);
+    }
     // TODO: Add view report
 });
