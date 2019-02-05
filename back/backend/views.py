@@ -139,6 +139,7 @@ def reports(request):
     queryset = Report.objects.all()
     for i in queryset:
         data = {
+            "report_pk": i.id,
             "title": i.title,
             "date_created": i.date_created,
             "submitted": i.submitted,
