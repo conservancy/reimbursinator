@@ -50,11 +50,13 @@ def get_fields(s_id):
     queryset = Field.objects.filter(section_id=s_id)
     # queryset = Field.objects.all()
     for i in queryset:
-        data = {i.label: {
+        data = {
+            "field_name": "TODO",
             "label": i.label,
             "type": i.type,
-            "value": i.number,
-        }}
+            "number": i.number,
+            "value": "get_value",
+        }
         # append the fields to array
         # use copy() to avoid overwriting
         field_set["fields"].append(data.copy())
