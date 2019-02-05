@@ -1,8 +1,3 @@
-function displayErrorMessage(errorMessage) {
-    const errorReport = document.querySelector("#errorReport");
-    errorReport.innerHTML = JSON.parse(errorMessage).error;
-}
-
 function postToLoginEndpoint(event) {
     event.preventDefault();
 
@@ -30,7 +25,6 @@ function postToLoginEndpoint(event) {
                 console.error("LOGIN FAILURE!");
                 console.error("Server status: " + this.status);
                 console.error("Server response:\n" + this.response);
-                displayErrorMessage(this.response);
             }
         }
     };
