@@ -39,10 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 # 3rd party
     'rest_framework',
     'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
     'rest_auth',
+    'rest_auth.registration',
     'corsheaders',
 # local
     'users',
@@ -149,3 +153,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Email Config
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SITE_ID = 1
