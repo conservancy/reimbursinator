@@ -22,6 +22,7 @@ function postToLoginEndpoint(event) {
                 localStorage.setItem("token", token);
                 window.location.replace("home.html");
             } else {
+                document.getElementById("errorLogin").innerHTML = "Incorrect user name or password";
                 console.error("LOGIN FAILURE!");
                 console.error("Server status: " + this.status);
                 console.error("Server response:\n" + this.response);
