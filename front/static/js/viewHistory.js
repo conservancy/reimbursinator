@@ -10,7 +10,9 @@ function getDataFromEndpoint(url, callback) {
 
     console.log("Attempting a connection to the following endpoint: " + url);
 
+
     xhr.open("GET", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
@@ -222,7 +224,7 @@ function displayListOfReports(parsedData) {
         for (let i = 0; i < reports.length; i++) {
             let title = reports[i].title;
             let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
-            let state = reports[i].state;
+            let submitted = reports[i].submitted;
             let dateSubmitted;
             let rid = reports[i].report_pk;
 
@@ -231,7 +233,7 @@ function displayListOfReports(parsedData) {
             bodyRow.insertCell(1).innerHTML = dateCreated; 
 
             let stateCell = bodyRow.insertCell(2);
-            stateCell.innerHTML = state;
+            stateCell.innerHTML = submitted;
             stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
 
             // Create edit/view button
@@ -240,7 +242,7 @@ function displayListOfReports(parsedData) {
             actionButton.setAttribute("data-rid", rid);
             actionButton.classList.add("btn");
 
-            if (state === "created") {
+            if (submitted === false) {
                 // Edit button
                 dateSubmitted = "TBD";
                 actionButton.classList.add("btn-primary", "edit-report-button"); // Add event listener class
