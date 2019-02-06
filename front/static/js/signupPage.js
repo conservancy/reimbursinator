@@ -46,7 +46,7 @@ function postToRegistrationEndpoint(event) {
                 localStorage.setItem("token", token);
                 window.location.replace("home.html");
             } else {
-                console.error("LOGIN FAILURE!");
+                console.error("REGISTRATION FAILURE!");
                 console.error("Server status: " + this.status);
                 console.error("Server response:\n" + this.response);
             }
