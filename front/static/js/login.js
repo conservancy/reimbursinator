@@ -2,7 +2,7 @@ function postToLoginEndpoint(event) {
     event.preventDefault();
 
     const credentials = {
-        "username" : this.elements.username.value,
+        "email" : this.elements.email.value,
         "password" : this.elements.password.value
     }
     const url = "https://" + window.location.hostname + ":8444/api/v1/account/login/";
