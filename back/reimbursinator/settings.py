@@ -163,11 +163,16 @@ SITE_ID = 1
 
 # Registration
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+#ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 REST_AUTH_REGISTER_SERIALIZERS = {
-        'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
 }
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
