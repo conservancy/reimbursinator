@@ -1,10 +1,36 @@
-# simple_policy.py
 from datetime import date
-from policy import Policy, Section
 
-# - For the rules, should one refer to fields by 'section.fields.x'
-# or by the section name eg. 'general_section.fields.x'?
+#### Classes for policy, sections.
 
+class Policy():
+
+    def __init__(self):
+        self.sections = []
+
+    def add_section(self, section):
+        self.sections.append(section)
+
+class Section():
+    
+    def __init__(self, title="Section", html_description="", required=False, auto_submit=False, fields={}):
+        self.title = title
+        self.html_description = html_description
+        self.required = required
+        self.auto_submit = auto_submit
+        self.fields = fields
+        self.rules = []
+
+    def add_rule(self, title="Rule", rule=None, rule_break_text=""):
+        rule = {
+            "title": title,
+            "rule": rule,
+            "rule_break_text": rule_break_text,
+        }
+        self.rules.append(rule)
+
+#### Policy configuration begin here
+
+pol = Policy()
 
 #### General
 #### Section 0
@@ -12,7 +38,7 @@ general_section = Section(
     title="General Info",
     html_description="",
     fields={
-        "destination": {"label": "Destination City", "type": "string"}
+        "destination": {"label": "Destination City", "type": "string"},
     }
 )
 
@@ -22,7 +48,7 @@ general_section.add_rule(
     rule_break_text="What did the cowboy say about Tim, his wild horse?"
 )
 
-Policy.add_section(general_section)
+pol.add_section(general_section)
 
 #### Flight
 #### Section 1
@@ -43,7 +69,7 @@ flight_section.add_rule(
     rule_break_text="Fares cannot be more than $500"
 )
 
-Policy.add_section(flight_section)
+pol.add_section(flight_section)
 
 #### Lodging
 #### Section 2
@@ -64,13 +90,13 @@ def nightly_rate_check(report, section):
     duration = checkout_date - checkin_date
     return section.fields.cost <= duration * section.fields.rate
 
-section.add_rule(
+lodging_section.add_rule(
     title="",
     rule=nightly_rate_check,
     rule_break_text="The average nightly rate cannot be more than the USGSA rate."
 )
 
-Policy.add_section(lodging_section)
+pol.add_section(lodging_section)
 
 #### Local Transportation
 #### Section 3
@@ -89,7 +115,7 @@ transport_section.add_rule(
     rule_break_text="Local transportation costs must be less than $10 per day, on average."
 )
 
-Policy.add_section(transport_section)
+pol.add_section(transport_section)
 
 #### Per Diem
 #### Section 4
@@ -109,24 +135,4 @@ per_diem_section.add_rule(
     rule_break_text="The average cost per day for per diem expenses cannot be more than the rate specified by the USGSA."
 )
 
-Policy.add_section(per_diem_section)
-
-'''
-Section(
-    title="",
-    html_description="<p></p>",
-    fields={
-        "": {"label": "", "type": ""}
-    }
-)
-
-section.add_rule(
-    title="",
-    rule=lambda report, section: boolean_statement,
-    rule_break_text=""
-)
-
-#// or, for a rule which doesn’t apply to a specific section...
-#//
-#// add_general_rule(...)
-'''
+pol.add_section(per_diem_section)
