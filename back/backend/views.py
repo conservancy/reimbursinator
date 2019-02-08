@@ -52,13 +52,13 @@ def get_fields(s_id):
 
     for i in queryset:
         # function to print corresponding datatype
-        key, value = get_datatype(i)
+        value = get_datatype(i)
         data = {
             "field_name": i.field_name,
             "label": i.label,
             "type": i.type,
             "number": i.number,
-            key: value
+            "value": value
         }
         # append the fields to array
         # use copy() to avoid overwriting
@@ -75,19 +75,19 @@ def to_json(convert):
 def get_datatype(self):
     if self.type == "boolean":
         if self.data_bool:
-            return "data_bool", True
+            return True
         else:
-            return "data_bool", False
+            return False
     elif self.type == "decimal":
-        return "decimal", self.data_decimal
+        return self.data_decimal
     elif self.type == "date":
-        return "date", "{}".format(self.data_date)
+        return "{}".format(self.data_date)
     elif self.type == "file":
-        return "file", "{}".format(self.data_file)
+        return "{}".format(self.data_file)
     elif self.type == "string":
-        return "string", "{}".format(self.data_string)
+        return "{}".format(self.data_string)
     elif self.type == "integer":
-        return "integer", self.data_integer
+        return self.data_integer
 
 
 # API Endpoints
