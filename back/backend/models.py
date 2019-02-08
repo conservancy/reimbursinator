@@ -26,12 +26,13 @@ class Section(models.Model):
 
 class Field(models.Model):
     section_id = models.ForeignKey(Section, on_delete=models.CASCADE)
+    field_name = models.CharField(max_length=512, default="field")
     label = models.CharField(max_length=512)
     number = models.IntegerField()
     type = models.CharField(max_length=128)
     completed = models.BooleanField(default=False)
     data_bool = models.BooleanField(default=False)
-    data_decimal = models.DecimalField(max_digits=9,decimal_places=2, null=True, blank=True)
+    data_decimal = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     data_date = models.DateField(default=datetime.date.today)
     data_file = models.FileField(upload_to='uploads/%Y/%m/%d/', max_length=512, null=True, blank=True)
     data_string = models.TextField(default='', blank=True)
