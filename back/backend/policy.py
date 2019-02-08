@@ -12,7 +12,8 @@ class Policy():
 
 class Section():
     
-    def __init__(self, title="Section", html_description="", required=False, auto_submit=False, fields={}):
+    def __init__(self, title="Section", html_description="", required=False,
+                 auto_submit=False, fields={}):
         self.title = title
         self.html_description = html_description
         self.required = required
@@ -75,7 +76,8 @@ pol.add_section(flight_section)
 #### Section 2
 lodging_section = Section(
     title="Hotel Info",
-    html_description="<p>Enter hotel info here.\nPer diem rates can be found at <a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'></a></p>",
+    html_description="<p>Enter hotel info here.\nPer diem rates can be found at "
+                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'></a></p>",
     fields={
         "check-in_date": {"label": "Check-in date", "type": "date"},
         "check-out_date": {"label": "Check-out date", "type": "date"},

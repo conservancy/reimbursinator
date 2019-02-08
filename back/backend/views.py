@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
-import json
+
 
 # function that prints all the reports
 def get_reports(report_pk):
@@ -97,9 +97,10 @@ def report(request):
 @api_view(['GET'])
 def reports(request):
     report_set = {"reports": []}
-    queryset = Report.objects.all().order_by('date_created')
+    queryset = Report.objects.all().filter(user_id=request.user.id).order_by('date_created')
     for i in queryset:
         data = {
+            "user_id": request.user.id,
             "report_pk": i.id,
             "title": i.title,
             "date_created": i.date_created,
