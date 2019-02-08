@@ -61,6 +61,7 @@ flight_section = Section(
         "departure_date": {"label": "Departure date", "type": "date"},
         "return_date": {"label": "Return date", "type": "date"},
         "fare": {"label": "Fare", "type": "decimal"},
+        "layovers": {"label": "Transit wait", "type": "integer"},
     }
 )
 
