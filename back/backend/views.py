@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
-import json
+
 
 # function that prints all the reports
 def get_reports(report_pk):
@@ -49,19 +49,45 @@ def get_fields(s_id):
     # create dict of arrays for fields
     field_set = {"fields": []}
     queryset = Field.objects.filter(section_id=s_id).order_by('number')
+
     for i in queryset:
+        # function to print corresponding datatype
+        value = get_datatype(i)
         data = {
             "field_name": i.field_name,
             "label": i.label,
             "type": i.type,
             "number": i.number,
-            "value": "i.to_json()",
+            "value": value
         }
         # append the fields to array
         # use copy() to avoid overwriting
         field_set["fields"].append(data.copy())
 
     return field_set
+
+# function to convert value into JSON
+def to_json(convert):
+    return {"value": convert}
+
+# function that gets corresponding
+# data type
+def get_datatype(self):
+    if self.type == "boolean":
+        if self.data_bool:
+            return True
+        else:
+            return False
+    elif self.type == "decimal":
+        return self.data_decimal
+    elif self.type == "date":
+        return "{}".format(self.data_date)
+    elif self.type == "file":
+        return "{}".format(self.data_file)
+    elif self.type == "string":
+        return "{}".format(self.data_string)
+    elif self.type == "integer":
+        return self.data_integer
 
 
 # API Endpoints
@@ -97,9 +123,10 @@ def report(request):
 @api_view(['GET'])
 def reports(request):
     report_set = {"reports": []}
-    queryset = Report.objects.all().order_by('date_created')
+    queryset = Report.objects.all().filter(user_id=request.user.id).order_by('date_created')
     for i in queryset:
         data = {
+            "user_id": request.user.id,
             "report_pk": i.id,
             "title": i.title,
             "date_created": i.date_created,
