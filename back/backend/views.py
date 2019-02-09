@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
+from .policy import pol
 
 
 # function that prints all the reports
@@ -47,21 +48,46 @@ def get_sections(r_id):
 def get_fields(s_id):
     # create dict of arrays for fields
     field_set = {"fields": []}
-    queryset = Field.objects.filter(section_id=s_id)
-    # queryset = Field.objects.all()
+    queryset = Field.objects.filter(section_id=s_id).order_by('number')
+
     for i in queryset:
+        # function to print corresponding datatype
+        value = get_datatype(i)
         data = {
-            "field_name": "TODO",
+            "field_name": i.field_name,
             "label": i.label,
             "type": i.type,
             "number": i.number,
-            "value": "get_value",
+            "value": value
         }
         # append the fields to array
         # use copy() to avoid overwriting
         field_set["fields"].append(data.copy())
 
     return field_set
+
+# function to convert value into JSON
+def to_json(convert):
+    return {"value": convert}
+
+# function that gets corresponding
+# data type
+def get_datatype(self):
+    if self.type == "boolean":
+        if self.data_bool:
+            return True
+        else:
+            return False
+    elif self.type == "decimal":
+        return self.data_decimal
+    elif self.type == "date":
+        return "{}".format(self.data_date)
+    elif self.type == "file":
+        return "{}".format(self.data_file)
+    elif self.type == "string":
+        return "{}".format(self.data_string)
+    elif self.type == "integer":
+        return self.data_integer
 
 
 # API Endpoints
@@ -70,75 +96,37 @@ def report(request):
     '''
     Generate a new empty report and return it
     '''
-    data = {
-        "title": "2018 Portland trip",
-        "date_created": "2018-05-22T14:56:28.000Z",
-        "submitted": False,
-        "date_submitted": "0000-00-00T00:00:00.000Z",
-        "sections": [
-            {
-                "id": 1,
-                "completed": True,
-                "title": "Flight Info",
-                "html_description": "<p>Enter flight details here.</p>",
-                "fields": {
-                    "international": {
-                        "label": "International flight",
-                        "type": "boolean",
-                        "value": True
-                    },
-                    "travel_date": {
-                        "label": "Travel start date",
-                        "type": "date",
-                        "value": "2016-05-22T14:56:28.000Z"
-                    },
-                    "fare": {
-                        "label": "Fare",
-                        "type": "decimal",
-                        "value": "1024.99"
-                    },
-                    "lowest_fare_screenshot": {
-                        "label": "Lowest fare screenshot",
-                        "type": "file",
-                        "value": "e92h842jiu49f8..."
-                    },
-                    "plane_ticket_invoice": {
-                        "label": "Plane ticket invoice PDF",
-                        "type": "file",
-                        "value": ""
-                    }
-                },
-                "rule_violations": [
-                    {
-                        "error_text": "Plane ticket invoice must be submitted."
-                    }
-                ]
-            },
-            {
-                "id": 2,
-                "completed": False,
-                "title": "Hotel info",
-                "html_description": "<p>If you used a hotel, please enter the details.</p>",
-                "fields": {
-                    "total": {
-                        "label": "Total cost",
-                        "type": "decimal"
-                    }
-                },
-                "rule_violations": [
-                ]
-            }
-        ]
-    }
+    
+    # Create the report
+    report = Report.objects.create(user_id=request.user, title=request.data['title'], date_created=datetime.date.today())
+    report.save()
+
+    # Create the sections
+    for i in range(len(pol.sections)):
+        section = pol.sections[i]
+        s = Section.objects.create(report_id=report, auto_submit=section.auto_submit, required=section.required, completed=False, title=section.title, html_description=section.html_description, number=i)
+        s.save()
+
+        # Create the fields
+        j = 0
+        for key in section.fields:
+            field = section.fields[key]
+            f = Field.objects.create(section_id=s, field_name=key, label=field['label'], number=j, type=field['type'], completed=False)
+            f.save()
+            j = j+1
+    
+    # Return the newly created report
+    data = get_reports(report.id)
     return JsonResponse(data)
 
 # List of reports
 @api_view(['GET'])
 def reports(request):
     report_set = {"reports": []}
-    queryset = Report.objects.all()
+    queryset = Report.objects.all().filter(user_id=request.user.id).order_by('date_created')
     for i in queryset:
         data = {
+            "user_id": request.user.id,
             "report_pk": i.id,
             "title": i.title,
             "date_created": i.date_created,
