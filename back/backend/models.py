@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 import datetime
+import ntpath
 
 class Report(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -38,6 +39,8 @@ class Field(models.Model):
     data_string = models.TextField(default='', blank=True)
     data_integer = models.IntegerField(default=0, blank=True)
 
+    # function that prints the string representation
+    # on the api?
     def __str__(self):
         if self.type == "boolean":
             if self.data_bool:
@@ -54,3 +57,31 @@ class Field(models.Model):
             return "{}".format(self.data_string)
         elif self.type == "integer":
             return "{}".format(self.data_integer)
+
+
+    # function that gets corresponding
+    # data type
+    def get_datatype(self):
+        if self.type == "boolean":
+            if self.data_bool:
+                return True
+            else:
+                return False
+        elif self.type == "decimal":
+            return self.data_decimal
+        elif self.type == "date":
+            return "{}".format(self.data_date)
+        elif self.type == "file":
+            file_name = self.path_leaf(str(self.data_file))
+            return "{}".format(file_name)
+        elif self.type == "string":
+            return "{}".format(self.data_string)
+        elif self.type == "integer":
+            return self.data_integer
+
+    # function that accommodates if
+    # path has slash at end
+    def path_leaf(self, path):
+        head, tail = ntpath.split(path)
+        return tail or ntpath.basename(head)
+

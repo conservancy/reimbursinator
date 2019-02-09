@@ -50,8 +50,8 @@ def get_fields(s_id):
     queryset = Field.objects.filter(section_id=s_id).order_by('number')
 
     for i in queryset:
-        # function to print corresponding datatype
-        value = get_datatype(i)
+        # function that gets the corresponding datatype
+        value = Field.get_datatype(i)
         data = {
             "field_name": i.field_name,
             "label": i.label,
@@ -64,32 +64,6 @@ def get_fields(s_id):
         field_set["fields"].append(data.copy())
 
     return field_set
-
-# function that gets corresponding
-# data type
-def get_datatype(self):
-    if self.type == "boolean":
-        if self.data_bool:
-            return True
-        else:
-            return False
-    elif self.type == "decimal":
-        return self.data_decimal
-    elif self.type == "date":
-        return "{}".format(self.data_date)
-    elif self.type == "file":
-        file_name = path_leaf(str(self.data_file))
-        return "{}".format(file_name)
-    elif self.type == "string":
-        return "{}".format(self.data_string)
-    elif self.type == "integer":
-        return self.data_integer
-
-# function that accommodates if
-# path has slash at end
-def path_leaf(path):
-    head, tail = ntpath.split(path)
-    return tail or ntpath.basename(head)
 
 
 # API Endpoints
