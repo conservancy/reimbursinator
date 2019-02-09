@@ -254,6 +254,8 @@ function displayListOfReports(parsedData) {
                 dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
                 actionButton.classList.add("btn-success", "view-report-button");
                 actionButton.innerHTML = "View";
+                actionButton.setAttribute("data-toggle", "modal");
+                actionButton.setAttribute("data-target", "#viewReportModal");
             }
 
             let dateSubmittedCell = bodyRow.insertCell(3);
@@ -267,8 +269,50 @@ function displayListOfReports(parsedData) {
 }
 
 function displayReport(parsedData){
-    window.alert(parsedData.date_created); //Able to get the correct report ID now just needs to display the
+    //Able to get the correct report ID now just needs to display the
     //report as an modual
+    const modalBody = document.querySelector(".modal-view");
+    const modalLabel = document.querySelector("#viewReportModalLabel");
+
+    while (modalBody.firstChild) {
+        modalBody.removeChild(modalBody.firstChild);
+    }
+
+    // Add report title and date
+    const reportTitle = parsedData.title;
+    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
+    modalLabel.innerHTML = reportTitle + " " + dateCreated;
+
+    const card = document.createElement("div");
+    card.classList.add("card");
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
+
+
+    const sections = parsedData.sections;
+    for (let key in sections) {
+        let section = sections[key];
+        const h4 = document.createElement("h4");
+        const value = document.createTextNode(section.title);
+
+        h4.appendChild(value);
+        cardBody.appendChild(h4);
+        let fields = section.fields;
+        for (let key in fields) {
+            let field = fields[key];
+            const p1 = document.createElement("p");
+            const p1Value = document.createTextNode(field.label + ": " +field.value);
+            p1.appendChild(p1Value);
+            cardBody.appendChild(p1);
+        }
+        cardHeader.appendChild(cardBody);
+        card.appendChild(cardHeader);
+
+    }
+
+    modalBody.appendChild(card);
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
