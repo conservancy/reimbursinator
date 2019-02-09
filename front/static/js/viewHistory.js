@@ -285,31 +285,41 @@ function displayReport(parsedData){
 
     const card = document.createElement("div");
     card.classList.add("card");
+
     const cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header");
+
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
+
+    /*
+    const displayTable = document.createElement("table");
+    displayTable.classList.add("table table-striped table-responsive-sm");
+    displayTable.style.visibility = "visible";
+    cardBody.appendChild(displayTable);
+*/
 
 
     const sections = parsedData.sections;
     for (let key in sections) {
         let section = sections[key];
-        const h4 = document.createElement("h4");
-        const value = document.createTextNode(section.title);
+        if(section.completed) {
+            const h4 = document.createElement("h4");
+            const value = document.createTextNode(section.title);
 
-        h4.appendChild(value);
-        cardBody.appendChild(h4);
-        let fields = section.fields;
-        for (let key in fields) {
-            let field = fields[key];
-            const p1 = document.createElement("p");
-            const p1Value = document.createTextNode(field.label + ": " +field.value);
-            p1.appendChild(p1Value);
-            cardBody.appendChild(p1);
+            h4.appendChild(value);
+            cardBody.appendChild(h4);
+            let fields = section.fields;
+            for (let key in fields) {
+                let field = fields[key];
+                const p1 = document.createElement("p");
+                const p1Value = document.createTextNode(field.label + ": " + field.value);
+                p1.appendChild(p1Value);
+                cardBody.appendChild(p1);
+            }
+            cardHeader.appendChild(cardBody);
+            card.appendChild(cardHeader);
         }
-        cardHeader.appendChild(cardBody);
-        card.appendChild(cardHeader);
-
     }
 
     modalBody.appendChild(card);
