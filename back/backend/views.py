@@ -2,11 +2,11 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
+import ntpath
 
 
 # function that prints all the reports
 def get_reports(report_pk):
-    # queryset = Report.objects.all()
     queryset = Report.objects.filter(id=report_pk)
     for i in queryset:
         data = {
@@ -28,7 +28,6 @@ def get_sections(r_id):
     # create a dict of arrays for section
     section_set = {"sections": []}
     queryset = Section.objects.filter(report_id=r_id)
-    # queryset = Section.objects.all()
     for i in queryset:
         data = {
             "id": i.id,
@@ -66,10 +65,6 @@ def get_fields(s_id):
 
     return field_set
 
-# function to convert value into JSON
-def to_json(convert):
-    return {"value": convert}
-
 # function that gets corresponding
 # data type
 def get_datatype(self):
@@ -83,11 +78,18 @@ def get_datatype(self):
     elif self.type == "date":
         return "{}".format(self.data_date)
     elif self.type == "file":
-        return "{}".format(self.data_file)
+        file_name = path_leaf(str(self.data_file))
+        return "{}".format(file_name)
     elif self.type == "string":
         return "{}".format(self.data_string)
     elif self.type == "integer":
         return self.data_integer
+
+# function that accommodates if
+# path has slash at end
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 
 # API Endpoints
@@ -98,20 +100,25 @@ def report(request):
     '''
     
     # Create the report
-    report = Report.objects.create(user_id=request.user, title=request.data['title'], date_created=datetime.date.today())
+    report = Report.objects.create(user_id=request.user, title=request.data['title'],
+                                   date_created=datetime.date.today())
     report.save()
 
     # Create the sections
     for i in range(len(pol.sections)):
         section = pol.sections[i]
-        s = Section.objects.create(report_id=report, auto_submit=section.auto_submit, required=section.required, completed=False, title=section.title, html_description=section.html_description, number=i)
+        s = Section.objects.create(report_id=report, auto_submit=section.auto_submit,
+                                   required=section.required, completed=False,
+                                   title=section.title, html_description=section.html_description,
+                                   number=i)
         s.save()
 
         # Create the fields
         j = 0
         for key in section.fields:
             field = section.fields[key]
-            f = Field.objects.create(section_id=s, field_name=key, label=field['label'], number=j, type=field['type'], completed=False)
+            f = Field.objects.create(section_id=s, field_name=key, label=field['label'],
+                                     number=j, type=field['type'], completed=False)
             f.save()
             j = j+1
     
@@ -119,7 +126,7 @@ def report(request):
     data = get_reports(report.id)
     return JsonResponse(data)
 
-# List of reports
+# View the list of reports
 @api_view(['GET'])
 def reports(request):
     report_set = {"reports": []}
@@ -139,21 +146,26 @@ def reports(request):
     return JsonResponse(report_set)
 
 
+# actions for an individual report
 @api_view(['GET', 'PUT', 'DELETE'])
 def report_detail(request, report_pk):
+    # view the report
     if request.method == 'GET':
         data = get_reports(report_pk)
         return JsonResponse(data)
+
+    # submit the report
     elif request.method == 'PUT':
         return JsonResponse({"message": "Report submitted."})
+
+    # Delete the report
     elif request.method == 'DELETE':
         return JsonResponse({"message": "Deleted report {0}.".format(report_pk)})
 
+
+# update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    '''
-    Update a section with new data.
-    '''
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
         "fields": {
