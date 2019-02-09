@@ -342,5 +342,5 @@ document.addEventListener("click", function(event) {
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
         getDataFromEndpoint(url, displayReport);
     }
-    // TODO: Add view report
+    // TODO: Add View Report
 });
