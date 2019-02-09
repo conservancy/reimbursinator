@@ -2,7 +2,6 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
-import ntpath
 
 
 # function that prints all the reports
@@ -134,6 +133,7 @@ def report_detail(request, report_pk):
 
     # Delete the report
     elif request.method == 'DELETE':
+        Report.objects.filter(id=report_pk).delete()
         return JsonResponse({"message": "Deleted report {0}.".format(report_pk)})
 
 
