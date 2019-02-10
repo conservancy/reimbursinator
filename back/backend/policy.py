@@ -78,7 +78,7 @@ pol.add_section(flight_section)
 lodging_section = Section(
     title="Hotel Info",
     html_description="<p>Enter hotel info here.\nPer diem rates can be found at "
-                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'></a></p>",
+                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
     fields={
         "check-in_date": {"label": "Check-in date", "type": "date"},
         "check-out_date": {"label": "Check-out date", "type": "date"},
