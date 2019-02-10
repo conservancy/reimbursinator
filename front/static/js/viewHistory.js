@@ -419,13 +419,15 @@ document.addEventListener("click", function(event) {
     }
 });
 
-document.addEventListener("submit", function(event) {
-    event.preventDefault();
-    if (event.target.classList.contains("new-report")) {
+const newReportForm = document.querySelector(".new-report-form");
+if (newReportForm) {
+    newReportForm.addEventListener("submit", function(event) {
+        event.preventDefault();
         const url = getEndpointDomain() + "api/v1/report";
         const payload = JSON.stringify({ "title": event.target.elements.title.value });
         console.log("Payload:\n" + payload);
         const type = reportType.NEW;
         postDataToEndpoint(url, payload, createReportForm, type);
-    }
-});
+        this.reset();
+    });
+}
