@@ -11,6 +11,7 @@ function getDataFromEndpoint(url, callback, optional) {
     console.log("Attempting a connection to the following endpoint: " + url);
 
     xhr.open("GET", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
@@ -33,22 +34,55 @@ function getDataFromEndpoint(url, callback, optional) {
     xhr.send();
 }
 
+
+// Make a POST request to url and pass response to callback function
+function postDataToEndpoint(url, payload, callback, optional) {
+    const token = localStorage.getItem("token");
+    const xhr = new XMLHttpRequest();
+
+    console.log("Attempting a connection to the following endpoint: " + url);
+
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("POST SUCCESS!");
+                console.log("Server response:\n" + this.response);
+                let parsedData = JSON.parse(this.response);
+                optional === undefined ? callback(parsedData) : callback(parsedData, optional);
+            } else {
+                console.error("POST FAILURE!");
+                console.error("Server status: " + this.status);
+                console.error("Server response:\n" + this.response);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        alert("Connection error!");
+    };
+
+    xhr.send(payload);
+}
+
 // Wraps a Bootstrap form group around a field
-function createFormGroup(key, field) {
+function createFormGroup(field) {
     const formGroup = document.createElement("div")
     formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
     label.classList.add("col-sm-4", "col-form");
     label.innerHTML = field.label + ": ";
-    label.setAttribute("for", key);
+    label.setAttribute("for", field.field_name);
     
     const div = document.createElement("div");
     div.classList.add("col-sm-6");
 
     const input = document.createElement("input");
-    input.name = key;
-    input.id = key;
+    input.name = field.field_name;
+    input.id = field.field_name;
 
     switch(field.type) {
         case "boolean":
@@ -58,6 +92,7 @@ function createFormGroup(key, field) {
             input.classList.add("form-check-input");
             label.className = "";
             label.classList.add("form-check-label");
+            label.innerHTML = field.label;
             outerLabel = document.createElement("div");
             outerLabel.classList.add("col-sm-4");
             outerLabel.innerHTML = "Flight type: ";
@@ -70,10 +105,29 @@ function createFormGroup(key, field) {
             formGroup.appendChild(div);
             break;
         case "date":
+        case "string":
+            input.type = "text";
+            input.value = field.value;
+            input.classList.add("form-control");
+            formGroup.appendChild(label);
+            div.appendChild(input)
+            formGroup.appendChild(div);
+            break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
             input.classList.add("form-control");
+            input.pattern = "\\d+(\\.\\d{2})?";
+            formGroup.appendChild(label);
+            div.appendChild(input)
+            formGroup.appendChild(div);
+            break;
+        case "integer":
+            input.type = "number";
+            input.value = field.value;
+            input.classList.add("form-control");
+            input.step = 1;
+            input.min = 0;
             formGroup.appendChild(label);
             div.appendChild(input)
             formGroup.appendChild(div);
@@ -158,10 +212,12 @@ function createReportForm(parsedData, type) {
     accordion.classList.add("accordion");
 
     if (type === reportType.EDIT) {
+        console.log("reportType.EDIT");
         modalBody = document.querySelector("#editReportModalBody");
         modalLabel = document.querySelector("#editReportModalLabel");
         accordion.id = "editReportAccordion";
     } else if (type === reportType.NEW) {
+        console.log("reportType.NEW");
         modalBody = document.querySelector("#newReportModalBody");
         modalLabel = document.querySelector("#newReportModalLabel");
         accordion.id = "newReportAccordion";
@@ -199,7 +255,7 @@ function createReportForm(parsedData, type) {
             console.log("Field value: " + field.value); 
             
             // Create a form group for each field and add it to the form
-            let formGroup = createFormGroup(key, field);
+            let formGroup = createFormGroup(field);
             form.appendChild(formGroup);
         }
 
@@ -235,7 +291,7 @@ function displayListOfReports(parsedData) {
         for (let i = 0; i < reports.length; i++) {
             let title = reports[i].title;
             let dateCreated = new Date(reports[i].date_created).toLocaleDateString("en-US");
-            let state = reports[i].state;
+            let state = reports[i].submitted;
             let dateSubmitted;
             let rid = reports[i].report_pk;
 
@@ -253,7 +309,7 @@ function displayListOfReports(parsedData) {
             actionButton.setAttribute("data-rid", rid);
             actionButton.classList.add("btn");
 
-            if (state === "created") {
+            if (state === false) {
                 // Edit button
                 dateSubmitted = "TBD";
                 actionButton.classList.add("btn-primary", "edit-report-button"); // Add event listener class
@@ -263,8 +319,10 @@ function displayListOfReports(parsedData) {
             } else {
                 // View button
                 dateSubmitted = new Date(reports[i].date_submitted).toLocaleDateString("en-US");
-                actionButton.classList.add("btn-success");
+                actionButton.classList.add("btn-success", "view-report-button");
                 actionButton.innerHTML = "View";
+                actionButton.setAttribute("data-toggle", "modal");
+                actionButton.setAttribute("data-target", "#viewReportModal");
             }
 
             let dateSubmittedCell = bodyRow.insertCell(3);
@@ -277,6 +335,63 @@ function displayListOfReports(parsedData) {
     }
 }
 
+function displayReport(parsedData){
+    //Able to get the correct report ID now just needs to display the
+    //report as an modual
+    const modalBody = document.querySelector(".modal-view");
+    const modalLabel = document.querySelector("#viewReportModalLabel");
+
+    while (modalBody.firstChild) {
+        modalBody.removeChild(modalBody.firstChild);
+    }
+
+    // Add report title and date
+    const reportTitle = parsedData.title;
+    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
+    modalLabel.innerHTML = reportTitle + " " + dateCreated;
+
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
+
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
+
+    /*
+    const displayTable = document.createElement("table");
+    displayTable.classList.add("table table-striped table-responsive-sm");
+    displayTable.style.visibility = "visible";
+    cardBody.appendChild(displayTable);
+*/
+
+
+    const sections = parsedData.sections;
+    for (let key in sections) {
+        let section = sections[key];
+        if(section.completed) {
+            const h4 = document.createElement("h4");
+            const value = document.createTextNode(section.title);
+
+            h4.appendChild(value);
+            cardBody.appendChild(h4);
+            let fields = section.fields;
+            for (let key in fields) {
+                let field = fields[key];
+                const p1 = document.createElement("p");
+                const p1Value = document.createTextNode(field.label + ": " + field.value);
+                p1.appendChild(p1Value);
+                cardBody.appendChild(p1);
+            }
+            cardHeader.appendChild(cardBody);
+            card.appendChild(cardHeader);
+        }
+    }
+
+    modalBody.appendChild(card);
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     if (window.location.pathname === "/edit_report.html") {
         const url = getEndpointDomain() + "api/v1/reports";
@@ -285,9 +400,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 const reportType = {
-    EDIT : 1,
-    VIEW : 2,
-    NEW : 3
+    NEW : 1,
+    EDIT : 2,
+    VIEW : 3
 };
 
 document.addEventListener("click", function(event) {
@@ -298,13 +413,21 @@ document.addEventListener("click", function(event) {
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             const type = reportType.EDIT;
             getDataFromEndpoint(url, createReportForm, type);
-        } else if (event.target.classList.contains("new-report-button")) {
-            //const url = getEndpointDomain() + "api/v1/report";
-            const type = reportType.NEW;
-            //getDataFromEndpoint(url, createReportForm, type);
-            createReportForm(newReport, type);
+        } else if (event.target.classList.contains("view-report-button")) {
+            console.log("View button clicked");
+            const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+            getDataFromEndpoint(url, displayReport);
         }
     }
+});
 
-    // TODO: Add view report
+document.addEventListener("submit", function(event) {
+    event.preventDefault();
+    if (event.target.classList.contains("new-report")) {
+        const url = getEndpointDomain() + "api/v1/report";
+        const payload = JSON.stringify({ "title": event.target.elements.title.value });
+        console.log("Payload:\n" + payload);
+        const type = reportType.NEW;
+        postDataToEndpoint(url, payload, createReportForm, type);
+    }
 });

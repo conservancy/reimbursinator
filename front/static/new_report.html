@@ -36,8 +36,25 @@
             </ul>
         </div>
     </nav>
-    <div class="container">
-        <button type="button" class="btn btn-primary new-report-button" data-toggle="modal" data-target="#newReportModal">Create New</button>
+    <div class="container pt-3">
+        <div class="row">
+            <div class="col-sm-6 mx-auto">
+                <div class="card bg-light text-dark">
+                    <div class="card-header">
+                        <h3>Create a new report</h3>
+                   </div>
+                    <div class="card-body">
+                        <form class="form new-report" autocomplete="off">
+                            <div class="form-group">
+                                <label for="title">Report title:</label>
+                                <input type="text" class="form-control" name="title" id="title">
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#newReportModal">Create</button>
+                        </form>
+                    </div>
+               </div>
+           </div>
+       </div>
     </div>
     <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
@@ -51,7 +68,6 @@
                 <div class="modal-body" id="newReportModalBody">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger">Delete Report</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Submit Report</button>
                 </div>
@@ -59,7 +75,6 @@
         </div>
     </div>
     <script src="js/logout.js"></script>
-    <script src="js/newReport.js"></script>
     <script src="js/viewHistory.js"></script>
 </body>
 </html>
