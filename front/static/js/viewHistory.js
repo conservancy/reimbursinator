@@ -1,3 +1,9 @@
+const reportType = {
+    NEW : 1,
+    EDIT : 2,
+    VIEW : 3
+};
+
 // Hack to change endpoint url
 function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
@@ -18,7 +24,7 @@ function getDataFromEndpoint(url, callback, optional) {
                 console.log("GET SUCCESS!");
                 console.log("Server response:\n" + this.response);
                 let parsedData = JSON.parse(this.response);
-                optional === undefined ? callback(parsedData) : callback(parsedData, optional);
+                optional ? callback(parsedData, optional) : callback(parsedData);
             } else {
                 console.error("GET FAILURE!");
                 console.error("Server status: " + this.status);
@@ -51,7 +57,7 @@ function postDataToEndpoint(url, payload, callback, optional) {
                 console.log("POST SUCCESS!");
                 console.log("Server response:\n" + this.response);
                 let parsedData = JSON.parse(this.response);
-                optional === undefined ? callback(parsedData) : callback(parsedData, optional);
+                optional ? callback(parsedData, optional) : callback(parsedData);
             } else {
                 console.error("POST FAILURE!");
                 console.error("Server status: " + this.status);
@@ -399,17 +405,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 });
 
-const reportType = {
-    NEW : 1,
-    EDIT : 2,
-    VIEW : 3
-};
-
 document.addEventListener("click", function(event) {
     if (event.target) {
         if (event.target.classList.contains("edit-report-button")) {
-            console.log("Edit button clicked");
-            console.log(event);
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             const type = reportType.EDIT;
             getDataFromEndpoint(url, createReportForm, type);
