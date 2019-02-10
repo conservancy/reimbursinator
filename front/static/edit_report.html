@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="editReportModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="editReportModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -71,7 +71,13 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="editReportModalBody">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-3x fa-spin"></i>
+                        <br>
+                        <br>
+                        <h5>Loading Report ...</h5>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger">Delete Report</button>
@@ -81,7 +87,7 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="viewReportModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -91,6 +97,12 @@
                     </button>
                 </div>
                 <div class="modal-view">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-3x fa-spin"></i>
+                        <br>
+                        <br>
+                        <h5>Loading Report ...</h5>
+                    </div>
                 </div>
             </div>
         </div>
