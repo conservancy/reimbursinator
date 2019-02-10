@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.2.20171210/classList.min.js"></script>
     <link rel="shortcut icon" href="img/favicon.ico">
     <title>Reimbursinator</title>
 </head>
@@ -41,16 +42,45 @@
                 <div class="card bg-light text-dark">
                     <div class="card-header">
                         <h3>Create a new report</h3>
-                        <div class="form-group">
-                            <label for="title">Report title:</label>
-                            <input type="text" class="form-control" id="title">
-                        </div>
-                        <button type="button" class="btn btn-primary" herf="#Create">Create</button>
                    </div>
+                    <div class="card-body">
+                        <form class="form new-report-form" autocomplete="off">
+                            <div class="form-group">
+                                <label for="title">Report title:</label>
+                                <input type="text" class="form-control" name="title" id="title">
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#newReportModal">Create</button>
+                        </form>
+                    </div>
                </div>
            </div>
        </div>
-   </div>
-   <script src="js/logout.js"></script>
+    </div>
+    <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newReportModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="newReportModalBody">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-3x fa-spin"></i>
+                        <br>
+                        <br>
+                        <h5>Creating Report ...</h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Submit Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/logout.js"></script>
+    <script src="js/viewHistory.js"></script>
 </body>
 </html>

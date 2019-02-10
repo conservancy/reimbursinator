@@ -1,3 +1,9 @@
+const reportType = {
+    NEW : 1,
+    EDIT : 2,
+    VIEW : 3
+};
+
 // Hack to change endpoint url
 function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
@@ -35,12 +41,11 @@ function removeDataFromEndpoint(url) {
 }
 
 // Make a GET request to url and pass response to callback function
-function getDataFromEndpoint(url, callback) {
+function getDataFromEndpoint(url, callback, optional) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
     console.log("Attempting a connection to the following endpoint: " + url);
-
 
     xhr.open("GET", url, true);
     xhr.setRequestHeader("Authorization", "Bearer " + token);
@@ -49,8 +54,8 @@ function getDataFromEndpoint(url, callback) {
             if (this.status === 200) {
                 console.log("GET SUCCESS!");
                 console.log("Server response:\n" + this.response);
-                parsedData = JSON.parse(this.response);
-                callback(parsedData);
+                let parsedData = JSON.parse(this.response);
+                optional ? callback(parsedData, optional) : callback(parsedData);
             } else {
                 console.error("GET FAILURE!");
                 console.error("Server status: " + this.status);
@@ -66,22 +71,55 @@ function getDataFromEndpoint(url, callback) {
     xhr.send();
 }
 
+
+// Make a POST request to url and pass response to callback function
+function postDataToEndpoint(url, payload, callback, optional) {
+    const token = localStorage.getItem("token");
+    const xhr = new XMLHttpRequest();
+
+    console.log("Attempting a connection to the following endpoint: " + url);
+
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("POST SUCCESS!");
+                console.log("Server response:\n" + this.response);
+                let parsedData = JSON.parse(this.response);
+                optional ? callback(parsedData, optional) : callback(parsedData);
+            } else {
+                console.error("POST FAILURE!");
+                console.error("Server status: " + this.status);
+                console.error("Server response:\n" + this.response);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        alert("Connection error!");
+    };
+
+    xhr.send(payload);
+}
+
 // Wraps a Bootstrap form group around a field
-function createFormGroup(key, field) {
+function createFormGroup(field) {
     const formGroup = document.createElement("div")
     formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
     label.classList.add("col-sm-4", "col-form");
     label.innerHTML = field.label + ": ";
-    label.setAttribute("for", key);
+    label.setAttribute("for", field.field_name);
     
     const div = document.createElement("div");
     div.classList.add("col-sm-6");
 
     const input = document.createElement("input");
-    input.name = key;
-    input.id = key;
+    input.name = field.field_name;
+    input.id = field.field_name;
 
     switch(field.type) {
         case "boolean":
@@ -91,6 +129,7 @@ function createFormGroup(key, field) {
             input.classList.add("form-check-input");
             label.className = "";
             label.classList.add("form-check-label");
+            label.innerHTML = field.label;
             outerLabel = document.createElement("div");
             outerLabel.classList.add("col-sm-4");
             outerLabel.innerHTML = "Flight type: ";
@@ -103,10 +142,29 @@ function createFormGroup(key, field) {
             formGroup.appendChild(div);
             break;
         case "date":
+        case "string":
+            input.type = "text";
+            input.value = field.value;
+            input.classList.add("form-control");
+            formGroup.appendChild(label);
+            div.appendChild(input)
+            formGroup.appendChild(div);
+            break;
         case "decimal":
             input.type = "text";
             input.value = field.value;
             input.classList.add("form-control");
+            input.pattern = "\\d+(\\.\\d{2})?";
+            formGroup.appendChild(label);
+            div.appendChild(input)
+            formGroup.appendChild(div);
+            break;
+        case "integer":
+            input.type = "number";
+            input.value = field.value;
+            input.classList.add("form-control");
+            input.step = 1;
+            input.min = 0;
             formGroup.appendChild(label);
             div.appendChild(input)
             formGroup.appendChild(div);
@@ -151,10 +209,13 @@ function createCollapsibleCard(key, sectionTitle) {
     return card;
 }
 
-function createCollapsibleCardBody(key, form, sectionDescription, sectionCompleted) {
+function createCollapsibleCardBody(key, form, type, sectionDescription, sectionCompleted) {
     // Create wrapper div
     const div = document.createElement("div");
+    div.id = "collapse" + key;
     const sectionAlert = document.createElement("div");
+    const cardBody = document.createElement("div");
+    cardBody.classList.add("card-body");
 
     if (sectionCompleted) {
         div.classList.add("collapse");
@@ -166,12 +227,13 @@ function createCollapsibleCardBody(key, form, sectionDescription, sectionComplet
         sectionAlert.innerHTML = "This section is not complete";
     }
 
-    div.setAttribute("data-parent", "#editReportAccordion");
-    div.id = "collapse" + key;
+    if (type === reportType.EDIT) {
+        div.setAttribute("data-parent", "#editReportAccordion");
+    } else {
+        div.setAttribute("data-parent", "#newReportAccordion");
+    }
 
     // Create card body. Append form to body, body to wrapper div
-    const cardBody = document.createElement("div");
-    cardBody.classList.add("card-body");
     cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription); 
     cardBody.appendChild(form);
@@ -180,9 +242,25 @@ function createCollapsibleCardBody(key, form, sectionDescription, sectionComplet
     return div;
 }
 
-function createEditReportForm(parsedData) {
-    const modalBody = document.querySelector(".modal-body");
-    const modalLabel = document.querySelector("#editReportModalLabel");
+function createReportForm(parsedData, type) {
+    let modalBody;
+    let modalLabl;
+    const accordion = document.createElement("div");
+    accordion.classList.add("accordion");
+
+    if (type === reportType.EDIT) {
+        console.log("reportType.EDIT");
+        modalBody = document.querySelector("#editReportModalBody");
+        modalLabel = document.querySelector("#editReportModalLabel");
+        accordion.id = "editReportAccordion";
+    } else if (type === reportType.NEW) {
+        console.log("reportType.NEW");
+        modalBody = document.querySelector("#newReportModalBody");
+        modalLabel = document.querySelector("#newReportModalLabel");
+        accordion.id = "newReportAccordion";
+    } else {
+        return;
+    }
 
     while (modalBody.firstChild) {
         modalBody.removeChild(modalBody.firstChild);
@@ -192,11 +270,6 @@ function createEditReportForm(parsedData) {
     const reportTitle = parsedData.title;
     const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
     modalLabel.innerHTML = reportTitle + " " + dateCreated;
-
-    // Create accordion
-    const accordion = document.createElement("div");
-    accordion.classList.add("accordion");
-    accordion.id = "editReportAccordion";
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
@@ -219,7 +292,7 @@ function createEditReportForm(parsedData) {
             console.log("Field value: " + field.value); 
             
             // Create a form group for each field and add it to the form
-            let formGroup = createFormGroup(key, field);
+            let formGroup = createFormGroup(field);
             form.appendChild(formGroup);
         }
 
@@ -231,7 +304,7 @@ function createEditReportForm(parsedData) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(key, form, section.html_description, section.completed);
+        let cardBody = createCollapsibleCardBody(key, form, type, section.html_description, section.completed);
         collapsibleCard.appendChild(cardBody); 
         accordion.appendChild(collapsibleCard);
     }
@@ -357,35 +430,47 @@ function displayReport(parsedData){
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    const url = getEndpointDomain() + "api/v1/reports";
-    getDataFromEndpoint(url, displayListOfReports);
+    if (window.location.pathname === "/edit_report.html") {
+        const url = getEndpointDomain() + "api/v1/reports";
+        getDataFromEndpoint(url, displayListOfReports);
+    }
 });
 
 document.addEventListener("click", function(event) {
-    if (event.target && event.target.classList.contains("edit-report-button")) {
-        console.log("Edit button clicked");
-        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-        const deleteButton = document.querySelector(".delete-report");
-        if (deleteButton) {
-            deleteButton.setAttribute("data-rid", event.target.dataset.rid);
-        }
-        getDataFromEndpoint(url, createEditReportForm);
-    }
-    if(event.target && event.target.classList.contains("view-report-button"))
-    {
-        console.log("View button clicked");
-        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-        getDataFromEndpoint(url, displayReport);
-    }
-    // TODO: Add View Report
-
-    if(event.target && event.target.classList.contains("delete-report")) {
-        event.preventDefault();
-        console.log("Delete report button clicked");
-        const result = confirm("Are you sure you want to delete this report?");
-        if (result) {
+    if (event.target) {
+        if (event.target.classList.contains("edit-report-button")) {
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-            removeDataFromEndpoint(url);
+            const type = reportType.EDIT;
+            const deleteButton = document.querySelector(".delete-report");
+            if (deleteButton) {
+                deleteButton.setAttribute("data-rid", event.target.dataset.rid);
+            }
+            getDataFromEndpoint(url, createReportForm, type);
+        } else if (event.target.classList.contains("view-report-button")) {
+            console.log("View button clicked");
+            const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+            getDataFromEndpoint(url, displayReport);
+        } else if (event.target.classList.contains("delete-report")) {
+            event.preventDefault();
+            console.log("Delete report button clicked");
+            const result = confirm("Are you sure you want to delete this report?");
+            if (result) {
+                const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+                removeDataFromEndpoint(url);
+            }
         }
     }
 });
+
+const newReportForm = document.querySelector(".new-report-form");
+if (newReportForm) {
+    newReportForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const url = getEndpointDomain() + "api/v1/report";
+        const payload = JSON.stringify({ "title": event.target.elements.title.value });
+        console.log("Payload:\n" + payload);
+        const type = reportType.NEW;
+        postDataToEndpoint(url, payload, createReportForm, type);
+        this.reset();
+    });
+}
