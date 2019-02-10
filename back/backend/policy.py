@@ -124,7 +124,8 @@ pol.add_section(transport_section)
 #### Section 4
 per_diem_section = Section(
     title="Per Diem",
-    html_description="<p>Enter info about meals and incidentals here.\nPer diem rates can be found at <a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'></a></p>",
+    html_description="<p>Enter info about meals and incidentals here.\nPer diem rates can be found at "
+                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
     fields={
         "duration": {"label": "How many days was your trip?", "type": "decimal"},
         "rate": {"label": "What is the per diem rate for your destination?", "type": "decimal"},
