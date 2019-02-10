@@ -3,6 +3,37 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
+function removeDataFromEndpoint(url) {
+    const token = localStorage.getItem("token");
+    const xhr = new XMLHttpRequest();
+
+    console.log("Attempting a connection to the following endpoint: " + url);
+
+
+    xhr.open("DELETE", url, true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log("DELETE SUCCESS!");
+                console.log("Server response:\n" + this.response);
+                alert("Report deleted");
+                location.reload(true);
+            } else {
+                console.error("DELETE FAILURE!");
+                console.error("Server status: " + this.status);
+                console.error("Server response:\n" + this.response);
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        alert("Connection error!");
+    };
+
+    xhr.send();
+}
+
 // Make a GET request to url and pass response to callback function
 function getDataFromEndpoint(url, callback) {
     const token = localStorage.getItem("token");
@@ -334,6 +365,10 @@ document.addEventListener("click", function(event) {
     if (event.target && event.target.classList.contains("edit-report-button")) {
         console.log("Edit button clicked");
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+        const deleteButton = document.querySelector(".delete-report");
+        if (deleteButton) {
+            deleteButton.setAttribute("data-rid", event.target.dataset.rid);
+        }
         getDataFromEndpoint(url, createEditReportForm);
     }
     if(event.target && event.target.classList.contains("view-report-button"))
@@ -343,4 +378,14 @@ document.addEventListener("click", function(event) {
         getDataFromEndpoint(url, displayReport);
     }
     // TODO: Add View Report
+
+    if(event.target && event.target.classList.contains("delete-report")) {
+        event.preventDefault();
+        console.log("Delete report button clicked");
+        const result = confirm("Are you sure you want to delete this report?");
+        if (result) {
+            const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+            removeDataFromEndpoint(url);
+        }
+    }
 });
