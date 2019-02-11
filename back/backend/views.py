@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
+import os
 
 
 # function that prints all the reports
@@ -133,7 +134,19 @@ def report_detail(request, report_pk):
 
     # Delete the report
     elif request.method == 'DELETE':
-        Report.objects.filter(id=report_pk).delete()
+        # get corresponding sections
+        section_set = Section.objects.filter(report_id=report_pk)
+        for i in section_set:
+            # gets the fields that have a field in them
+            field_set = Field.objects.filter(section_id=i.id).exclude(data_file__exact='')
+            if field_set.exists():
+                for j in field_set:
+                    # delete the file if exists
+                    path_name = str(j.data_file)
+                    os.remove(path_name)
+                    # Field.delete_data_file(j, path_name)
+        # delete the full report
+        Report.objects.get(id=report_pk).delete()
         return JsonResponse({"message": "Deleted report {0}.".format(report_pk)})
 
 
