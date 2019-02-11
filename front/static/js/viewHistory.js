@@ -9,88 +9,25 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
-function removeDataFromEndpoint(url) {
+function makeAjaxRequest(method, url, callback, type, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
     console.log("Attempting a connection to the following endpoint: " + url);
 
-
-    xhr.open("DELETE", url, true);
+    xhr.open(method, url, true);
     xhr.setRequestHeader("Authorization", "Bearer " + token);
+    method === "POST" ? xhr.setRequestHeader("Content-Type", "application/json") : payload = null;
+
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                console.log("DELETE SUCCESS!");
-                console.log("Server response:\n" + this.response);
-                alert("Report deleted");
-                location.reload(true);
-            } else {
-                console.error("DELETE FAILURE!");
-                console.error("Server status: " + this.status);
-                console.error("Server response:\n" + this.response);
-            }
-        }
-    };
-
-    xhr.onerror = function() {
-        alert("Connection error!");
-    };
-
-    xhr.send();
-}
-
-// Make a GET request to url and pass response to callback function
-function getDataFromEndpoint(url, callback, optional) {
-    const token = localStorage.getItem("token");
-    const xhr = new XMLHttpRequest();
-
-    console.log("Attempting a connection to the following endpoint: " + url);
-
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader("Authorization", "Bearer " + token);
-    xhr.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) {
-                console.log("GET SUCCESS!");
+                console.log(method + " SUCCESS!");
                 console.log("Server response:\n" + this.response);
                 let parsedData = JSON.parse(this.response);
-                optional ? callback(parsedData, optional) : callback(parsedData);
+                type ? callback(parsedData, type) : callback(parsedData);
             } else {
-                console.error("GET FAILURE!");
-                console.error("Server status: " + this.status);
-                console.error("Server response:\n" + this.response);
-            }
-        }
-    };
-
-    xhr.onerror = function() {
-        alert("Connection error!");
-    };
-
-    xhr.send();
-}
-
-
-// Make a POST request to url and pass response to callback function
-function postDataToEndpoint(url, payload, callback, optional) {
-    const token = localStorage.getItem("token");
-    const xhr = new XMLHttpRequest();
-
-    console.log("Attempting a connection to the following endpoint: " + url);
-
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Authorization", "Bearer " + token);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) {
-                console.log("POST SUCCESS!");
-                console.log("Server response:\n" + this.response);
-                let parsedData = JSON.parse(this.response);
-                optional ? callback(parsedData, optional) : callback(parsedData);
-            } else {
-                console.error("POST FAILURE!");
+                console.error(method + " FAILURE!");
                 console.error("Server status: " + this.status);
                 console.error("Server response:\n" + this.response);
             }
@@ -268,8 +205,7 @@ function createReportForm(parsedData, type) {
 
     // Add report title and date
     const reportTitle = parsedData.title;
-    const dateCreated = new Date(parsedData.date_created).toLocaleDateString("en-US");
-    modalLabel.innerHTML = reportTitle + " " + dateCreated;
+    modalLabel.innerHTML = reportTitle;
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
@@ -432,7 +368,7 @@ function displayReport(parsedData){
 document.addEventListener("DOMContentLoaded", function(event) {
     if (window.location.pathname === "/edit_report.html") {
         const url = getEndpointDomain() + "api/v1/reports";
-        getDataFromEndpoint(url, displayListOfReports);
+        makeAjaxRequest("GET", url, displayListOfReports);
     }
 });
 
@@ -445,18 +381,21 @@ document.addEventListener("click", function(event) {
             if (deleteButton) {
                 deleteButton.setAttribute("data-rid", event.target.dataset.rid);
             }
-            getDataFromEndpoint(url, createReportForm, type);
+            makeAjaxRequest("GET", url, createReportForm, type);
         } else if (event.target.classList.contains("view-report-button")) {
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-            getDataFromEndpoint(url, displayReport);
+            makeAjaxRequest("GET", url, displayReport);
         } else if (event.target.classList.contains("delete-report")) {
             event.preventDefault();
-            console.log("Delete report button clicked");
-            const result = confirm("Are you sure you want to delete this report?");
+            const title = document.querySelector("#editReportModalLabel").textContent;
+            const result = confirm("Are you sure you want to delete the report \"" + title + "\"?");
             if (result) {
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
-                removeDataFromEndpoint(url);
+                makeAjaxRequest("DELETE", url, function(parsedData) {
+                    alert(parsedData.message);
+                    location.reload(true);
+                });
             }
         }
     }
@@ -470,7 +409,7 @@ if (newReportForm) {
         const payload = JSON.stringify({ "title": event.target.elements.title.value });
         console.log("Payload:\n" + payload);
         const type = reportType.NEW;
-        postDataToEndpoint(url, payload, createReportForm, type);
+        makeAjaxRequest("POST", url, createReportForm, type, payload);
         this.reset();
     });
 }
