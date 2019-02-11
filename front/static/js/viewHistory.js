@@ -50,7 +50,7 @@ function createFormGroup(field) {
     label.classList.add("col-sm-4", "col-form");
     label.innerHTML = field.label + ": ";
     label.setAttribute("for", field.field_name);
-    
+
     const div = document.createElement("div");
     div.classList.add("col-sm-6");
 
@@ -172,10 +172,10 @@ function createCollapsibleCardBody(key, form, type, sectionDescription, sectionC
 
     // Create card body. Append form to body, body to wrapper div
     cardBody.appendChild(sectionAlert);
-    cardBody.insertAdjacentHTML("beforeend", sectionDescription); 
+    cardBody.insertAdjacentHTML("beforeend", sectionDescription);
     cardBody.appendChild(form);
     div.appendChild(cardBody);
-    
+
     return div;
 }
 
@@ -186,12 +186,14 @@ function createReportForm(parsedData, type) {
     accordion.classList.add("accordion");
 
     if (type === reportType.EDIT) {
-        console.log("reportType.EDIT");
         modalBody = document.querySelector("#editReportModalBody");
         modalLabel = document.querySelector("#editReportModalLabel");
         accordion.id = "editReportAccordion";
+        const deleteButton = document.querySelector(".delete-report");
+        if (deleteButton) {
+            deleteButton.setAttribute("data-rid", parsedData.report_pk);
+        }
     } else if (type === reportType.NEW) {
-        console.log("reportType.NEW");
         modalBody = document.querySelector("#newReportModalBody");
         modalLabel = document.querySelector("#newReportModalLabel");
         accordion.id = "newReportAccordion";
@@ -223,10 +225,10 @@ function createReportForm(parsedData, type) {
         for (let key in fields) {
             let field = fields[key];
 
-            console.log("Field label: " + field.label); 
-            console.log("Field type: " + field.type); 
-            console.log("Field value: " + field.value); 
-            
+            console.log("Field label: " + field.label);
+            console.log("Field type: " + field.type);
+            console.log("Field value: " + field.value);
+
             // Create a form group for each field and add it to the form
             let formGroup = createFormGroup(field);
             form.appendChild(formGroup);
@@ -241,10 +243,10 @@ function createReportForm(parsedData, type) {
 
         // Create collapsible card body, append form to it, append card to accordion
         let cardBody = createCollapsibleCardBody(key, form, type, section.html_description, section.completed);
-        collapsibleCard.appendChild(cardBody); 
+        collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
-   
+
     modalBody.appendChild(accordion);
 }
 
@@ -268,9 +270,9 @@ function displayListOfReports(parsedData) {
             let dateSubmitted;
             let rid = reports[i].report_pk;
 
-            let bodyRow = tbody.insertRow(i); 
+            let bodyRow = tbody.insertRow(i);
             bodyRow.insertCell(0).innerHTML = title;
-            bodyRow.insertCell(1).innerHTML = dateCreated; 
+            bodyRow.insertCell(1).innerHTML = dateCreated;
 
             let stateCell = bodyRow.insertCell(2);
             stateCell.innerHTML = state;
@@ -377,10 +379,6 @@ document.addEventListener("click", function(event) {
         if (event.target.classList.contains("edit-report-button")) {
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             const type = reportType.EDIT;
-            const deleteButton = document.querySelector(".delete-report");
-            if (deleteButton) {
-                deleteButton.setAttribute("data-rid", event.target.dataset.rid);
-            }
             makeAjaxRequest("GET", url, createReportForm, type);
         } else if (event.target.classList.contains("view-report-button")) {
             console.log("View button clicked");
