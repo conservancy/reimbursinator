@@ -82,6 +82,5 @@ class Field(models.Model):
     # function that accommodates if
     # path has slash at end
     def path_leaf(self, path):
-        head, tail = ntpath.split(path)
-        return tail or ntpath.basename(head)
-
+        dir_path, name = ntpath.split(path)
+        return name or ntpath.basename(dir_path)
