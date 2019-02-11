@@ -144,7 +144,6 @@ def report_detail(request, report_pk):
                     # delete the file if exists
                     path_name = str(j.data_file)
                     os.remove(path_name)
-                    # Field.delete_data_file(j, path_name)
         # delete the full report and catch the title
         r = Report.objects.get(id=report_pk)
         title = r.title

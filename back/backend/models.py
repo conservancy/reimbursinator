@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 import datetime
 import ntpath
-import os
 
 class Report(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -82,21 +81,6 @@ class Field(models.Model):
 
     # function that accommodates if
     # path has slash at end
-    def path_leaf(self, path, flag=1):
+    def path_leaf(self, path):
         dir_path, name = ntpath.split(path)
-        if flag == 1:
-            return name or ntpath.basename(dir_path)
-        else:
-            return dir_path, name
-
-    # def delete_data_file(self, file_path):
-    #     # delete file name in uploads
-    #     # os.remove(file_name)
-    #     os.remove(file_path)
-    #
-    #     # check if directory is empty
-    #     # if yes, delete directory
-    #     # if [f for f in os.listdir("back/uploads") if not f.startswith('.')] == []:
-    #     #     os.removedirs("")
-
-
+        return name or ntpath.basename(dir_path)
