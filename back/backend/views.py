@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import *
 from .policy import pol
+from django.core.mail import send_mail
 import os
 
 
@@ -165,3 +166,14 @@ def section(request, report_pk, section_pk):
     }
 
     return JsonResponse(data)
+
+
+# Send email
+# Show broken rules
+# Attach image files
+def submit_report(request, report_pk):
+    send_mail('Report #'+str(report_pk), #subject
+              'This is only a test.\nRegarding report # '+str(report_pk), #body
+              'no_effect', #from:
+              ['reimbursinator@gmail.com',]) #send to user, also #to:
+    return HttpResponse(status=200, content="Thanks for submitting your report.")
