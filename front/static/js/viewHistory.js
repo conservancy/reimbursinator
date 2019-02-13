@@ -9,6 +9,10 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
+function alertCallback(parsedData) {
+    alert(JSON.stringify(parsedData));
+}
+
 function makeAjaxRequest(method, url, callback, type, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
@@ -17,7 +21,17 @@ function makeAjaxRequest(method, url, callback, type, payload) {
 
     xhr.open(method, url, true);
     xhr.setRequestHeader("Authorization", "Bearer " + token);
-    method === "POST" ? xhr.setRequestHeader("Content-Type", "application/json") : payload = null;
+
+    switch (method) {
+        case "PUT":
+            break;
+        case "POST":
+            xhr.setRequestHeader("Content-Type", "application/json");
+            break;
+        default:
+            payload = null;
+            break;
+    }
 
     xhr.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -217,8 +231,10 @@ function createReportForm(parsedData, type) {
 
         // Create a new form with the section key index as id
         let form = document.createElement("form");
-        form.classList.add("form");
+        form.classList.add("form", "section-form");
         form.id = "form" + key;
+        form.setAttribute("data-rid", parsedData.report_pk);
+        form.setAttribute("data-sid", section.id);
 
         // Traverse the fields of this section
         let fields = section.fields;
@@ -238,7 +254,7 @@ function createReportForm(parsedData, type) {
         let saveButton = document.createElement("button");
         saveButton.innerHTML = "Save";
         saveButton.type = "submit";
-        saveButton.classList.add("btn", "btn-primary"); // TODO: add eventListener
+        saveButton.classList.add("btn", "btn-primary", "save-section"); // TODO: add eventListener
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
@@ -411,3 +427,13 @@ if (newReportForm) {
         this.reset();
     });
 }
+
+document.addEventListener("submit", function(event) {
+    if (event.target.classList.contains("section-form")) {
+        event.preventDefault();
+        console.log(event.target);
+        const formData = new FormData(event.target);
+        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
+        makeAjaxRequest("PUT", url, alertCallback, null, formData);
+    }
+});
