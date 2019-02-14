@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
+# import json
 
 
 # function that prints all the reports
@@ -57,7 +58,8 @@ def get_fields(s_id):
             "label": i.label,
             "type": i.type,
             "number": i.number,
-            "value": value
+            "value": value,
+            "id": i.id,
         }
         # append the fields to array
         # use copy() to avoid overwriting
@@ -154,14 +156,64 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    data = {
-        "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
-        "fields": {
-            "international": True,
-            "travel_date": "2012-04-23T18:25:43.511Z",
-            "fare": "1024.99",
-            "lowest_fare_screenshot": "image",
-        }
-    }
+    json_input = {
+    "fields": [
+        {
+            "id": 178,
+            "value": "2016-05-22",
+            "type": "date"
+        },
+        {
+            "id": 179,
+            "value": "2016-05-22",
+            "type": "date"
+        },
+        {
+            "id": 180,
+            "value": 3.14,
+            "type": "decimal"
+        },
+        {
+            "id": 181,
+            "value": 10000,
+            "type": "integer"
+        },
+        {
+            "id": 182,
+            "value": True,
+            "type": "boolean"
+        },
+    ]
+}
 
-    return JsonResponse(data)
+    '''
+    1) decode JSON object into dictionaries
+    2) iterate through fields (for loop)? 
+    3) in each iteration, check for data type
+    4) in the datatype, update the database
+    4a) update = field_set.get(id=request.data.id) 
+    4b) update.data_type = request.data["value"]
+    '''
+
+    # print("request data: {}".format(type(request.body)))
+    # json.loads()
+
+    for v in json_input["fields"]:
+        update_field = Field.objects.get(id=v["id"])
+
+        if v["type"] == "boolean":
+            update_field.data_bool = v["value"]
+        if v["type"] == "decimal":
+            update_field.data_decimal = v["value"]
+        if v["type"] == "date":
+            update_field.data_date = v["value"]
+        if v["type"] == "file":
+            update_field.data_file = v["value"]
+        if v["type"] == "string":
+            update_field.data_string = v["value"]
+        if v["type"] == "integer":
+            update_field.data_integer = v["value"]
+
+        update_field.save()
+
+    return JsonResponse({"message": "Updated report {0}, section {1}.".format(report_pk, section_pk)})
