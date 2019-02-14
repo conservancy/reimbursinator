@@ -154,6 +154,8 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
+    
+    """ original stub
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
         "fields": {
@@ -162,6 +164,12 @@ def section(request, report_pk, section_pk):
             "fare": "1024.99",
             "lowest_fare_screenshot": "image",
         }
+    }
+    """
+
+    data = {
+        "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
+        "request.data": request.data
     }
 
     return JsonResponse(data)
