@@ -56,26 +56,28 @@ function makeAjaxRequest(method, url, callback, type, payload) {
 }
 
 // Wraps a Bootstrap form group around a field
-function createFormGroup(field) {
+function createFormGroup(sectionId, field) {
+    const inputId = "section-" + sectionId + "-" + field.field_name;
     const formGroup = document.createElement("div")
     formGroup.classList.add("form-group", "row");
 
     const label = document.createElement("label");
     label.classList.add("col-sm-4", "col-form");
     label.innerHTML = field.label + ": ";
-    label.setAttribute("for", field.field_name);
+    label.setAttribute("for", inputId);
 
     const div = document.createElement("div");
     div.classList.add("col-sm-6");
 
     const input = document.createElement("input");
     input.name = field.field_name;
-    input.id = field.field_name;
+    input.id = inputId;
 
     switch(field.field_type) {
         case "boolean":
             const select = document.createElement("select");
             select.name = field.field_name;
+            select.id = inputId;
             select.classList.add("form-control");
             const yesOption = document.createElement("option");
             yesOption.innerHTML = "Yes";
@@ -140,7 +142,7 @@ function createFormGroup(field) {
     return formGroup;
 }
 
-function createCollapsibleCard(key, sectionTitle) {
+function createCollapsibleCard(sectionId, sectionTitle) {
     // Create card and header
     const card = document.createElement("div");
     card.classList.add("card");
@@ -153,7 +155,7 @@ function createCollapsibleCard(key, sectionTitle) {
     button.classList.add("btn", "btn-link");
     button.type = "button";
     button.setAttribute("data-toggle", "collapse");
-    button.setAttribute("data-target", "#collapse" + key);
+    button.setAttribute("data-target", "#section-" + sectionId + "-collapse");
     button.innerHTML = sectionTitle;
     h2.appendChild(button);
     cardHeader.appendChild(h2);
@@ -162,10 +164,10 @@ function createCollapsibleCard(key, sectionTitle) {
     return card;
 }
 
-function createCollapsibleCardBody(key, form, type, sectionDescription, sectionCompleted) {
+function createCollapsibleCardBody(form, type, sectionId, sectionDescription, sectionCompleted) {
     // Create wrapper div
     const div = document.createElement("div");
-    div.id = "collapse" + key;
+    div.id = "section-" + sectionId +"-collapse";
     const sectionAlert = document.createElement("div");
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
@@ -227,40 +229,37 @@ function createReportForm(parsedData, type) {
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
-    for (let key in sections) {
-        let section = sections[key];
-        let collapsibleCard = createCollapsibleCard(key, section.title)
+    for (let i = 0; i < sections.length; i++) {
+        let collapsibleCard = createCollapsibleCard(sections[i].id, sections[i].title)
 
         // Create a new form with the section key index as id
         let form = document.createElement("form");
         form.classList.add("form", "section-form");
-        form.id = "form" + key;
+        form.id = "section-" + sections[i].id +"-form";
         form.setAttribute("data-rid", parsedData.report_pk);
-        form.setAttribute("data-sid", section.id);
+        form.setAttribute("data-sid", sections[i].id);
 
         // Traverse the fields of this section
-        let fields = section.fields;
-        for (let key in fields) {
-            let field = fields[key];
+        let fields = sections[i].fields;
+        for (let j = 0; j < fields.length; j++) {
 
-            console.log("Field label: " + field.label);
-            console.log("Field type: " + field.field_type);
-            console.log("Field value: " + field.value);
+            console.log("Field label: " + fields[j].label);
+            console.log("Field type: " + fields[j].field_type);
+            console.log("Field value: " + fields[j].value);
 
             // Create a form group for each field and add it to the form
-            let formGroup = createFormGroup(field);
-            form.appendChild(formGroup);
+            form.appendChild(createFormGroup(sections[i].id, fields[j]));
         }
 
         // Add save button to the current form
         let saveButton = document.createElement("button");
         saveButton.innerHTML = "Save";
         saveButton.type = "submit";
-        saveButton.classList.add("btn", "btn-primary", "save-section"); // TODO: add eventListener
+        saveButton.classList.add("btn", "btn-primary", "save-section");
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(key, form, type, section.html_description, section.completed);
+        let cardBody = createCollapsibleCardBody(form, type, sections[i].id, sections[i].html_description, sections[i].completed);
         collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
