@@ -39,7 +39,7 @@ general_section = Section(
     title="General Info",
     html_description="",
     fields={
-        "destination": {"label": "Destination City", "type": "string"},
+        "destination": {"label": "Destination City", "field_type": "string"},
     }
 )
 
@@ -57,11 +57,12 @@ flight_section = Section(
     title="Flight Info",
     html_description="<p>Enter flight details here.</p>",
     fields={
-        "international": {"label": "Is this an international flight?", "type": "boolean"},
-        "departure_date": {"label": "Departure date", "type": "date"},
-        "return_date": {"label": "Return date", "type": "date"},
-        "fare": {"label": "Fare", "type": "decimal"},
-        "layovers": {"label": "Transit wait", "type": "integer"},
+        "international": {"label": "Is this an international flight?", "field_type": "boolean"},
+        "departure_date": {"label": "Departure date", "field_type": "date"},
+        "return_date": {"label": "Return date", "field_type": "date"},
+        "fare": {"label": "Fare", "field_type": "decimal"},
+        "layovers": {"label": "Transit wait", "field_type": "integer"},
+        "fare_search_screenshot": {"label": "Screenshot of fare search", "field_type": "file"},
     }
 )
 
@@ -80,10 +81,10 @@ lodging_section = Section(
     html_description="<p>Enter hotel info here.\nPer diem rates can be found at "
                      "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
     fields={
-        "check-in_date": {"label": "Check-in date", "type": "date"},
-        "check-out_date": {"label": "Check-out date", "type": "date"},
-        "rate": {"label": "Per diem nightly rate", "type": "decimal"},
-        "cost": {"label": "Total Cost", "type": "decimal"}
+        "check-in_date": {"label": "Check-in date", "field_type": "date"},
+        "check-out_date": {"label": "Check-out date", "field_type": "date"},
+        "rate": {"label": "Per diem nightly rate", "field_type": "decimal"},
+        "cost": {"label": "Total Cost", "field_type": "decimal"}
     }
 )
 
@@ -107,8 +108,8 @@ transport_section = Section(
     title="Local Transportation",
     html_description="<p>How much did you spend on local transportation, in total?</p>",
     fields={
-        "duration": {"label": "How many days was your trip?", "type": "decimal"},
-        "cost": {"label": "Total cost", "type": "decimal"}
+        "duration": {"label": "How many days was your trip?", "field_type": "decimal"},
+        "cost": {"label": "Total cost", "field_type": "decimal"}
     }
 )
 
@@ -127,9 +128,9 @@ per_diem_section = Section(
     html_description="<p>Enter info about meals and incidentals here.\nPer diem rates can be found at "
                      "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
     fields={
-        "duration": {"label": "How many days was your trip?", "type": "decimal"},
-        "rate": {"label": "What is the per diem rate for your destination?", "type": "decimal"},
-        "cost": {"label": "Total Cost for meals and incidentals", "type": "decimal"}
+        "duration": {"label": "How many days was your trip?", "field_type": "decimal"},
+        "rate": {"label": "What is the per diem rate for your destination?", "field_type": "decimal"},
+        "cost": {"label": "Total Cost for meals and incidentals", "field_type": "decimal"}
     }
 )
 

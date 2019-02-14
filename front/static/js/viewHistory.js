@@ -72,7 +72,7 @@ function createFormGroup(field) {
     input.name = field.field_name;
     input.id = field.field_name;
 
-    switch(field.type) {
+    switch(field.field_type) {
         case "boolean":
             input.type = "checkbox";
             if (field.value === true)
@@ -242,7 +242,7 @@ function createReportForm(parsedData, type) {
             let field = fields[key];
 
             console.log("Field label: " + field.label);
-            console.log("Field type: " + field.type);
+            console.log("Field type: " + field.field_type);
             console.log("Field value: " + field.value);
 
             // Create a form group for each field and add it to the form
