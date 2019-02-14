@@ -162,13 +162,10 @@ def section(request, report_pk, section_pk):
 
         if update.field_type == "boolean":
             # flight check
-            if request.data[key] == "on":
+            if request.data[key] == "true":
                 update.data_bool = True
-            elif request.data[key] == "off":
+            elif request.data[key] == "false":
                 update.data_bool = False
-            # everything else
-            else:
-                update.data_bool = request.data[key]
 
         if update.field_type == "decimal":
             # initialize to 0

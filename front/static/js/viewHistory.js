@@ -74,22 +74,24 @@ function createFormGroup(field) {
 
     switch(field.field_type) {
         case "boolean":
-            input.type = "checkbox";
-            if (field.value === true)
-                input.setAttribute("checked", "checked");
-            input.classList.add("form-check-input");
-            label.className = "";
-            label.classList.add("form-check-label");
-            label.innerHTML = field.label;
-            outerLabel = document.createElement("div");
-            outerLabel.classList.add("col-sm-4");
-            outerLabel.innerHTML = "Flight type: ";
-            formCheck = document.createElement("div");
-            formCheck.classList.add("form-check");
-            formCheck.appendChild(input);
-            formCheck.appendChild(label);
-            div.appendChild(formCheck);
-            formGroup.appendChild(outerLabel);
+            const select = document.createElement("select");
+            select.name = field.field_name;
+            select.classList.add("form-control");
+            const yesOption = document.createElement("option");
+            yesOption.innerHTML = "Yes";
+            yesOption.value = "true";
+            const noOption = document.createElement("option");
+            noOption.innerHTML = "No";
+            noOption.value = "false";
+            if (field.value === true) {
+                yesOption.setAttribute("selected", "selected");
+            } else {
+                noOption.setAttribute("selected", "selected");
+            }
+            select.appendChild(yesOption);
+            select.appendChild(noOption);
+            formGroup.appendChild(label);
+            div.appendChild(select)
             formGroup.appendChild(div);
             break;
         case "date":
