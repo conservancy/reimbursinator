@@ -57,7 +57,8 @@ def get_fields(s_id):
             "label": i.label,
             "field_type": i.field_type,
             "number": i.number,
-            "value": value
+            "value": value,
+            "id": i.id,
         }
         # append the fields to array
         # use copy() to avoid overwriting
@@ -154,21 +155,62 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    
-    """ original stub
-    data = {
-        "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
-        "fields": {
-            "international": True,
-            "travel_date": "2012-04-23T18:25:43.511Z",
-            "fare": "1024.99",
-            "lowest_fare_screenshot": "image",
-        }
-    }
-    """
+
+    for key in request.data:
+        # get the matching field object
+        update = Field.objects.get(section_id=section_pk, field_name=key)
+
+        if update.field_type == "boolean":
+            # flight check
+            if request.data[key] == "on":
+                update.data_bool = True
+            elif request.data[key] == "off":
+                update.data_bool = False
+            # everything else
+            else:
+                update.data_bool = request.data[key]
+
+        if update.field_type == "decimal":
+            # initialize to 0
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update.data_decimal = 0.0
+            else:
+                update.data_decimal = request.data[key]
+
+        if update.field_type == "date":
+            # initialize to today's date
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update.data_date = None
+            else:
+                update.data_date = request.data[key]
+
+        if update.field_type == "file":
+            update.data_file = request.data[key]
+
+        if update.field_type == "string":
+            update.data_string = request.data[key]
+
+        if update.field_type == "integer":
+            # initialize to 0
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update.data_integer = 0
+            else:
+                update.data_integer = request.data[key]
+
+        update.save()
 
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
+        "request_data": request.data
     }
-
     return JsonResponse(data)
+

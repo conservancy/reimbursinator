@@ -34,7 +34,7 @@ class Field(models.Model):
     completed = models.BooleanField(default=False)
     data_bool = models.BooleanField(default=False)
     data_decimal = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    data_date = models.DateField(default=datetime.date.today)
+    data_date = models.DateField(null=True, blank=True)
     data_file = models.FileField(upload_to='uploads/%Y/%m/%d/', max_length=512, null=True, blank=True)
     data_string = models.TextField(default='', blank=True)
     data_integer = models.IntegerField(default=0, blank=True)
