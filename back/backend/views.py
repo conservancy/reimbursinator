@@ -155,22 +155,28 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    for v in request.data["fields"]:
-        update_field = Field.objects.get(id=v["id"])
+    # first enter sections
+    for s in request.data["sections"]:
+        # check for match
+        if s["id"] == section_pk:
+            # begin updating fields
+            for v in s["fields"]:
+                update_field = Field.objects.get(id=v["id"])
 
-        if v["type"] == "boolean":
-            update_field.data_bool = v["value"]
-        if v["type"] == "decimal":
-            update_field.data_decimal = v["value"]
-        if v["type"] == "date":
-            update_field.data_date = v["value"]
-        if v["type"] == "file":
-            update_field.data_file = v["value"]
-        if v["type"] == "string":
-            update_field.data_string = v["value"]
-        if v["type"] == "integer":
-            update_field.data_integer = v["value"]
+                if v["type"] == "boolean":
+                    update_field.data_bool = v["value"]
+                if v["type"] == "decimal":
+                    update_field.data_decimal = v["value"]
+                if v["type"] == "date":
+                    update_field.data_date = v["value"]
+                if v["type"] == "file":
+                    update_field.data_file = v["value"]
+                if v["type"] == "string":
+                    update_field.data_string = v["value"]
+                if v["type"] == "integer":
+                    update_field.data_integer = v["value"]
 
-        update_field.save()
+                update_field.save()
 
     return JsonResponse({"message": "Updated report {0}, section {1}.".format(report_pk, section_pk)})
+
