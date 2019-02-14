@@ -55,7 +55,7 @@ def get_fields(s_id):
         data = {
             "field_name": i.field_name,
             "label": i.label,
-            "type": i.type,
+            "field_type": i.field_type,
             "number": i.number,
             "value": value
         }
@@ -92,7 +92,7 @@ def report(request):
         for key in section.fields:
             field = section.fields[key]
             f = Field.objects.create(section_id=s, field_name=key, label=field['label'],
-                                     number=j, type=field['type'], completed=False)
+                                     number=j, field_type=field['field_type'], completed=False)
             f.save()
             j = j+1
     
