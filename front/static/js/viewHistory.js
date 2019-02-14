@@ -197,7 +197,7 @@ function createCollapsibleCardBody(key, form, type, sectionDescription, sectionC
 
 function createReportForm(parsedData, type) {
     let modalBody;
-    let modalLabl;
+    let modalLabel;
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
 
