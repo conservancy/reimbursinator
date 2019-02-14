@@ -169,7 +169,6 @@ def section(request, report_pk, section_pk):
 
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
-        "request.data": request.data
     }
 
     return JsonResponse(data)
