@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
-# import json
 
 
 # function that prints all the reports
@@ -156,49 +155,7 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    json_input = {
-    "fields": [
-        {
-            "id": 178,
-            "value": "2016-05-22",
-            "type": "date"
-        },
-        {
-            "id": 179,
-            "value": "2016-05-22",
-            "type": "date"
-        },
-        {
-            "id": 180,
-            "value": 3.14,
-            "type": "decimal"
-        },
-        {
-            "id": 181,
-            "value": 10000,
-            "type": "integer"
-        },
-        {
-            "id": 182,
-            "value": True,
-            "type": "boolean"
-        },
-    ]
-}
-
-    '''
-    1) decode JSON object into dictionaries
-    2) iterate through fields (for loop)? 
-    3) in each iteration, check for data type
-    4) in the datatype, update the database
-    4a) update = field_set.get(id=request.data.id) 
-    4b) update.data_type = request.data["value"]
-    '''
-
-    # print("request data: {}".format(type(request.body)))
-    # json.loads()
-
-    for v in json_input["fields"]:
+    for v in request.data["fields"]:
         update_field = Field.objects.get(id=v["id"])
 
         if v["type"] == "boolean":
