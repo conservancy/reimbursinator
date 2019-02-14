@@ -185,8 +185,8 @@ def section(request, report_pk, section_pk):
                     request.data[key] == "" or
                     request.data[key] is None
             ):
-                update_field.data_date = datetime.date.today()
-                # update_field.data_date = None
+                # update_field.data_date = datetime.date.today()
+                update_field.data_date = None
             else:
                 update_field.data_date = request.data[key]
 
