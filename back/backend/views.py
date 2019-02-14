@@ -155,28 +155,59 @@ def report_detail(request, report_pk):
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
-    # first enter sections
-    for s in request.data["sections"]:
-        # check for match
-        if s["id"] == section_pk:
-            # begin updating fields
-            for v in s["fields"]:
-                update_field = Field.objects.get(id=v["id"])
 
-                if v["type"] == "boolean":
-                    update_field.data_bool = v["value"]
-                if v["type"] == "decimal":
-                    update_field.data_decimal = v["value"]
-                if v["type"] == "date":
-                    update_field.data_date = v["value"]
-                if v["type"] == "file":
-                    update_field.data_file = v["value"]
-                if v["type"] == "string":
-                    update_field.data_string = v["value"]
-                if v["type"] == "integer":
-                    update_field.data_integer = v["value"]
+    for key in request.data:
+        update_field = Field.objects.get(section_id=section_pk, field_name=key)
 
-                update_field.save()
+        if update_field.type == "boolean":
+            # flight check
+            if request.data[key] == "on":
+                update_field.data_bool = True
+            elif request.data[key] == "off":
+                update_field.data_bool = False
+            # everything else
+            else:
+                update_field.data_bool = request.data[key]
+
+        if update_field.type == "decimal":
+            # initialize to 0
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update_field.data_decimal = 0.0
+            else:
+                update_field.data_decimal = request.data[key]
+
+        if update_field.type == "date":
+            # initialize to today's date
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update_field.data_date = datetime.date.today()
+                # update_field.data_date = None
+            else:
+                update_field.data_date = request.data[key]
+
+        if update_field.type == "file":
+            update_field.data_file = request.data[key]
+
+        if update_field.type == "string":
+            update_field.data_string = request.data[key]
+
+        if update_field.type == "integer":
+            # initialize to 0
+            if (
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update_field.data_integer = 0
+            else:
+                update_field.data_integer = request.data[key]
+
+        update_field.save()
+
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
         "request.data": request.data
