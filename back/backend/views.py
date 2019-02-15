@@ -1,8 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 
 # function that prints all the reports
@@ -233,14 +235,15 @@ def section(request, report_pk, section_pk):
     complete = section_complete(section_pk)
     s = Section.objects.get(id=section_pk)
     if complete:
-        # s = Section.objects.get(id=section_pk)
         s.completed = True
         s.save()
+    else:
+        s.completed = False
 
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
         "section completion": s.completed,
-        "request_data": request.data
+        "request_data": "{}".format(request.data)
     }
     return JsonResponse(data)
 
