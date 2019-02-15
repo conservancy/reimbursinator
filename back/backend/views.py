@@ -210,13 +210,15 @@ def section(request, report_pk, section_pk):
 
     # update section boolean to complete
     complete = section_complete(section_pk)
+    s = Section.objects.get(id=section_pk)
     if complete:
-        s = Section.objects.get(id=section_pk)
+        # s = Section.objects.get(id=section_pk)
         s.completed = True
         s.save()
 
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
+        "section completion": s.completed,
         "request_data": request.data
     }
     return JsonResponse(data)
@@ -237,6 +239,7 @@ def section_complete(section_pk):
                 return True
         elif i.field_type == "decimal":
             if not(
+                    i.data_decimal == 0.0 or
                     i.data_decimal == "" or
                     i.data_decimal is None
             ):
@@ -261,6 +264,7 @@ def section_complete(section_pk):
                 return True
         elif i.field_type == "integer":
             if not(
+                    i.data_integer == 0 or
                     i.data_integer == "" or
                     i.data_integer is None
             ):
