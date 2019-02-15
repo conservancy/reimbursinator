@@ -79,7 +79,7 @@ pol.add_section(flight_section)
 lodging_section = Section(
     title="Hotel Info",
     html_description="<p>Enter hotel info here.\nPer diem rates can be found at "
-                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
+                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates' target="_blank">this link</a></p>",
     fields={
         "check-in_date": {"number": 0, "label": "Check-in date", "field_type": "date"},
         "check-out_date": {"number": 1, "label": "Check-out date", "field_type": "date"},
@@ -126,7 +126,7 @@ pol.add_section(transport_section)
 per_diem_section = Section(
     title="Per Diem",
     html_description="<p>Enter info about meals and incidentals here.\nPer diem rates can be found at "
-                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
+                     "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates' target="_blank">this link</a></p>",
     fields={
         "duration": {"number":0, "label": "How many days was your trip?", "field_type": "integer"},
         "rate": {"number":1, "label": "What is the per diem rate for your destination?", "field_type": "decimal"},
