@@ -28,15 +28,31 @@ def get_sections(r_id):
     # create a dict of arrays for section
     section_set = {"sections": []}
     queryset = Section.objects.filter(report_id=r_id)
-    for i in queryset:
+    for index in range(len(queryset)):
+        i = queryset[index]
         data = {
             "id": i.id,
             "completed": i.completed,
             "title": i.title,
             "html_description": i.html_description,
+            "rule_violations": [],
         }
         # append the fields for corresponding section
         data.update(get_fields(i.id))
+        # process rules from the policy file if the section is completed
+        if i.completed:
+            rules = pol.sections[index].rules
+            for rule in rules:
+                try:
+                    named_fields = generate_named_fields_for_section(data['fields'])
+                    if not rule['rule'](data, named_fields):
+                        info = {
+                            "label": rule['title'],
+                            "rule_break_text": rule['rule_break_text'],
+                        }
+                        data['rule_violations'].append(info)
+                except Exception as e:
+                    print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
         # append section to the array
         section_set["sections"].append(data.copy())
 
@@ -66,6 +82,14 @@ def get_fields(s_id):
 
     return field_set
 
+
+def generate_named_fields_for_section(fields):
+    result = {}
+    for field in fields:
+        key = field['field_name']
+        value = field['value']
+        result[key] = value
+    return result
 
 # API Endpoints
 @api_view(['POST'])

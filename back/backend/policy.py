@@ -45,7 +45,7 @@ general_section = Section(
 
 general_section.add_rule(
     title="Destination city check",
-    rule=lambda report, section: section.field.destination == "Timbuktu",
+    rule=lambda report, fields: fields['destination'] == "Timbuktu",
     rule_break_text="What did the cowboy say about Tim, his wild horse?"
 )
 
@@ -68,7 +68,7 @@ flight_section = Section(
 
 flight_section.add_rule(
     title="Airline fare pre-approval check",
-    rule=lambda report, section: section.fields.fare < 500, 
+    rule=lambda report, fields: fields['fare'] < 500, 
     rule_break_text="Fares cannot be more than $500"
 )
 
@@ -88,14 +88,14 @@ lodging_section = Section(
     }
 )
 
-def nightly_rate_check(report, section):
-    checkin_date = date(section.fields.checkin_date)
-    checkout_date = date(section.fields.checkout_date)
+def nightly_rate_check(report, fields):
+    checkin_date = date(fields['checkin_date'])
+    checkout_date = date(fields['checkout_date'])
     duration = checkout_date - checkin_date
-    return section.fields.cost <= duration * section.fields.rate
+    return fields['cost'] <= duration * fields['rate']
 
 lodging_section.add_rule(
-    title="",
+    title="Average nightly rate",
     rule=nightly_rate_check,
     rule_break_text="The average nightly rate cannot be more than the USGSA rate."
 )
@@ -108,14 +108,14 @@ transport_section = Section(
     title="Local Transportation",
     html_description="<p>How much did you spend on local transportation, in total?</p>",
     fields={
-        "duration": {"label": "How many days was your trip?", "field_type": "decimal"},
+        "duration": {"label": "How many days was your trip?", "field_type": "integer"},
         "cost": {"label": "Total cost", "field_type": "decimal"}
     }
 )
 
 transport_section.add_rule(
     title="Total cost check",
-    rule=lambda report, section: section.fields.cost <= section.fields.duration * 10,
+    rule=lambda report, fields: fields['cost'] <= fields['duration'] * 10,
     rule_break_text="Local transportation costs must be less than $10 per day, on average."
 )
 
@@ -136,7 +136,7 @@ per_diem_section = Section(
 
 per_diem_section.add_rule(
     title="Per Diem Cost Check",
-    rule=lambda report, section: section.fields.cost <= section.fields.duration * section.fields.rate,
+    rule=lambda report, fields: fields['cost'] <= fields['duration'] * fields['rate'],
     rule_break_text="The average cost per day for per diem expenses cannot be more than the rate specified by the USGSA."
 )
 
