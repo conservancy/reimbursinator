@@ -229,9 +229,67 @@ def section(request, report_pk, section_pk):
 
         update.save()
 
+    # update section boolean to complete
+    complete = section_complete(section_pk)
+    s = Section.objects.get(id=section_pk)
+    if complete:
+        # s = Section.objects.get(id=section_pk)
+        s.completed = True
+        s.save()
+
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
+        "section completion": s.completed,
         "request_data": request.data
     }
     return JsonResponse(data)
 
+# function checks if a field is filled and
+# returns boolean accordingly
+def section_complete(section_pk):
+    # grab field set
+    check_fields = Field.objects.filter(section_id=section_pk)
+
+    # return true if any field is filled
+    for i in check_fields:
+        if i.field_type == "boolean":
+            if not(
+                    i.data_bool == "" or
+                    i.data_bool is None
+            ):
+                return True
+        elif i.field_type == "decimal":
+            if not(
+                    i.data_decimal == 0.0 or
+                    i.data_decimal == "" or
+                    i.data_decimal is None
+            ):
+                return True
+        elif i.field_type == "date":
+            if not(
+                    i.data_date == "" or
+                    i.data_date is None
+            ):
+                return True
+        elif i.field_type == "file":
+            if not(
+                    i.data_file == "" or
+                    i.data_file is None
+            ):
+                return True
+        elif i.field_type == "string":
+            if not(
+                    i.data_string == "" or
+                    i.data_string is None
+            ):
+                return True
+        elif i.field_type == "integer":
+            if not(
+                    i.data_integer == 0 or
+                    i.data_integer == "" or
+                    i.data_integer is None
+            ):
+                return True
+
+    # return false if no field is filled
+    return False

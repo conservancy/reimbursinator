@@ -128,7 +128,7 @@ per_diem_section = Section(
     html_description="<p>Enter info about meals and incidentals here.\nPer diem rates can be found at "
                      "<a href='https://www.gsa.gov/travel/plan-book/per-diem-rates'>this link</a></p>",
     fields={
-        "duration": {"label": "How many days was your trip?", "field_type": "decimal"},
+        "duration": {"label": "How many days was your trip?", "field_type": "integer"},
         "rate": {"label": "What is the per diem rate for your destination?", "field_type": "decimal"},
         "cost": {"label": "Total Cost for meals and incidentals", "field_type": "decimal"}
     }
