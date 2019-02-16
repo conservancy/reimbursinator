@@ -4,6 +4,10 @@ import datetime
 import ntpath
 
 class Report(models.Model):
+    """
+    This model represents an expense report that can be
+    created, updated and submitted by a user.
+    """
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
     date_created = models.DateTimeField('date created', default=datetime.date.today)
@@ -11,9 +15,17 @@ class Report(models.Model):
     submitted = models.BooleanField(default=False)
 
     def __str__(self):
+        """
+        For debugging and display in admin view.
+        """
         return self.title
 
 class Section(models.Model):
+    """
+    This model represents a logical division of a report,
+    containing its own fields and rules that apply to those
+    fields.
+    """
     report_id = models.ForeignKey(Report, on_delete=models.CASCADE)
     auto_submit = models.BooleanField(default=False)
     required = models.BooleanField(default=False)
@@ -23,9 +35,18 @@ class Section(models.Model):
     number = models.IntegerField()
 
     def __str__(self):
+        """
+        For debugging and display in admin view.
+        """
         return "{0}(#{1})".format(self.title, self.number)
 
 class Field(models.Model):
+    """
+    This model contains a piece of data entered by the user.
+    Depending on the type of the data ( boolean, decimal,
+    date, file, string or integer), different table columns
+    will be used to store the data.
+    """
     section_id = models.ForeignKey(Section, on_delete=models.CASCADE)
     field_name = models.CharField(max_length=512, default="field")
     label = models.CharField(max_length=512)
@@ -39,9 +60,10 @@ class Field(models.Model):
     data_string = models.TextField(default='', blank=True)
     data_integer = models.IntegerField(default=0, blank=True)
 
-    # function that prints the string representation
-    # on the api?
     def __str__(self):
+        """
+        For debugging and display in the admin view.
+        """
         if self.field_type == "boolean":
             if self.data_bool:
                 return "True"
@@ -58,10 +80,11 @@ class Field(models.Model):
         elif self.field_type == "integer":
             return "{}".format(self.data_integer)
 
-
-    # function that gets corresponding
-    # data type
     def get_datatype(self):
+        """
+        Returns the data corresponding to the type of the
+        field.
+        """
         if self.field_type == "boolean":
             if self.data_bool:
                 return True
@@ -79,8 +102,9 @@ class Field(models.Model):
         elif self.field_type == "integer":
             return self.data_integer
 
-    # function that accommodates if
-    # path has slash at end
     def path_leaf(self, path):
+        """
+        Function accommodating path with slash at end.
+        """
         dir_path, name = ntpath.split(path)
         return name or ntpath.basename(dir_path)

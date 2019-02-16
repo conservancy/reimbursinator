@@ -1,19 +1,42 @@
 from datetime import date
 
-#### Classes for policy, sections.
+#### Classes for policy, sections. Do not edit these.
+#####################################################
 
 class Policy():
-
+    """
+    Represents the policy for the company/organization.
+    """
     def __init__(self):
+        """
+        Creates a new Policy object.
+        """
         self.sections = []
 
     def add_section(self, section):
+        """
+        Appends the specified section to the policy in order.
+
+        section -- Section object to append.
+        """
         self.sections.append(section)
 
 class Section():
-    
-    def __init__(self, title="Section", html_description="", required=False,
-                 auto_submit=False, fields={}):
+    """
+    Represents a logical division of te policy, containing
+    data fields for users to enter, and rules which
+    apply to those fields.
+    """
+    def __init__(self, title="Section", html_description="", required=False, auto_submit=False, fields={}):
+        """
+        Creates a new Section object.
+
+        title -- This is the name for the section the user sees.
+        html_description -- This is html displayed beneath the title.
+        required -- If True, user must complete before submitting.
+        auto_submit -- Completing this section notifies the administrator.
+        fields -- A python object of fields the user should enter.
+        """
         self.title = title
         self.html_description = html_description
         self.required = required
@@ -22,6 +45,13 @@ class Section():
         self.rules = []
 
     def add_rule(self, title="Rule", rule=None, rule_break_text=""):
+        """
+        Assigns a new rule to the section.
+
+        title -- Administrative title for the rule.
+        rule -- lambda expression which must evaluate true to pass the rule.
+        rule_break_text -- Error message to show the user when rule is broken.
+        """
         rule = {
             "title": title,
             "rule": rule,
@@ -29,9 +59,10 @@ class Section():
         }
         self.rules.append(rule)
 
-#### Policy configuration begin here
-
 pol = Policy()
+
+#### Policy configuration begins here. Edit below this line.
+############################################################
 
 #### General
 #### Section 0
