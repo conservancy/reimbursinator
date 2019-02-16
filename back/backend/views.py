@@ -116,13 +116,11 @@ def report(request):
         s.save()
 
         # Create the fields
-        j = 0
         for key in section.fields:
             field = section.fields[key]
             f = Field.objects.create(section_id=s, field_name=key, label=field['label'],
-                                     number=j, field_type=field['field_type'], completed=False)
+                                     number=field['number'], field_type=field['field_type'], completed=False)
             f.save()
-            j = j+1
     
     # Return the newly created report
     data = get_reports(report.id)
