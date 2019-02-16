@@ -97,6 +97,18 @@ function createFormGroup(sectionIdStr, field) {
             formGroup.appendChild(div);
             break;
         case "date":
+            input.type = "date";
+            input.placeholder = "mm-dd-yyyy";
+            if (field.value === "None") {
+                input.value = "";
+            } else {
+                input.value = field.value;
+            }
+            input.classList.add("form-control");
+            formGroup.appendChild(label);
+            div.appendChild(input)
+            formGroup.appendChild(div);
+            break;
         case "string":
             input.type = "text";
             input.value = field.value;
@@ -107,7 +119,11 @@ function createFormGroup(sectionIdStr, field) {
             break;
         case "decimal":
             input.type = "text";
-            input.value = field.value;
+            if (field.value === "0.00") {
+                input.value = "";
+            } else {
+                input.value = field.value;
+            }
             input.classList.add("form-control");
             input.pattern = "\\d+(\\.\\d{2})?";
             formGroup.appendChild(label);
@@ -116,7 +132,11 @@ function createFormGroup(sectionIdStr, field) {
             break;
         case "integer":
             input.type = "number";
-            input.value = field.value;
+            if (field.value === 0) {
+                input.value = "";
+            } else {
+                input.value = field.value;
+            }
             input.classList.add("form-control");
             input.step = 1;
             input.min = 0;
@@ -462,6 +482,16 @@ if (newReportForm) {
         this.reset();
     });
 }
+
+document.addEventListener("input", function(event) {
+    if (event.target.type === "date") {
+        if (!moment(event.target.value, "YYYY-MM-DD", true).isValid()) {
+            event.target.setCustomValidity("Invalid date format");
+        } else {
+            event.target.setCustomValidity("");
+        }
+    }
+});
 
 document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {

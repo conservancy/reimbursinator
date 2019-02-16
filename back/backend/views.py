@@ -87,6 +87,10 @@ def get_fields(s_id):
 
 
 def generate_named_fields_for_section(fields):
+    '''
+    Converts a section's field data into key-value pairs
+    for use in policy rule lambda functions.
+    '''
     result = {}
     for field in fields:
         key = field['field_name']
@@ -145,10 +149,22 @@ def reports(request):
 
     return JsonResponse(report_set)
 
+def user_owns_report(user, report):
+    '''
+    Returns true if the specified user is owner of the report
+    '''
+    report_to_check = Report.objects.filter(id=report)
+    if len(report_to_check) < 1:
+        return False
+    return report_to_check[0].user_id == user
 
 # actions for an individual report
 @api_view(['GET', 'PUT', 'DELETE'])
 def report_detail(request, report_pk):
+    # Check that the user owns the report
+    if not user_owns_report(user=request.user, report=report_pk):
+        return JsonResponse({"message": "Current user does not own the specified report."}, status=401)
+
     # view the report
     if request.method == 'GET':
         data = get_reports(report_pk)
@@ -176,10 +192,22 @@ def report_detail(request, report_pk):
         r.delete()
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
 
+def user_owns_section(user, section):
+    '''
+    Returns true if the specified user is owner of the section
+    '''
+    section_to_check = Section.objects.filter(id=section)
+    if len(section_to_check) < 1:
+        return False
+    report_to_check = section_to_check[0].report_id
+    return report_to_check.user_id == user
 
 # update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
+    # Check that the user owns the report
+    if not user_owns_section(user=request.user, section=section_pk):
+        return JsonResponse({"message": "Current user does not own the specified section."}, status=401)
 
     for key in request.data:
         # get the matching field object
@@ -250,15 +278,18 @@ def section(request, report_pk, section_pk):
     s = Section.objects.get(id=section_pk)
     if complete:
         s.completed = True
-        s.save()
     else:
         s.completed = False
+    s.save()
 
+    # get section and field details
     data = {
-        "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
-        "section completion": s.completed,
-        "request_data": "{}".format(request.data)
+        "id": s.id,
+        "completed": s.completed,
+        "title": s.title,
+        "html_description": s.html_description,
     }
+    data.update(get_fields(s.id))
     return JsonResponse(data)
 
 # function checks if a field is complete
