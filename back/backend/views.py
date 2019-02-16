@@ -166,6 +166,17 @@ def reports(request):
 
     return JsonResponse(report_set)
 
+def user_owns_report(user, report):
+    """
+    Returns true if the specified user is owner of the report.
+
+    report -- ID of the report to check.
+    """
+    report_to_check = Report.objects.filter(id=report)
+    if len(report_to_check) < 1:
+        return False
+    return report_to_check[0].user_id == user
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def report_detail(request, report_pk):
     """
@@ -174,6 +185,10 @@ def report_detail(request, report_pk):
 
     report_pk -- ID of the report to carry out the action on.
     """
+    # Check that the user owns the report
+    if not user_owns_report(user=request.user, report=report_pk):
+        return JsonResponse({"message": "Current user does not own the specified report."}, status=401)
+
     # GET: Retrieves a json representation of the specified report
     if request.method == 'GET':
         data = get_report(report_pk)
@@ -203,13 +218,29 @@ def report_detail(request, report_pk):
         r.delete()
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
 
+def user_owns_section(user, section):
+    """
+    Returns true if the specified user is owner of the section.
+    
+    section -- ID of the section to check.
+    """
+    section_to_check = Section.objects.filter(id=section)
+    if len(section_to_check) < 1:
+        return False
+    report_to_check = section_to_check[0].report_id
+    return report_to_check.user_id == user
+
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
     """
     Updates the specified section with new data.
-
+    
     section_pk -- Section for which the data should be updated.
     """
+    # Check that the user owns the report
+    if not user_owns_section(user=request.user, section=section_pk):
+        return JsonResponse({"message": "Current user does not own the specified section."}, status=401)
+
     for key in request.data:
         # get the matching field object
         update = Field.objects.get(section_id=section_pk, field_name=key)
