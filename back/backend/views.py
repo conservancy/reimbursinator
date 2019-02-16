@@ -1,8 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 
 # function that prints all the reports
@@ -69,6 +71,7 @@ def get_fields(s_id):
         # function that gets the corresponding datatype
         value = Field.get_datatype(i)
         data = {
+            "completed": i.completed,
             "field_name": i.field_name,
             "label": i.label,
             "field_type": i.field_type,
@@ -190,6 +193,7 @@ def section(request, report_pk, section_pk):
                 update.data_bool = True
             elif request.data[key] == "false":
                 update.data_bool = False
+            update.completed = True
 
         if update.field_type == "decimal":
             # initialize to 0
@@ -199,6 +203,7 @@ def section(request, report_pk, section_pk):
             ):
                 update.data_decimal = 0.0
             else:
+                update.completed = True
                 update.data_decimal = request.data[key]
 
         if update.field_type == "date":
@@ -209,13 +214,25 @@ def section(request, report_pk, section_pk):
             ):
                 update.data_date = None
             else:
+                update.completed = True
                 update.data_date = request.data[key]
 
         if update.field_type == "file":
-            update.data_file = request.data[key]
+            if not(
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update.completed = True
+                update.data_file = request.data[key]
 
         if update.field_type == "string":
-            update.data_string = request.data[key]
+            if not(
+                    request.data[key] == "" or
+                    request.data[key] is None
+            ):
+                update.completed = True
+                update.data_string = request.data[key]
+
 
         if update.field_type == "integer":
             # initialize to 0
@@ -225,6 +242,7 @@ def section(request, report_pk, section_pk):
             ):
                 update.data_integer = 0
             else:
+                update.completed = True
                 update.data_integer = request.data[key]
 
         update.save()
@@ -233,63 +251,25 @@ def section(request, report_pk, section_pk):
     complete = section_complete(section_pk)
     s = Section.objects.get(id=section_pk)
     if complete:
-        # s = Section.objects.get(id=section_pk)
         s.completed = True
         s.save()
+    else:
+        s.completed = False
 
     data = {
         "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
         "section completion": s.completed,
-        "request_data": request.data
+        "request_data": "{}".format(request.data)
     }
     return JsonResponse(data)
 
-# function checks if a field is filled and
-# returns boolean accordingly
+# function checks if a field is complete
 def section_complete(section_pk):
     # grab field set
     check_fields = Field.objects.filter(section_id=section_pk)
 
-    # return true if any field is filled
+    # return true if any field is complete
     for i in check_fields:
-        if i.field_type == "boolean":
-            if not(
-                    i.data_bool == "" or
-                    i.data_bool is None
-            ):
-                return True
-        elif i.field_type == "decimal":
-            if not(
-                    i.data_decimal == 0.0 or
-                    i.data_decimal == "" or
-                    i.data_decimal is None
-            ):
-                return True
-        elif i.field_type == "date":
-            if not(
-                    i.data_date == "" or
-                    i.data_date is None
-            ):
-                return True
-        elif i.field_type == "file":
-            if not(
-                    i.data_file == "" or
-                    i.data_file is None
-            ):
-                return True
-        elif i.field_type == "string":
-            if not(
-                    i.data_string == "" or
-                    i.data_string is None
-            ):
-                return True
-        elif i.field_type == "integer":
-            if not(
-                    i.data_integer == 0 or
-                    i.data_integer == "" or
-                    i.data_integer is None
-            ):
-                return True
-
-    # return false if no field is filled
+        if i.completed:
+            return True
     return False
