@@ -278,15 +278,18 @@ def section(request, report_pk, section_pk):
     s = Section.objects.get(id=section_pk)
     if complete:
         s.completed = True
-        s.save()
     else:
         s.completed = False
+    s.save()
 
+    # get section and field details
     data = {
-        "message": "Updated report {0}, section {1}.".format(report_pk, section_pk),
-        "section completion": s.completed,
-        "request_data": "{}".format(request.data)
+        "id": s.id,
+        "completed": s.completed,
+        "title": s.title,
+        "html_description": s.html_description,
     }
+    data.update(get_fields(s.id))
     return JsonResponse(data)
 
 # function checks if a field is complete
