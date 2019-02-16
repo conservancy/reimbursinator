@@ -198,7 +198,7 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
         sectionAlert.innerHTML = "This section is complete";
     } else {
         collapseDiv.classList.add("collapse", "show");
-        sectionAlert.classList.add("alert", "alert-danger");
+        sectionAlert.classList.add("alert", "alert-warning");
         sectionAlert.innerHTML = "This section is not complete";
     }
 
@@ -218,19 +218,19 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
 }
 
 function createCardFooter(ruleViolations) {
-    const cardFooter = document.createElement("div");
-    cardFooter.classList.add("card-footer");
-
     if (ruleViolations.length === 0) {
-        return cardFooter;
+        return null;
     }
 
+    const cardFooter = document.createElement("div");
+    cardFooter.classList.add("card-footer");
     const violationMessage = document.createElement("div");
     violationMessage.classList.add("alert", "alert-danger");
-    const h5 = document.createElement("h5");
-    h5.innerHTML = "Rule Violations";
-    h5.classList.add("alert-heading");
-    violationMessage.appendChild(h5);
+    const heading = document.createElement("div");
+    heading.innerHTML = "Rule Violations";
+    heading.classList.add("alert-heading");
+    violationMessage.appendChild(heading);
+    violationMessage.appendChild(document.createElement("hr"));
 
     for (let i = 0; i < ruleViolations.length; i++) {
         let violation = document.createElement("p");
@@ -310,8 +310,9 @@ function createReportForm(parsedData, type) {
         // Create collapsible card body, append form to it, append card to accordion
         let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
             sections[i].html_description, sections[i].completed);
-        if (sections[i].rule_violations.length > 0) {
-            cardBody.appendChild(createCardFooter(sections[i].rule_violations));
+        let cardFooter = createCardFooter(sections[i].rule_violations);
+        if (cardFooter) {
+            cardBody.appendChild(cardFooter);
         }
         let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title)
         collapsibleCard.appendChild(cardBody);
