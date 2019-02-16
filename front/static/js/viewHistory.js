@@ -166,35 +166,65 @@ function createCollapsibleCard(sectionIdStr, sectionTitle) {
 
 function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted) {
     // Create wrapper div
-    const div = document.createElement("div");
-    div.id = sectionIdStr + "collapse";
+    const collapseDiv = document.createElement("div");
+    collapseDiv.id = sectionIdStr + "collapse";
     const sectionAlert = document.createElement("div");
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
 
     if (sectionCompleted) {
-        div.classList.add("collapse");
+        collapseDiv.classList.add("collapse");
         sectionAlert.classList.add("alert", "alert-success");
         sectionAlert.innerHTML = "This section is complete";
     } else {
-        div.classList.add("collapse", "show");
+        collapseDiv.classList.add("collapse", "show");
         sectionAlert.classList.add("alert", "alert-danger");
         sectionAlert.innerHTML = "This section is not complete";
     }
 
     if (type === reportType.EDIT) {
-        div.setAttribute("data-parent", "#editReportAccordion");
+        collapseDiv.setAttribute("data-parent", "#editReportAccordion");
     } else {
-        div.setAttribute("data-parent", "#newReportAccordion");
+        collapseDiv.setAttribute("data-parent", "#newReportAccordion");
     }
 
     // Create card body. Append form to body, body to wrapper div
     cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription);
     cardBody.appendChild(form);
-    div.appendChild(cardBody);
+    collapseDiv.appendChild(cardBody);
 
-    return div;
+    return collapseDiv;
+}
+
+function createCardFooter(ruleViolations) {
+    const cardFooter = document.createElement("div");
+    cardFooter.classList.add("card-footer");
+
+    if (ruleViolations.length === 0) {
+        return cardFooter;
+    }
+
+    const violationMessage = document.createElement("div");
+    violationMessage.classList.add("alert", "alert-danger");
+    const h5 = document.createElement("h5");
+    h5.innerHTML = "Rule Violations";
+    h5.classList.add("alert-heading");
+    violationMessage.appendChild(h5);
+
+    for (let i = 0; i < ruleViolations.length; i++) {
+        let violation = document.createElement("p");
+        let violationLabel = document.createElement("strong");
+        violationLabel.innerHTML = ruleViolations[i].label;
+        violation.appendChild(violationLabel);
+        violation.appendChild(document.createElement("br"));
+        let ruleBreakText = document.createTextNode(ruleViolations[i].rule_break_text);
+        violation.appendChild(ruleBreakText);
+        violationMessage.appendChild(violation);
+    }
+    
+    cardFooter.appendChild(violationMessage);
+    return cardFooter;
 }
 
 function createReportForm(parsedData, type) {
@@ -224,16 +254,14 @@ function createReportForm(parsedData, type) {
     }
 
     // Add report title and date
-    const reportTitle = parsedData.title;
-    modalLabel.innerHTML = reportTitle;
+    modalLabel.innerHTML = parsedData.title;
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
     for (let i = 0; i < sections.length; i++) {
-        let sectionIdStr = "section-" + sections[i].id + "-";
-        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title)
 
         // Create a new form with the section key index as id
+        let sectionIdStr = "section-" + sections[i].id + "-";
         let form = document.createElement("form");
         form.classList.add("form", "section-form");
         form.id = sectionIdStr + "form";
@@ -260,7 +288,12 @@ function createReportForm(parsedData, type) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr, sections[i].html_description, sections[i].completed);
+        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
+            sections[i].html_description, sections[i].completed);
+        if (sections[i].rule_violations.length > 0) {
+            cardBody.appendChild(createCardFooter(sections[i].rule_violations));
+        }
+        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title)
         collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
