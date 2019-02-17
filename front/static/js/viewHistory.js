@@ -468,8 +468,6 @@ document.addEventListener("input", function(event) {
 document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {
         event.preventDefault();
-        console.log(event.target);
-        console.log(event.target.lastElementChild);
         let saveButton = event.target.lastElementChild;
         saveButton.disabled = true;
         saveButton.innerHTML = "";
