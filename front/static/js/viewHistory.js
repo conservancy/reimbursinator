@@ -290,14 +290,19 @@ function createReportForm(parsedData, type) {
 
 function displayListOfReports(parsedData) {
     const reports = parsedData.reports;
+    const cardBody = document.querySelector(".card-body");
     const table = document.querySelector("table");
 
+    console.log(cardBody);
+    console.log(cardBody.firstElementChild);
+    cardBody.removeChild(cardBody.firstElementChild); // remove loading spinner
+    
     if (reports.length === 0) {
-        const cardBody = document.querySelector(".card-body");
-        const h4 = document.createElement("h4");
-        h4.innerHTML = "No reports found.";
-        h4.classList.add("text-center");
-        cardBody.insertBefore(h4, table);
+        cardBody.removeChild(table);
+        const h5 = document.createElement("h5");
+        h5.innerHTML = "No reports found.";
+        h5.classList.add("text-center");
+        cardBody.appendChild(h5);
     } else {
         const tbody = document.querySelector("tbody");
 
