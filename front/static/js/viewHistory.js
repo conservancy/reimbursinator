@@ -290,14 +290,15 @@ function createReportForm(parsedData, type) {
 
 function displayListOfReports(parsedData) {
     const reports = parsedData.reports;
+    const table = document.querySelector("table");
 
     if (reports.length === 0) {
         const cardBody = document.querySelector(".card-body");
-        const p = document.createElement("p");
-        p.innerHTML = "No reports found.";
-        cardBody.appendChild(p);
+        const h4 = document.createElement("h4");
+        h4.innerHTML = "No reports found.";
+        h4.classList.add("text-center");
+        cardBody.insertBefore(h4, table);
     } else {
-        const table = document.querySelector("table");
         const tbody = document.querySelector("tbody");
 
         // Insert data into the table row
