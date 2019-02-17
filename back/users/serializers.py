@@ -6,6 +6,10 @@ from allauth.account.utils import setup_user_email
 from django.utils.translation import gettext as _
 
 class RegisterSerializer(serializers.Serializer):
+    """
+    Custom serializer to allow users to register with only
+    their email address, first and last name, and password.
+    """
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
     first_name = serializers.CharField(required=True, write_only=True)
     last_name = serializers.CharField(required=True, write_only=True)
