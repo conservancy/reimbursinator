@@ -475,3 +475,10 @@ document.addEventListener("submit", function(event) {
         makeAjaxRequest("PUT", url, alertCallback, null, formData);
     }
 });
+
+// Jquery is required to handle this modal event
+$(document).ready(function(){
+    $("#newReportModal").on('hidden.bs.modal', function() {
+        location.reload(true);
+    });
+});
