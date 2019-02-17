@@ -9,11 +9,13 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
-function alertCallback(parsedData) {
+function saveSectionCallback(parsedData, saveButton) {
     alert(JSON.stringify(parsedData));
+    saveButton.innerHTML = "Save";
+    saveButton.disabled = false;
 }
 
-function makeAjaxRequest(method, url, callback, type, payload) {
+function makeAjaxRequest(method, url, callback, optional, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
@@ -39,7 +41,7 @@ function makeAjaxRequest(method, url, callback, type, payload) {
                 console.log(method + " SUCCESS!");
                 console.log("Server response:\n" + this.response);
                 let parsedData = JSON.parse(this.response);
-                type ? callback(parsedData, type) : callback(parsedData);
+                optional ? callback(parsedData, optional) : callback(parsedData);
             } else {
                 console.error(method + " FAILURE!");
                 console.error("Server status: " + this.status);
@@ -467,9 +469,17 @@ document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {
         event.preventDefault();
         console.log(event.target);
+        console.log(event.target.lastElementChild);
+        let saveButton = event.target.lastElementChild;
+        saveButton.disabled = true;
+        saveButton.innerHTML = "";
+        let span = document.createElement("span");
+        span.classList.add("spinner-border", "spinner-border-sm");
+        saveButton.appendChild(span); 
+        saveButton.appendChild(document.createTextNode("  Saving..."));
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
-        makeAjaxRequest("PUT", url, alertCallback, null, formData);
+        makeAjaxRequest("PUT", url, saveSectionCallback, saveButton, formData);
     }
 });
 
