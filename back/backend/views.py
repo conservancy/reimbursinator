@@ -6,9 +6,12 @@ import os
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 
-
-# function that prints all the reports
-def get_reports(report_pk):
+def get_report(report_pk):
+    """
+    Returns a python object representation of the specified section.
+    
+    report_pk -- ID of the report to compile.
+    """
     queryset = Report.objects.filter(id=report_pk)
     for i in queryset:
         data = {
@@ -24,9 +27,12 @@ def get_reports(report_pk):
     # return JsonResponse(data)
     return data
 
-# function that gets all the sections
-# takes report_id param
 def get_sections(r_id):
+    """
+    Returns a python object array of sections for the specified report.
+
+    r_id -- ID of the report to compile sections for.
+    """
     # create a dict of arrays for section
     section_set = {"sections": []}
     queryset = Section.objects.filter(report_id=r_id)
@@ -60,9 +66,12 @@ def get_sections(r_id):
 
     return section_set
 
-# function that gets all the fields
-# takes section_id param
 def get_fields(s_id):
+    """
+    Returns a python object array of fields for the specified section.
+
+    s_id -- ID of the section to compile fields for.
+    """
     # create dict of arrays for fields
     field_set = {"fields": []}
     queryset = Field.objects.filter(section_id=s_id).order_by('number')
@@ -87,10 +96,12 @@ def get_fields(s_id):
 
 
 def generate_named_fields_for_section(fields):
-    '''
-    Converts a section's field data into key-value pairs
-    for use in policy rule lambda functions.
-    '''
+    """
+    Prepares a dictionary of key-value pairs based on the raw fields
+    passed in. Used to pass into the rule lambda functions.
+
+    fields -- Python object prepared by get_fields
+    """
     result = {}
     for field in fields:
         key = field['field_name']
@@ -98,13 +109,16 @@ def generate_named_fields_for_section(fields):
         result[key] = value
     return result
 
-# API Endpoints
 @api_view(['POST'])
 def report(request):
-    '''
-    Generate a new empty report and return it
-    '''
-    
+    """
+    Generates a new empty report for the current user and returns it
+    in json format. The title of the report should be provided as
+    follows:
+    {
+        "title": "Report Title Here"
+    }
+    """
     # Create the report
     report = Report.objects.create(user_id=request.user, title=request.data['title'],
                                    date_created=datetime.date.today())
@@ -127,12 +141,15 @@ def report(request):
             f.save()
     
     # Return the newly created report
-    data = get_reports(report.id)
+    data = get_report(report.id)
     return JsonResponse(data)
 
-# View the list of reports
 @api_view(['GET'])
 def reports(request):
+    """
+    Returns a condensed version of the current user's reports in json
+    format.
+    """
     report_set = {"reports": []}
     queryset = Report.objects.all().filter(user_id=request.user.id).order_by('date_created')
     for i in queryset:
@@ -150,31 +167,40 @@ def reports(request):
     return JsonResponse(report_set)
 
 def user_owns_report(user, report):
-    '''
-    Returns true if the specified user is owner of the report
-    '''
+    """
+    Returns true if the specified user is owner of the report.
+
+    report -- ID of the report to check.
+    """
     report_to_check = Report.objects.filter(id=report)
     if len(report_to_check) < 1:
         return False
     return report_to_check[0].user_id == user
 
-# actions for an individual report
 @api_view(['GET', 'PUT', 'DELETE'])
 def report_detail(request, report_pk):
+    """
+    Handler for individual report actions. Actions are divided into
+    GET, PUT, and DELETE requests.
+
+    report_pk -- ID of the report to carry out the action on.
+    """
     # Check that the user owns the report
     if not user_owns_report(user=request.user, report=report_pk):
         return JsonResponse({"message": "Current user does not own the specified report."}, status=401)
 
-    # view the report
+    # GET: Retrieves a json representation of the specified report
     if request.method == 'GET':
-        data = get_reports(report_pk)
+        data = get_report(report_pk)
         return JsonResponse(data)
 
-    # submit the report
+    # PUT: Submits a report to the administrator for review,
+    # and marks it as "submitted", after which changes may
+    # not be made.
     elif request.method == 'PUT':
         return JsonResponse({"message": "Report submitted."})
 
-    # Delete the report
+    # DELETE: Deletes a report from the user's account.
     elif request.method == 'DELETE':
         # get corresponding sections
         section_set = Section.objects.filter(report_id=report_pk)
@@ -193,18 +219,24 @@ def report_detail(request, report_pk):
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
 
 def user_owns_section(user, section):
-    '''
-    Returns true if the specified user is owner of the section
-    '''
+    """
+    Returns true if the specified user is owner of the section.
+    
+    section -- ID of the section to check.
+    """
     section_to_check = Section.objects.filter(id=section)
     if len(section_to_check) < 1:
         return False
     report_to_check = section_to_check[0].report_id
     return report_to_check.user_id == user
 
-# update a section with new data
 @api_view(['PUT'])
 def section(request, report_pk, section_pk):
+    """
+    Updates the specified section with new data.
+    
+    section_pk -- Section for which the data should be updated.
+    """
     # Check that the user owns the report
     if not user_owns_section(user=request.user, section=section_pk):
         return JsonResponse({"message": "Current user does not own the specified section."}, status=401)
@@ -288,12 +320,33 @@ def section(request, report_pk, section_pk):
         "completed": s.completed,
         "title": s.title,
         "html_description": s.html_description,
+        "rule_violations": [],
     }
     data.update(get_fields(s.id))
+    # process rules from the policy file if the section is completed
+    if s.completed:
+        rules = pol.sections[s.number].rules
+        for rule in rules:
+            try:
+                named_fields = generate_named_fields_for_section(data['fields'])
+                if not rule['rule'](data, named_fields):
+                    info = {
+                        "label": rule['title'],
+                        "rule_break_text": rule['rule_break_text'],
+                    }
+                    data['rule_violations'].append(info)
+            except Exception as e:
+                print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
     return JsonResponse(data)
 
-# function checks if a field is complete
 def section_complete(section_pk):
+    """
+    Returns True if any fields of the specified section have been
+    entered by the user. This means that entering even one field
+    will count the entire section as "complete".
+
+    section_pk -- ID of the section whose fields you wish to check.
+    """
     # grab field set
     check_fields = Field.objects.filter(section_id=section_pk)
 
