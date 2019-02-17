@@ -292,9 +292,6 @@ function displayListOfReports(parsedData) {
     const reports = parsedData.reports;
     const cardBody = document.querySelector(".card-body");
     const table = document.querySelector("table");
-
-    console.log(cardBody);
-    console.log(cardBody.firstElementChild);
     cardBody.removeChild(cardBody.firstElementChild); // remove loading spinner
     
     if (reports.length === 0) {
