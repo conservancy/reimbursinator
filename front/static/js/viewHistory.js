@@ -225,6 +225,12 @@ function createReportForm(parsedData, type) {
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
 
+    //submit button
+    const submitButton = document.querySelector(".submit-report-button");
+    if (submitButton) {
+        submitButton.setAttribute("data-rid", parsedData.report_pk);
+    }
+
     if (type === reportType.EDIT) {
         modalBody = document.querySelector("#editReportModalBody");
         modalLabel = document.querySelector("#editReportModalLabel");
@@ -295,7 +301,7 @@ function displayListOfReports(parsedData) {
     const cardBody = document.querySelector(".card-body");
     const table = document.querySelector("table");
     cardBody.removeChild(cardBody.firstElementChild); // remove loading spinner
-    
+
     if (reports.length === 0) {
         cardBody.removeChild(table);
         const h5 = document.createElement("h5");
@@ -427,6 +433,17 @@ document.addEventListener("click", function(event) {
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             makeAjaxRequest("GET", url, displayReport);
+        } else if (event.target.classList.contains("submit-report-button")) {
+            event.preventDefault();
+            //const title = document.querySelector("#editReportModalLabel").textContent;
+            const result = confirm("Are you sure you want to submit the report ?");
+            if (result) {
+                const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+                makeAjaxRequest("PUT", url, function(parsedData) {
+                    alert(parsedData.message);
+                    location.reload(true);
+                });
+            }
         } else if (event.target.classList.contains("delete-report")) {
             event.preventDefault();
             const title = document.querySelector("#editReportModalLabel").textContent;
@@ -473,7 +490,7 @@ document.addEventListener("submit", function(event) {
         saveButton.innerHTML = "";
         let span = document.createElement("span");
         span.classList.add("spinner-border", "spinner-border-sm");
-        saveButton.appendChild(span); 
+        saveButton.appendChild(span);
         saveButton.appendChild(document.createTextNode("  Saving..."));
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
