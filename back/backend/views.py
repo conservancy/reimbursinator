@@ -198,10 +198,20 @@ def report_detail(request, report_pk):
     # and marks it as "submitted", after which changes may
     # not be made.
     elif request.method == 'PUT':
+        rep = Report.objects.get(id=report_pk)
+        if rep.submitted == True:
+            return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=400)
+        rep.submitted = True;
+        rep.save()
+        # Send email here
+        #################
         return JsonResponse({"message": "Report submitted."})
 
     # DELETE: Deletes a report from the user's account.
     elif request.method == 'DELETE':
+        r = Report.objects.get(id=report_pk)
+        if r.submitted == True:
+            return JsonResponse({"message": "Cannot delete a report that has been submitted."}, status=400)
         # get corresponding sections
         section_set = Section.objects.filter(report_id=report_pk)
         for i in section_set:
@@ -213,7 +223,6 @@ def report_detail(request, report_pk):
                     path_name = str(j.data_file)
                     os.remove(path_name)
         # delete the full report and catch the title
-        r = Report.objects.get(id=report_pk)
         title = r.title
         r.delete()
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
@@ -240,6 +249,10 @@ def section(request, report_pk, section_pk):
     # Check that the user owns the report
     if not user_owns_section(user=request.user, section=section_pk):
         return JsonResponse({"message": "Current user does not own the specified section."}, status=401)
+
+    # Check that the report isn't submitted
+    if Section.objects.get(id=section_pk).report_id.submitted:
+        return JsonResponse({"message": "Cannot update a report that has been submitted."}, status=400)
 
     for key in request.data:
         # get the matching field object
