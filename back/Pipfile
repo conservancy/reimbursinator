@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "==2.1.5"
+django = ">=2.1.6"
 django-cors-headers = "==2.4.0"
 djangorestframework = "==3.8.2"
 django-rest-auth = "==0.9.3"
