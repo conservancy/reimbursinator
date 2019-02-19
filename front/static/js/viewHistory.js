@@ -9,11 +9,13 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
-function alertCallback(parsedData) {
+function saveSectionCallback(parsedData, saveButton) {
     alert(JSON.stringify(parsedData));
+    saveButton.innerHTML = "Save";
+    saveButton.disabled = false;
 }
 
-function makeAjaxRequest(method, url, callback, type, payload) {
+function makeAjaxRequest(method, url, callback, optional, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
 
@@ -39,7 +41,7 @@ function makeAjaxRequest(method, url, callback, type, payload) {
                 console.log(method + " SUCCESS!");
                 console.log("Server response:\n" + this.response);
                 let parsedData = JSON.parse(this.response);
-                type ? callback(parsedData, type) : callback(parsedData);
+                optional ? callback(parsedData, optional) : callback(parsedData);
             } else {
                 console.error(method + " FAILURE!");
                 console.error("Server status: " + this.status);
@@ -253,6 +255,12 @@ function createReportForm(parsedData, type) {
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
 
+    //submit button
+    const submitButton = document.querySelector(".submit-report-button");
+    if (submitButton) {
+        submitButton.setAttribute("data-rid", parsedData.report_pk);
+    }
+
     if (type === reportType.EDIT) {
         modalBody = document.querySelector("#editReportModalBody");
         modalLabel = document.querySelector("#editReportModalLabel");
@@ -324,14 +332,17 @@ function createReportForm(parsedData, type) {
 
 function displayListOfReports(parsedData) {
     const reports = parsedData.reports;
+    const cardBody = document.querySelector(".card-body");
+    const table = document.querySelector("table");
+    cardBody.removeChild(cardBody.firstElementChild); // remove loading spinner
 
     if (reports.length === 0) {
-        const cardBody = document.querySelector(".card-body");
-        const p = document.createElement("p");
-        p.innerHTML = "No reports found.";
-        cardBody.appendChild(p);
+        cardBody.removeChild(table);
+        const h5 = document.createElement("h5");
+        h5.innerHTML = "No reports found.";
+        h5.classList.add("text-center");
+        cardBody.appendChild(h5);
     } else {
-        const table = document.querySelector("table");
         const tbody = document.querySelector("tbody");
 
         // Insert data into the table row
@@ -456,6 +467,17 @@ document.addEventListener("click", function(event) {
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             makeAjaxRequest("GET", url, displayReport);
+        } else if (event.target.classList.contains("submit-report-button")) {
+            event.preventDefault();
+            //const title = document.querySelector("#editReportModalLabel").textContent;
+            const result = confirm("Are you sure you want to submit the report ?");
+            if (result) {
+                const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+                makeAjaxRequest("PUT", url, function(parsedData) {
+                    alert(parsedData.message);
+                    location.reload(true);
+                });
+            }
         } else if (event.target.classList.contains("delete-report")) {
             event.preventDefault();
             const title = document.querySelector("#editReportModalLabel").textContent;
@@ -497,9 +519,22 @@ document.addEventListener("input", function(event) {
 document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {
         event.preventDefault();
-        console.log(event.target);
+        let saveButton = event.target.lastElementChild;
+        saveButton.disabled = true;
+        saveButton.innerHTML = "";
+        let span = document.createElement("span");
+        span.classList.add("spinner-border", "spinner-border-sm");
+        saveButton.appendChild(span);
+        saveButton.appendChild(document.createTextNode("  Saving..."));
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
-        makeAjaxRequest("PUT", url, alertCallback, null, formData);
+        makeAjaxRequest("PUT", url, saveSectionCallback, saveButton, formData);
     }
+});
+
+// Jquery is required to handle this modal event
+$(document).ready(function(){
+    $("#newReportModal").on('hidden.bs.modal', function() {
+        location.reload(true);
+    });
 });
