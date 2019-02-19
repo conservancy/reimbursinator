@@ -472,12 +472,12 @@ document.addEventListener("submit", function(event) {
 
 //listener to submit report button
 function submitReport() {
-        event.preventDefault();
-        console.log(event.target);
+        //event.preventDefault();
+        //console.log(event.target);
         //May add title into confirm
         const result = confirm("Are you sure you want to submit the report ?");
         if (result) {
-          const url = getEndpointDomain() + "api/v1/report/rid";
+          const url = getEndpointDomain() + "api/v1/report/id";
           makeAjaxRequest("PUT", url, function alertSubmitCallback(){
             alert("Submitted!");
           });
