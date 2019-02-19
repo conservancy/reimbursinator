@@ -200,7 +200,7 @@ def report_detail(request, report_pk):
     elif request.method == 'PUT':
         rep = Report.objects.get(id=report_pk)
         if rep.submitted == True:
-            return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=400)
+            return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
         rep.submitted = True;
         rep.save()
         # Send email here
@@ -211,7 +211,7 @@ def report_detail(request, report_pk):
     elif request.method == 'DELETE':
         r = Report.objects.get(id=report_pk)
         if r.submitted == True:
-            return JsonResponse({"message": "Cannot delete a report that has been submitted."}, status=400)
+            return JsonResponse({"message": "Cannot delete a report that has been submitted."}, status=409)
         # get corresponding sections
         section_set = Section.objects.filter(report_id=report_pk)
         for i in section_set:
@@ -252,7 +252,7 @@ def section(request, report_pk, section_pk):
 
     # Check that the report isn't submitted
     if Section.objects.get(id=section_pk).report_id.submitted:
-        return JsonResponse({"message": "Cannot update a report that has been submitted."}, status=400)
+        return JsonResponse({"message": "Cannot update a report that has been submitted."}, status=409)
 
     for key in request.data:
         # get the matching field object
