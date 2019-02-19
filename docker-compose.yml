@@ -20,3 +20,12 @@ services:
       - NGINX_HOST=reimbursinator.com
       - NGINX_PORT=443
     command: /bin/bash -c "exec nginx -g 'daemon off;'"
+  admin:
+    build: ./admin
+    image: reimbursinator_admin
+    ports:
+      - "8445:445"
+    environment:
+      - NGINX_HOST=reimbursinator.com
+      - NGINX_PORT=445
+    command: /bin/bash -c "exec nginx -g 'daemon off;'"
