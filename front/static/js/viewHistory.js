@@ -13,6 +13,25 @@ function saveSectionCallback(parsedData, saveButton) {
     alert(JSON.stringify(parsedData));
     saveButton.innerHTML = "Save";
     saveButton.disabled = false;
+    const sectionState = document.querySelector("#section-" + parsedData.id + "-state");
+    if (sectionState && parsedData.completed) {
+        sectionState.classList = "fas fa-check-square";
+    } else {
+        sectionState.classList = "fas fa-exclamation-triangle";
+    }
+
+    const collapseDiv = document.querySelector("#section-" + parsedData.id + "-collapse");
+    const cardFooter = createCardFooter(parsedData.rule_violations);
+    if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
+        collapseDiv.removeChild(collapseDiv.lastElementChild);
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    } else {
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    }
 }
 
 function makeAjaxRequest(method, url, callback, optional, payload) {
@@ -164,15 +183,24 @@ function createFormGroup(sectionIdStr, field) {
     return formGroup;
 }
 
-function createCollapsibleCard(sectionIdStr, sectionTitle) {
+function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted) {
     // Create card and header
     const card = document.createElement("div");
     card.classList.add("card");
     const cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header");
+    const sectionState = document.createElement("i");
+    sectionState.id = sectionIdStr + "state";
 
+    if (sectionCompleted) {
+        sectionState.classList.add("fas", "fa-check-square");
+    } else {
+        sectionState.classList.add("fas", "fa-exclamation-triangle");
+    }
+    
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
+    h2.classList.add("mb-0");
     const button = document.createElement("button");
     button.classList.add("btn", "btn-link");
     button.type = "button";
@@ -180,6 +208,7 @@ function createCollapsibleCard(sectionIdStr, sectionTitle) {
     button.setAttribute("data-target", "#" + sectionIdStr + "collapse");
     button.innerHTML = sectionTitle;
     h2.appendChild(button);
+    h2.appendChild(sectionState);
     cardHeader.appendChild(h2);
     card.appendChild(cardHeader);
 
@@ -190,18 +219,13 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
     // Create wrapper div
     const collapseDiv = document.createElement("div");
     collapseDiv.id = sectionIdStr + "collapse";
-    const sectionAlert = document.createElement("div");
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
 
     if (sectionCompleted) {
         collapseDiv.classList.add("collapse");
-        sectionAlert.classList.add("alert", "alert-success");
-        sectionAlert.innerHTML = "This section is complete";
     } else {
         collapseDiv.classList.add("collapse", "show");
-        sectionAlert.classList.add("alert", "alert-warning");
-        sectionAlert.innerHTML = "This section is not complete";
     }
 
     if (type === reportType.EDIT) {
@@ -211,7 +235,6 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
     }
 
     // Create card body. Append form to body, body to wrapper div
-    cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription);
     cardBody.appendChild(form);
     collapseDiv.appendChild(cardBody);
@@ -288,7 +311,7 @@ function createReportForm(parsedData, type) {
     const sections = parsedData.sections;
     for (let i = 0; i < sections.length; i++) {
 
-        // Create a new form with the section key index as id
+        // Create a new form
         let sectionIdStr = "section-" + sections[i].id + "-";
         let form = document.createElement("form");
         form.classList.add("form", "section-form");
@@ -300,9 +323,11 @@ function createReportForm(parsedData, type) {
         let fields = sections[i].fields;
         for (let j = 0; j < fields.length; j++) {
 
+            /*
             console.log("Field label: " + fields[j].label);
             console.log("Field type: " + fields[j].field_type);
             console.log("Field value: " + fields[j].value);
+            */
 
             // Create a form group for each field and add it to the form
             form.appendChild(createFormGroup(sectionIdStr, fields[j]));
@@ -322,7 +347,7 @@ function createReportForm(parsedData, type) {
         if (cardFooter) {
             cardBody.appendChild(cardFooter);
         }
-        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title)
+        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title, sections[i].completed)
         collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
