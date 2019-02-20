@@ -9,31 +9,6 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
-function saveSectionCallback(parsedData, saveButton) {
-    alert(JSON.stringify(parsedData));
-    saveButton.innerHTML = "Save";
-    saveButton.disabled = false;
-    const sectionState = document.querySelector("#section-" + parsedData.id + "-state");
-    if (sectionState && parsedData.completed) {
-        sectionState.classList = "fas fa-check-square";
-    } else {
-        sectionState.classList = "fas fa-exclamation-triangle";
-    }
-
-    const collapseDiv = document.querySelector("#section-" + parsedData.id + "-collapse");
-    const cardFooter = createCardFooter(parsedData.rule_violations);
-    if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
-        collapseDiv.removeChild(collapseDiv.lastElementChild);
-        if (cardFooter) {
-            collapseDiv.appendChild(cardFooter);
-        }
-    } else {
-        if (cardFooter) {
-            collapseDiv.appendChild(cardFooter);
-        }
-    }
-}
-
 function makeAjaxRequest(method, url, callback, optional, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
@@ -74,6 +49,31 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
     };
 
     xhr.send(payload);
+}
+
+function updateSection(parsedData, saveButton) {
+    saveButton.innerHTML = "Save";
+    saveButton.disabled = false;
+    
+    const sectionState = document.querySelector("#section-" + parsedData.id + "-state");
+    if (parsedData.completed) {
+        sectionState.classList = "fas fa-check-square";
+    } else {
+        sectionState.classList = "fas fa-exclamation-triangle";
+    }
+
+    const collapseDiv = document.querySelector("#section-" + parsedData.id + "-collapse");
+    const cardFooter = createCardFooter(parsedData.rule_violations);
+    if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
+        collapseDiv.removeChild(collapseDiv.lastElementChild);
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    } else {
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    }
 }
 
 // Wraps a Bootstrap form group around a field
@@ -527,7 +527,6 @@ if (newReportForm) {
         console.log("Payload:\n" + payload);
         const type = reportType.NEW;
         makeAjaxRequest("POST", url, createReportForm, type, payload);
-        this.reset();
     });
 }
 
@@ -553,7 +552,7 @@ document.addEventListener("submit", function(event) {
         saveButton.appendChild(document.createTextNode("  Saving..."));
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
-        makeAjaxRequest("PUT", url, saveSectionCallback, saveButton, formData);
+        makeAjaxRequest("PUT", url, updateSection, saveButton, formData);
     }
 });
 
