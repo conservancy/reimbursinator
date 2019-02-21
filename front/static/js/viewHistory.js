@@ -9,12 +9,6 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
-function saveSectionCallback(parsedData, saveButton) {
-    alert(JSON.stringify(parsedData));
-    saveButton.innerHTML = "Save";
-    saveButton.disabled = false;
-}
-
 function makeAjaxRequest(method, url, callback, optional, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
@@ -55,6 +49,45 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
     };
 
     xhr.send(payload);
+}
+
+function updateSection(parsedData, saveButton) {
+    const sectionIdStr = "#section-" + parsedData.id + "-";
+    const sectionState = document.querySelector(sectionIdStr + "state");
+    const collapseDiv = document.querySelector(sectionIdStr + "collapse");
+
+    // A completed section gets a header icon
+    if (parsedData.completed) {
+        const sectionAlert = collapseDiv.querySelector(".section-alert");
+        console.log(sectionAlert);
+        if (sectionAlert) {
+            collapseDiv.firstChild.removeChild(sectionAlert);
+        }
+        if (parsedData.rule_violations.length === 0) {
+            // Complete with no rule violations
+            sectionState.classList = "fas fa-check-square";
+            collapseDiv.className = "collapse";
+        } else {
+            // Complete but with rule violations
+            sectionState.classList = "fas fa-exclamation-triangle";
+        }
+    }
+
+    const cardFooter = createCardFooter(parsedData.rule_violations);
+    if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
+        collapseDiv.removeChild(collapseDiv.lastElementChild);
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    } else {
+        if (cardFooter) {
+            collapseDiv.appendChild(cardFooter);
+        }
+    }
+
+    saveButton.innerHTML = "Save";
+    saveButton.disabled = false;
+    
 }
 
 // Wraps a Bootstrap form group around a field
@@ -164,15 +197,27 @@ function createFormGroup(sectionIdStr, field) {
     return formGroup;
 }
 
-function createCollapsibleCard(sectionIdStr, sectionTitle) {
+function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations) {
     // Create card and header
     const card = document.createElement("div");
     card.classList.add("card");
     const cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header");
+    const sectionState = document.createElement("i");
+    sectionState.id = sectionIdStr + "state";
 
+    // A completed section gets a header icon
+    if (sectionCompleted) {
+        if (ruleViolations.length === 0) {
+            sectionState.classList.add("fas", "fa-check-square");
+        } else {
+            sectionState.classList.add("fas", "fa-exclamation-triangle");
+        }
+    }
+    
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
+    h2.classList.add("mb-0");
     const button = document.createElement("button");
     button.classList.add("btn", "btn-link");
     button.type = "button";
@@ -180,43 +225,75 @@ function createCollapsibleCard(sectionIdStr, sectionTitle) {
     button.setAttribute("data-target", "#" + sectionIdStr + "collapse");
     button.innerHTML = sectionTitle;
     h2.appendChild(button);
+    h2.appendChild(sectionState);
     cardHeader.appendChild(h2);
     card.appendChild(cardHeader);
 
     return card;
 }
 
-function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted) {
+function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
     // Create wrapper div
-    const div = document.createElement("div");
-    div.id = sectionIdStr + "collapse";
-    const sectionAlert = document.createElement("div");
+    const collapseDiv = document.createElement("div");
+    collapseDiv.id = sectionIdStr + "collapse";
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
+    const sectionAlert = document.createElement("div");
 
     if (sectionCompleted) {
-        div.classList.add("collapse");
-        sectionAlert.classList.add("alert", "alert-success");
-        sectionAlert.innerHTML = "This section is complete";
+        if (ruleViolations.length === 0) {
+            collapseDiv.classList.add("collapse");
+        } else {
+            collapseDiv.classList.add("collapse", "show");
+        }
     } else {
-        div.classList.add("collapse", "show");
-        sectionAlert.classList.add("alert", "alert-danger");
+        sectionAlert.classList.add("alert", "alert-danger", "section-alert");
         sectionAlert.innerHTML = "This section is not complete";
     }
 
     if (type === reportType.EDIT) {
-        div.setAttribute("data-parent", "#editReportAccordion");
+        collapseDiv.setAttribute("data-parent", "#editReportAccordion");
     } else {
-        div.setAttribute("data-parent", "#newReportAccordion");
+        collapseDiv.setAttribute("data-parent", "#newReportAccordion");
     }
 
     // Create card body. Append form to body, body to wrapper div
     cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription);
     cardBody.appendChild(form);
-    div.appendChild(cardBody);
+    collapseDiv.appendChild(cardBody);
 
-    return div;
+    return collapseDiv;
+}
+
+function createCardFooter(ruleViolations) {
+    if (ruleViolations.length === 0) {
+        return null;
+    }
+
+    const cardFooter = document.createElement("div");
+    cardFooter.classList.add("card-footer");
+    const violationMessage = document.createElement("div");
+    violationMessage.classList.add("alert", "alert-danger");
+    const heading = document.createElement("div");
+    heading.innerHTML = "Rule Violations";
+    heading.classList.add("alert-heading");
+    violationMessage.appendChild(heading);
+    violationMessage.appendChild(document.createElement("hr"));
+
+    for (let i = 0; i < ruleViolations.length; i++) {
+        let violation = document.createElement("p");
+        let violationLabel = document.createElement("strong");
+        violationLabel.innerHTML = ruleViolations[i].label;
+        violation.appendChild(violationLabel);
+        violation.appendChild(document.createElement("br"));
+        let ruleBreakText = document.createTextNode(ruleViolations[i].rule_break_text);
+        violation.appendChild(ruleBreakText);
+        violationMessage.appendChild(violation);
+    }
+    
+    cardFooter.appendChild(violationMessage);
+    return cardFooter;
 }
 
 function createReportForm(parsedData, type) {
@@ -252,16 +329,14 @@ function createReportForm(parsedData, type) {
     }
 
     // Add report title and date
-    const reportTitle = parsedData.title;
-    modalLabel.innerHTML = reportTitle;
+    modalLabel.innerHTML = parsedData.title;
 
     // Traverse the report's sections array
     const sections = parsedData.sections;
     for (let i = 0; i < sections.length; i++) {
-        let sectionIdStr = "section-" + sections[i].id + "-";
-        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title)
 
-        // Create a new form with the section key index as id
+        // Create a new form
+        let sectionIdStr = "section-" + sections[i].id + "-";
         let form = document.createElement("form");
         form.classList.add("form", "section-form");
         form.id = sectionIdStr + "form";
@@ -272,9 +347,11 @@ function createReportForm(parsedData, type) {
         let fields = sections[i].fields;
         for (let j = 0; j < fields.length; j++) {
 
+            /*
             console.log("Field label: " + fields[j].label);
             console.log("Field type: " + fields[j].field_type);
             console.log("Field value: " + fields[j].value);
+            */
 
             // Create a form group for each field and add it to the form
             form.appendChild(createFormGroup(sectionIdStr, fields[j]));
@@ -288,7 +365,14 @@ function createReportForm(parsedData, type) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr, sections[i].html_description, sections[i].completed);
+        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
+            sections[i].html_description, sections[i].completed, sections[i].rule_violations);
+        let cardFooter = createCardFooter(sections[i].rule_violations);
+        if (cardFooter) {
+            cardBody.appendChild(cardFooter);
+        }
+        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title,
+            sections[i].completed, sections[i].rule_violations)
         collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
@@ -323,9 +407,11 @@ function displayListOfReports(parsedData) {
             bodyRow.insertCell(0).innerHTML = title;
             bodyRow.insertCell(1).innerHTML = dateCreated;
 
+            /*
             let stateCell = bodyRow.insertCell(2);
             stateCell.innerHTML = state;
             stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
+            */
 
             // Create edit/view button
             let actionButton = document.createElement("button");
@@ -349,10 +435,10 @@ function displayListOfReports(parsedData) {
                 actionButton.setAttribute("data-target", "#viewReportModal");
             }
 
-            let dateSubmittedCell = bodyRow.insertCell(3);
+            let dateSubmittedCell = bodyRow.insertCell(2);
             dateSubmittedCell.innerHTML = dateSubmitted;
             dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
-            bodyRow.insertCell(4).appendChild(actionButton);
+            bodyRow.insertCell(3).appendChild(actionButton);
         }
 
         table.style.visibility = "visible";
@@ -468,7 +554,6 @@ if (newReportForm) {
         console.log("Payload:\n" + payload);
         const type = reportType.NEW;
         makeAjaxRequest("POST", url, createReportForm, type, payload);
-        this.reset();
     });
 }
 
@@ -494,7 +579,7 @@ document.addEventListener("submit", function(event) {
         saveButton.appendChild(document.createTextNode("  Saving..."));
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
-        makeAjaxRequest("PUT", url, saveSectionCallback, saveButton, formData);
+        makeAjaxRequest("PUT", url, updateSection, saveButton, formData);
     }
 });
 
