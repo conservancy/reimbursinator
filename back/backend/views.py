@@ -3,6 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from .models import *
 from .policy import pol
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+import html2text
 import os
 
 
@@ -168,12 +170,25 @@ def section(request, report_pk, section_pk):
     return JsonResponse(data)
 
 
-# Send email
+#TODO:
 # Show broken rules
 # Attach image files
+# Also send email to user
 def submit_report(request, report_pk):
+    ''' Send a formatted email of the report given by 'report_pk' to the
+        reimbursinator email address.
+    '''
+    params = get_reports(report_pk)
+    msg_html = render_to_string('backend/email.html', params)
+    msg_plain = render_to_string('backend/email.txt', params)
+    #msg_plain = html2text.html2text(msg_html)
+
     send_mail('Report #'+str(report_pk), #subject
-              'This is only a test.\nRegarding report # '+str(report_pk), #body
+              msg_plain, #body
               'no_effect', #from:
-              ['reimbursinator@gmail.com',]) #send to user, also #to:
+              ['reimbursinator@gmail.com',], #to:
+              html_message=msg_html)
+
     return HttpResponse(status=200, content="Thanks for submitting your report.")
+
+submit_report('GET',21)

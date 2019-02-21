@@ -12,6 +12,7 @@ djangorestframework = "==3.8.2"
 django-rest-auth = "==0.9.3"
 django-allauth = "==0.37.1"
 gunicorn = "==19.6.0"
+html2text = "*"
 
 [requires]
 python_version = "3.5"

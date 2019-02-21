@@ -1,0 +1,12 @@
+***Deprecated:
+    Replaced by converting html template to plaintext
+    using the html2text library
+***
+
+Title: {{title}}
+{% for section in sections %}
+    {{section.title}}
+    {% for field in section.fields %}
+        {{field.label}}:  {{field.value|default:"empty"}}
+    {% endfor %}
+{% endfor %}    
