@@ -246,3 +246,59 @@ def incidentals_rule(report, fields):
 per_diem_section.add_rule(title="Per diem check", rule=incidentals_rule)
 
 pol.add_section(per_diem_section)
+
+#### Payment Option - Paypal
+#### Section 6
+
+paypal_section = Section(
+    title="Payment Option - Paypal",
+    html_description="<p>Complete this section if you wish to be reimbursed via Paypal. This is the preferred reimbursement method of Software Freedom Conservancy.</p>",
+    fields={
+        "paypal_email": {"number":0, "label":"Email address used with Paypal", "field_type":"string"},
+        "preferred_currency": {"number":1, "label":"Preferred currency", "field_type":"string"},
+    }
+)
+
+pol.add_section(paypal_section)
+
+#### Payment Option - Check
+#### Section 7
+
+check_section = Section(
+    title="Payment Option - Check",
+    html_description="<p>Complete this section if you wish to be reimbursed in USD via check sent by mail.</p>",
+    fields={
+        "address_1": {"number":0, "label":"Street address", "field_type":"string"},
+        "address_2": {"number":1, "label":"Street address 2", "field_type":"string"},
+        "city": {"number":2, "label":"City", "field_type":"string"},
+        "state": {"number":3, "label":"State", "field_type":"string"},
+        "zip": {"number":4, "label":"Zip code", "field_type":"string"},
+    }
+)
+
+pol.add_section(check_section)
+
+#### Payment Option - Bank Wire
+#### Section 8
+
+wire_section = Section(
+    title="Payment Option - Bank Wire",
+    html_description="<p>Complete this section if you wish to be wired the amount to your bank in your local currency. Please fill in as much of the following information as is possible. Please refer to the <a href='https://sfconservancy.org/projects/policies/conservancy-travel-policy.html' target='_blank'>SFC travel policy</a> for additional bank information required for certain countries.</p>",
+    fields={
+        "name": {"number":0, "label":"Full name of account holder", "field_type":"string"},
+        "address_1": {"number":1, "label":"Street address", "field_type":"string"},
+        "address_2": {"number":2, "label":"Street address 2", "field_type":"string"},
+        "city": {"number":3, "label":"City", "field_type":"string"},
+        "state": {"number":4, "label":"State", "field_type":"string"},
+        "zip": {"number":5, "label":"Zip code", "field_type":"string"},
+        "account": {"number":6, "label":"Account number", "field_type":"string"},
+        "currency": {"number":7, "label":"Preferred currency", "field_type":"string"},
+        "bank_name": {"number":8, "label":"Bank name", "field_type":"string"},
+        "bank_address": {"number":9, "label":"Bank address", "field_type":"string"},
+        "routing_number": {"number":10, "label":"Bank ACH/ABA routing number (US) or SWIFT/BIC code (non-US)", "field_type":"string"},
+        "additional_info": {"number":11, "label":"Additional information (see SFC policy)", "field_type":"string"},
+    }
+)
+
+pol.add_section(wire_section)
+
