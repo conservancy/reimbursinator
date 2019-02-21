@@ -79,6 +79,7 @@ class Field(models.Model):
             return "{}".format(self.data_string)
         elif self.field_type == "integer":
             return "{}".format(self.data_integer)
+        return "Invalid type"
 
     def get_datatype(self):
         """

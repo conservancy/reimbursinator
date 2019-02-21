@@ -53,10 +53,11 @@ def get_sections(r_id):
             for rule in rules:
                 try:
                     named_fields = generate_named_fields_for_section(data['fields'])
-                    if not rule['rule'](data, named_fields):
+                    result = rule['rule'](data, named_fields)
+                    if not result is None:
                         info = {
                             "label": rule['title'],
-                            "rule_break_text": rule['rule_break_text'],
+                            "rule_break_text": result,
                         }
                         data['rule_violations'].append(info)
                 except Exception as e:
@@ -342,10 +343,11 @@ def section(request, report_pk, section_pk):
         for rule in rules:
             try:
                 named_fields = generate_named_fields_for_section(data['fields'])
-                if not rule['rule'](data, named_fields):
+                result = rule['rule'](data, named_fields)
+                if not result is None:
                     info = {
                         "label": rule['title'],
-                        "rule_break_text": rule['rule_break_text'],
+                        "rule_break_text": result,
                     }
                     data['rule_violations'].append(info)
             except Exception as e:

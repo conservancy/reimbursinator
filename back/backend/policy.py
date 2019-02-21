@@ -70,13 +70,13 @@ general_section = Section(
     title="General Info",
     html_description="<p>Each section of this report is designed to guide you through the reimbursement process. Please read through each and answer as many questions as you can that apply to you.</p><p>Be sure to click 'Save' after completing each section. Your entered data will be saved as you progress. You may also receive feedback from sections regarding policy restrictions and special requirements.</p>",
     fields={
-        "before_trip": {"number": 0, "label": "Have you taken this trip already?", "field_type": "boolean"},
+        "after_trip": {"number": 0, "label": "Have you taken this trip already?", "field_type": "boolean"},
     }
 )
 
 general_section.add_rule(
     title="Pre-trip / post-trip check",
-    rule=lambda report, fields: None if fields['before_trip'] else "If you have already take the trip your request will require special approval by the administrator. You may skip the following 'Pre-trip Planning' section."
+    rule=lambda report, fields: "If you have already take the trip your request will require special approval by the administrator. You may skip the following 'Pre-trip Planning' section." if fields['after_trip'] else None
 )
 
 pol.add_section(general_section)
@@ -193,7 +193,7 @@ lodging_section = Section(
         "cost": {"number": 1, "label": "Total cost for lodging", "field_type": "decimal"},
         "check_in_date": {"number": 2, "label": "Check-in date", "field_type": "date"},
         "check_out_date": {"number": 3, "label": "Check-out date", "field_type": "date"},
-        "invoice_screenshot": {"number": 4, "label": "Screenshot of invoice", "field_type": "screenshot"},
+        "invoice_screenshot": {"number": 4, "label": "Screenshot of invoice", "field_type": "file"},
     }
 )
 
