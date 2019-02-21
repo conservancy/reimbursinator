@@ -52,17 +52,27 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
 }
 
 function updateSection(parsedData, saveButton) {
-    saveButton.innerHTML = "Save";
-    saveButton.disabled = false;
-    
-    const sectionState = document.querySelector("#section-" + parsedData.id + "-state");
+    const sectionIdStr = "#section-" + parsedData.id + "-";
+    const sectionState = document.querySelector(sectionIdStr + "state");
+    const collapseDiv = document.querySelector(sectionIdStr + "collapse");
+
+    // A completed section gets a header icon
     if (parsedData.completed) {
-        sectionState.classList = "fas fa-check-square";
-    } else {
-        sectionState.classList = "fas fa-exclamation-triangle";
+        const sectionAlert = collapseDiv.querySelector(".section-alert");
+        console.log(sectionAlert);
+        if (sectionAlert) {
+            collapseDiv.firstChild.removeChild(sectionAlert);
+        }
+        if (parsedData.rule_violations.length === 0) {
+            // Complete with no rule violations
+            sectionState.classList = "fas fa-check-square";
+            collapseDiv.className = "collapse";
+        } else {
+            // Complete but with rule violations
+            sectionState.classList = "fas fa-exclamation-triangle";
+        }
     }
 
-    const collapseDiv = document.querySelector("#section-" + parsedData.id + "-collapse");
     const cardFooter = createCardFooter(parsedData.rule_violations);
     if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
         collapseDiv.removeChild(collapseDiv.lastElementChild);
@@ -74,6 +84,10 @@ function updateSection(parsedData, saveButton) {
             collapseDiv.appendChild(cardFooter);
         }
     }
+
+    saveButton.innerHTML = "Save";
+    saveButton.disabled = false;
+    
 }
 
 // Wraps a Bootstrap form group around a field
@@ -183,7 +197,7 @@ function createFormGroup(sectionIdStr, field) {
     return formGroup;
 }
 
-function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted) {
+function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations) {
     // Create card and header
     const card = document.createElement("div");
     card.classList.add("card");
@@ -192,10 +206,13 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted) {
     const sectionState = document.createElement("i");
     sectionState.id = sectionIdStr + "state";
 
+    // A completed section gets a header icon
     if (sectionCompleted) {
-        sectionState.classList.add("fas", "fa-check-square");
-    } else {
-        sectionState.classList.add("fas", "fa-exclamation-triangle");
+        if (ruleViolations.length === 0) {
+            sectionState.classList.add("fas", "fa-check-square");
+        } else {
+            sectionState.classList.add("fas", "fa-exclamation-triangle");
+        }
     }
     
     // Create h2, button. Append button to h2, h2 to header, and header to card
@@ -215,17 +232,23 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted) {
     return card;
 }
 
-function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted) {
+function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
     // Create wrapper div
     const collapseDiv = document.createElement("div");
     collapseDiv.id = sectionIdStr + "collapse";
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
+    const sectionAlert = document.createElement("div");
 
     if (sectionCompleted) {
-        collapseDiv.classList.add("collapse");
+        if (ruleViolations.length === 0) {
+            collapseDiv.classList.add("collapse");
+        } else {
+            collapseDiv.classList.add("collapse", "show");
+        }
     } else {
-        collapseDiv.classList.add("collapse", "show");
+        sectionAlert.classList.add("alert", "alert-danger", "section-alert");
+        sectionAlert.innerHTML = "This section is not complete";
     }
 
     if (type === reportType.EDIT) {
@@ -235,6 +258,7 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
     }
 
     // Create card body. Append form to body, body to wrapper div
+    cardBody.appendChild(sectionAlert);
     cardBody.insertAdjacentHTML("beforeend", sectionDescription);
     cardBody.appendChild(form);
     collapseDiv.appendChild(cardBody);
@@ -342,12 +366,13 @@ function createReportForm(parsedData, type) {
 
         // Create collapsible card body, append form to it, append card to accordion
         let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
-            sections[i].html_description, sections[i].completed);
+            sections[i].html_description, sections[i].completed, sections[i].rule_violations);
         let cardFooter = createCardFooter(sections[i].rule_violations);
         if (cardFooter) {
             cardBody.appendChild(cardFooter);
         }
-        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title, sections[i].completed)
+        let collapsibleCard = createCollapsibleCard(sectionIdStr, sections[i].title,
+            sections[i].completed, sections[i].rule_violations)
         collapsibleCard.appendChild(cardBody);
         accordion.appendChild(collapsibleCard);
     }
@@ -382,9 +407,11 @@ function displayListOfReports(parsedData) {
             bodyRow.insertCell(0).innerHTML = title;
             bodyRow.insertCell(1).innerHTML = dateCreated;
 
+            /*
             let stateCell = bodyRow.insertCell(2);
             stateCell.innerHTML = state;
             stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
+            */
 
             // Create edit/view button
             let actionButton = document.createElement("button");
@@ -408,10 +435,10 @@ function displayListOfReports(parsedData) {
                 actionButton.setAttribute("data-target", "#viewReportModal");
             }
 
-            let dateSubmittedCell = bodyRow.insertCell(3);
+            let dateSubmittedCell = bodyRow.insertCell(2);
             dateSubmittedCell.innerHTML = dateSubmitted;
             dateSubmittedCell.classList.add("d-none", "d-md-table-cell"); // Column visible on medium and larger displays
-            bodyRow.insertCell(4).appendChild(actionButton);
+            bodyRow.insertCell(3).appendChild(actionButton);
         }
 
         table.style.visibility = "visible";
