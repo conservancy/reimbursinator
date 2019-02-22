@@ -14,6 +14,11 @@
                     <td>{{field.value|default:""}}</td>
                 </tr>
             {% endfor %}
+            {% for rule in section.rule_violations %}
+                <tr style="color:#ff3333">
+		    <td colspan=2><strong>{{rule.label}}</strong><br/>{{rule.rule_break_text}}</td>
+                </tr>
+            {% endfor %}
             </table>
 	{% endif %}
         {% endfor %}    

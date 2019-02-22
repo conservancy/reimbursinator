@@ -9,4 +9,7 @@ Title: {{title}}
     {% for field in section.fields %}
         {{field.label}}:  {{field.value|default:"empty"}}
     {% endfor %}
+    {% for rule in section.rule_violations %}
+        [RULE] {{rule.label}}:  {{rule.rule_break_text}}
+    {% endfor %}
 {% endfor %}    
