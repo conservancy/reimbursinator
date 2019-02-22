@@ -383,14 +383,13 @@ def send_report_to_admin(request, report_pk):
     report_pk -- ID of the report to submit
     """
     params = get_report(report_pk)
-    subject = 'Report: {}'.format(params['title']),
     to_email = config('SUBMIT_REPORT_DESTINATION_EMAIL')
     from_email = config('SUBMIT_REPORT_FROM_EMAIL')
     cc = request.user.email
     msg_html = render_to_string('backend/email.html', params)
     msg_plain = render_to_string('backend/email.txt', params)
     message = EmailMultiAlternatives(
-        subject,
+        "Reimbursinator - {}".format(params['title']),
         msg_plain,
         from_email,
         [to_email],
