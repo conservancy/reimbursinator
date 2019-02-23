@@ -115,7 +115,7 @@ planning_section.add_rule(title="Fare limits", rule=fare_limit_rule)
 
 def lowest_fare_rule(report, fields):
     diff = fields['lowest_fare_duration'] - fields['preferred_flight_duration']
-    lowest_Fare = fields['lowest_fare']
+    lowest_fare = fields['lowest_fare']
     maximum = 0
     if diff <= 0:
         maximum = lowest_fare + 100
