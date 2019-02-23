@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Title: {{ title }}</h1>
+        {% for section in sections %}
+	{% if section.completed %}
+            <h2>{{section.title}}</h2>
+            <table border="1">
+            {% for field in section.fields %}
+                <tr>
+                    <td>{{field.label}}</td>
+                    <td>{{field.value|default:""}}</td>
+                </tr>
+            {% endfor %}
+            {% for rule in section.rule_violations %}
+                <tr style="color:#ff3333">
+		    <td colspan=2><strong>{{rule.label}}</strong><br/>{{rule.rule_break_text}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+	{% endif %}
+        {% endfor %}    
+    </body>
+</html>

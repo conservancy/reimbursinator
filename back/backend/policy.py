@@ -114,8 +114,8 @@ def fare_limit_rule(report, fields):
 planning_section.add_rule(title="Fare limits", rule=fare_limit_rule)
 
 def lowest_fare_rule(report, fields):
-    diff = field['lowest_fare_duration'] - field['preferred_flight_duration']
-    lowest_Fare = field['lowest_fare']
+    diff = fields['lowest_fare_duration'] - fields['preferred_flight_duration']
+    lowest_fare = fields['lowest_fare']
     maximum = 0
     if diff <= 0:
         maximum = lowest_fare + 100
@@ -127,14 +127,14 @@ def lowest_fare_rule(report, fields):
         maximum = lowest_fare + 350
     else:
         maximum = lowest_fare + 600
-    if field['preferred_fare'] > maximum:
+    if fields['preferred_fare'] > maximum:
         return "For the lowest fare you have provided, your maximum in-policy fare amount is {} USD.".format(maximum)
     return None
 
 planning_section.add_rule(title="Lowest fare check", rule=lowest_fare_rule)
 
 def departure_date_limit_rule(report, fields):
-    days_to_departure = date(field['departure_date']) - date(field['screenshot_date'])
+    days_to_departure = date(fields['departure_date']) - date(fields['screenshot_date'])
     if days_to_departure < 14:
         return "Flights must be booked at least 14 days in advance."
     if days_to_departure > 365:
@@ -174,7 +174,7 @@ flight_section.add_rule(title="Fare limits", rule=actual_fare_limit_rule)
 
 def request_date_rule(report, fields):
     now = date.today()
-    last_travel = date(field['return_date'])
+    last_travel = date(fields['return_date'])
     if now - last_travel > 90:
         return "Reimbursement requests must be made within 90 days of the last day of travel."
     return None

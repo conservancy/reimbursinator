@@ -3,6 +3,11 @@ from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser, MultiPartParser
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from decouple import config
 
 def get_report(report_pk):
     """
@@ -199,8 +204,8 @@ def report_detail(request, report_pk):
             return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
         rep.submitted = True;
         rep.save()
-        # Send email here
-        #################
+        # Send email
+        send_report_to_admin(request, report_pk)
         return JsonResponse({"message": "Report submitted."})
 
     # DELETE: Deletes a report from the user's account.
@@ -365,3 +370,46 @@ def section_complete(section_pk):
         if i.completed:
             return True
     return False
+
+def send_report_to_admin(request, report_pk):
+    """
+    Sends an email message to admin with html/txt version of report,
+    along with file attachments. Cc sent to user.
+    
+    request -- Request object with user info inside
+    report_pk -- ID of the report to submit
+    """
+    params = get_report(report_pk)
+    to_email = config('SUBMIT_REPORT_DESTINATION_EMAIL')
+    from_email = config('SUBMIT_REPORT_FROM_EMAIL')
+    cc = request.user.email
+    msg_html = render_to_string('backend/email.html', params)
+    msg_plain = render_to_string('backend/email.txt', params)
+    message = EmailMultiAlternatives(
+        "Reimbursinator - {}".format(params['title']),
+        msg_plain,
+        from_email,
+        [to_email],
+        cc=[request.user.email],
+    )
+    message.attach_alternative(msg_html, "text/html")
+    for f in get_files(report_pk):
+        message.attach_file(f)
+    message.send()
+
+def get_files(report_pk):
+    """
+    collects all the files in a particular report and returns them
+    in an array.
+
+    report_pk -- ID of the report to collect files for
+    """
+    sections = Section.objects.filter(report_id=report_pk)
+    files = []
+    for section in sections:
+        fields = Field.objects.filter(section_id=section.id, completed=True)
+        for field in fields:
+            if field.field_type == "file":
+                print("appending {}".format(field.data_file.name))
+                files.append(field.data_file.name)
+    return files
