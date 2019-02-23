@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import *
 from .policy import pol
@@ -84,13 +84,10 @@ def get_fields(s_id):
         # function that gets the corresponding datatype
         value = Field.get_datatype(i)
         data = {
-            "completed": i.completed,
             "field_name": i.field_name,
             "label": i.label,
             "field_type": i.field_type,
-            "number": i.number,
             "value": value,
-            "id": i.id,
         }
         # append the fields to array
         # use copy() to avoid overwriting
