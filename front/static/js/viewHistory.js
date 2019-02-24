@@ -498,12 +498,6 @@ function displayReport(parsedData){
                         cardBody.appendChild(p1);
                     }
                 }
-                else if(field.field_type == "decimal")
-                {
-                    p1Value = document.createTextNode(field.label + ": " + Math.trunc(field.value));
-                    p1.appendChild(p1Value);
-                    cardBody.appendChild(p1);
-                }
                 else if(field.value == "")
                 {
                     p1Value = document.createTextNode(field.label + ": " + "None");
