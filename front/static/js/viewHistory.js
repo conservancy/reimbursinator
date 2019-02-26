@@ -1,6 +1,6 @@
 const reportType = {
     NEW : 1,
-    EDIT : 2,
+    EDIT : 2
 };
 
 // Hack to change endpoint url
@@ -152,14 +152,15 @@ function createFormGroup(sectionIdStr, field) {
             formGroup.appendChild(div);
             break;
         case "decimal":
-            input.type = "text";
+            input.type = "number";
             if (field.value === "0.00") {
                 input.value = "";
             } else {
                 input.value = field.value;
             }
             input.classList.add("form-control");
-            input.pattern = "\\d+(\\.\\d{2})?";
+            input.step = 0.01;
+            input.min = 0.00;
             formGroup.appendChild(label);
             div.appendChild(input)
             formGroup.appendChild(div);
