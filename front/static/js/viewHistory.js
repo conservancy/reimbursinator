@@ -469,14 +469,6 @@ function displayReport(parsedData){
     const cardBody = document.createElement("div");
     cardBody.classList.add("card-body");
 
-    /*
-    const displayTable = document.createElement("table");
-    displayTable.classList.add("table table-striped table-responsive-sm");
-    displayTable.style.visibility = "visible";
-    cardBody.appendChild(displayTable);
-*/
-
-
     const sections = parsedData.sections;
     for (let key in sections) {
         let section = sections[key];
@@ -490,9 +482,34 @@ function displayReport(parsedData){
             for (let key in fields) {
                 let field = fields[key];
                 const p1 = document.createElement("p");
-                const p1Value = document.createTextNode(field.label + ": " + field.value);
-                p1.appendChild(p1Value);
-                cardBody.appendChild(p1);
+                let p1Value = "";
+                if(field.field_type == "boolean")
+                {
+                    if(field.value == "true")
+                    {
+                        p1Value = document.createTextNode(field.label + ": " + "Yes");
+                        p1.appendChild(p1Value);
+                        cardBody.appendChild(p1);
+                    }
+                    else
+                    {
+                        p1Value = document.createTextNode(field.label + ": " + "No");
+                        p1.appendChild(p1Value);
+                        cardBody.appendChild(p1);
+                    }
+                }
+                else if(field.value == "")
+                {
+                    p1Value = document.createTextNode(field.label + ": " + "None");
+                    p1.appendChild(p1Value);
+                    cardBody.appendChild(p1);
+                }
+                else
+                {
+                    p1Value = document.createTextNode(field.label + ": " + field.value);
+                    p1.appendChild(p1Value);
+                    cardBody.appendChild(p1);
+                }
             }
             cardHeader.appendChild(cardBody);
             card.appendChild(cardHeader);
