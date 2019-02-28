@@ -1,7 +1,6 @@
 const reportType = {
     NEW : 1,
-    EDIT : 2,
-    VIEW : 3
+    EDIT : 2
 };
 
 // Hack to change endpoint url
@@ -153,14 +152,15 @@ function createFormGroup(sectionIdStr, field) {
             formGroup.appendChild(div);
             break;
         case "decimal":
-            input.type = "text";
+            input.type = "number";
             if (field.value === "0.00") {
                 input.value = "";
             } else {
                 input.value = field.value;
             }
             input.classList.add("form-control");
-            input.pattern = "\\d+(\\.\\d{2})?";
+            input.step = 0.01;
+            input.min = 0.00;
             formGroup.appendChild(label);
             div.appendChild(input)
             formGroup.appendChild(div);
@@ -240,21 +240,14 @@ function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription,
     cardBody.classList.add("card-body");
     const sectionAlert = document.createElement("div");
 
-    if (sectionCompleted) {
-        if (ruleViolations.length === 0) {
-            collapseDiv.classList.add("collapse");
-        } else {
-            collapseDiv.classList.add("collapse", "show");
-        }
+    if (sectionCompleted && ruleViolations.length === 0) {
+        collapseDiv.classList.add("collapse");
+    } else if (sectionCompleted && ruleViolations.length > 0) {
+        collapseDiv.classList.add("collapse", "show");
     } else {
         sectionAlert.classList.add("alert", "alert-danger", "section-alert");
         sectionAlert.innerHTML = "This section is not complete";
-    }
-
-    if (type === reportType.EDIT) {
-        collapseDiv.setAttribute("data-parent", "#editReportAccordion");
-    } else {
-        collapseDiv.setAttribute("data-parent", "#newReportAccordion");
+        collapseDiv.classList.add("collapse", "show");
     }
 
     // Create card body. Append form to body, body to wrapper div
