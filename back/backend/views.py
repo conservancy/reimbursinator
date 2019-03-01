@@ -121,20 +121,13 @@ def report(request):
         "title": "Report Title Here"
     }
     """
-    # Create the report, with reference number if available
-    if 'reference_number' in request.data:
-        report = Report.objects.create(
-            user_id=request.user,
-            title=request.data['title'],
-            date_created=datetime.date.today(),
-            reference_number=request.data['reference_number']
-        )
-    else:
-        report = Report.objects.create(
-            user_id=request.user,
-            title=request.data['title'],
-            date_created=datetime.date.today()
-        )
+    # Create the report
+    report = Report.objects.create(
+        user_id=request.user,
+        title=request.data['title'],
+        date_created=datetime.date.today(),
+        reference_number=request.data['reference']
+    )
     report.save()
 
     # Create the sections
@@ -399,7 +392,7 @@ def send_report_to_admin(request, report_pk):
     msg_html = render_to_string('backend/email.html', params)
     msg_plain = render_to_string('backend/email.txt', params)
     message = EmailMultiAlternatives(
-        "Reimbursinator - {}".format(params['title']),
+        "[RT - Request Tracker #{}] {}".format(params['reference_number'], params['title']),
         msg_plain,
         from_email,
         [to_email],
