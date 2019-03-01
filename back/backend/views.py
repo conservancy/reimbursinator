@@ -23,6 +23,7 @@ def get_report(report_pk):
             "date_created": i.date_created,
             "submitted": i.submitted,
             "date_submitted": i.date_submitted,
+            "reference_number": i.reference_number,
         }
         # append the sections for each report
         data.update(get_sections(i.id))
@@ -120,9 +121,20 @@ def report(request):
         "title": "Report Title Here"
     }
     """
-    # Create the report
-    report = Report.objects.create(user_id=request.user, title=request.data['title'],
-                                   date_created=datetime.date.today())
+    # Create the report, with reference number if available
+    if 'reference_number' in request.data:
+        report = Report.objects.create(
+            user_id=request.user,
+            title=request.data['title'],
+            date_created=datetime.date.today(),
+            reference_number=request.data['reference_number']
+        )
+    else:
+        report = Report.objects.create(
+            user_id=request.user,
+            title=request.data['title'],
+            date_created=datetime.date.today()
+        )
     report.save()
 
     # Create the sections
@@ -161,6 +173,7 @@ def reports(request):
             "date_created": i.date_created,
             "submitted": i.submitted,
             "date_submitted": i.date_submitted,
+            "reference_number": i.reference_number,
         }
         # append the sections for each report
         report_set["reports"].append(data.copy())
