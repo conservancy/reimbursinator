@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QUnit Tests</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="../js/viewHistory.js"></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+    <script>
+
+    QUnit.test("createFormGroup boolean false renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "Have you taken this trip already?",
+            "field_name": "after_trip",
+            "field_type": "boolean",
+            "value": false
+        };
+
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label><div class="col-sm-6"><select name="after_trip" id="section-1-after_trip" class="form-control"><option value="true">Yes</option><option value="false" selected="selected">No</option></select></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean false renders as no option selected");	
+        
+    });
+
+    QUnit.test("createFormGroup boolean true renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "Have you taken this trip already?",
+            "field_name": "after_trip",
+            "field_type": "boolean",
+            "value": true
+        };
+
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label><div class="col-sm-6"><select name="after_trip" id="section-1-after_trip" class="form-control"><option value="true" selected="selected">Yes</option><option value="false">No</option></select></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean true renders as yes option selected");	
+    });
+
+    QUnit.test("createFormGroup date input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "None"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-departure_date">Departure date: </label><div class="col-sm-6"><input name="departure_date" id="section-1-departure_date" type="date" placeholder="mm-dd-yyyy" class="form-control"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
+    });
+
+    QUnit.test("createFormGroup date value None", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "None"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-departure_date").value;
+        assert.deepEqual(value, "", "date initialized to None has null value");	
+    });
+
+    QUnit.test("createFormGroup date value is set", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "2019-02-28"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-departure_date").value;
+        assert.deepEqual(value, field.value, "date input initialized to a value is rendered with that value");	
+    });
+
+    QUnit.test("createFormGroup string input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "City",
+            "field_name": "city",
+            "field_type": "string",
+            "value": "Portland"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-city">City: </label><div class="col-sm-6"><input name="city" id="section-1-city" type="text" class="form-control"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
+    });
+
+    QUnit.test("createFormGroup string value", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "City",
+            "field_name": "city",
+            "field_type": "string",
+            "value": "Portland"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-city").value;
+        assert.deepEqual(value, field.value, "text input initialized to a value is rendered with that value");	
+    });
+
+    </script>
+</body>
+</html>
