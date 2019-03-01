@@ -5,7 +5,7 @@
 
 Title: {{title}}
 {% for section in sections %}
-    {{section.title}}
+    {{section.title}}(SID: {{section.id}})
     {% for field in section.fields %}
         {{field.label}}:  {{field.value|default:"empty"}}
     {% endfor %}

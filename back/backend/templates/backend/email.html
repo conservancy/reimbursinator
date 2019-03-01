@@ -6,7 +6,7 @@
         <h1>Title: {{ title }}</h1>
         {% for section in sections %}
 	{% if section.completed %}
-            <h2>{{section.title}}</h2>
+	<h2>{{section.title}} (SID: {{section.id}})</h2>
             <table border="1">
             {% for field in section.fields %}
                 <tr>

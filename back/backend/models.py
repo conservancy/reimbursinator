@@ -33,6 +33,7 @@ class Section(models.Model):
     title = models.CharField(max_length=256)
     html_description = models.TextField()
     number = models.IntegerField()
+    approved = models.BooleanField(default=False)
 
     def __str__(self):
         """
