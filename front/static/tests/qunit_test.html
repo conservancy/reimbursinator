@@ -12,7 +12,11 @@
     <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
     <script>
 
-    QUnit.test("createFormGroup boolean false renders", function(assert) {
+    // BEGIN createFormGroup unit tests
+    QUnit.module("createFormGroup");
+
+    // BEGIN: Test rendering of fields with type boolean
+    QUnit.test("boolean input group false renders", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
             "label": "Have you taken this trip already?",
@@ -27,7 +31,7 @@
         
     });
 
-    QUnit.test("createFormGroup boolean true renders", function(assert) {
+    QUnit.test("boolean input group true renders", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
             "label": "Have you taken this trip already?",
@@ -41,7 +45,11 @@
         assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean true renders as yes option selected");	
     });
 
-    QUnit.test("createFormGroup date input group renders", function(assert) {
+    // END: Test rendering of fields with type boolean
+
+    
+    // BEGIN: Test rendering of fields with type date
+    QUnit.test("date input group renders", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
               "label": "Departure date",
@@ -54,7 +62,7 @@
         assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
     });
 
-    QUnit.test("createFormGroup date value None", function(assert) {
+    QUnit.test("date value None", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
               "label": "Departure date",
@@ -67,7 +75,7 @@
         assert.deepEqual(value, "", "date initialized to None has null value");	
     });
 
-    QUnit.test("createFormGroup date value is set", function(assert) {
+    QUnit.test("date value assignment", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
               "label": "Departure date",
@@ -79,8 +87,10 @@
         let value = formGroup.querySelector("#section-1-departure_date").value;
         assert.deepEqual(value, field.value, "date input initialized to a value is rendered with that value");	
     });
+    // END: Test rendering of fields with type date
 
-    QUnit.test("createFormGroup string input group renders", function(assert) {
+    // BEGIN: Test rendering of fields with type string
+    QUnit.test("string input group renders", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
             "label": "City",
@@ -93,7 +103,7 @@
         assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
     });
 
-    QUnit.test("createFormGroup string value", function(assert) {
+    QUnit.test("string value assignment", function(assert) {
         let sectionIdStr = "section-1-";
         let field = {
             "label": "City",
@@ -105,6 +115,121 @@
         let value = formGroup.querySelector("#section-1-city").value;
         assert.deepEqual(value, field.value, "text input initialized to a value is rendered with that value");	
     });
+    // END: Test rendering of fields with type date
+
+    // BEGIN: Test rendering of fields with type decimal
+    QUnit.test("decimal input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "0.00",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-lowest_fare">Lowest fare: </label><div class="col-sm-6"><input name="lowest_fare" id="section-1-lowest_fare" type="number" class="form-control" step="0.01" min="0"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
+    });
+
+    QUnit.test("decimal input group initialized to default", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "0.00",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-lowest_fare").value;
+        assert.deepEqual(value, "", "decimal input initialized to 0.00 has null value");	
+    });
+
+    QUnit.test("decimal input group initialized to value", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "1337",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-lowest_fare").value;
+        assert.deepEqual(value, field.value, "decimal input initialized to 1337 has value 1337");	
+    });
+    // END: Test rendering of fields with type decimal
+
+    // BEGIN: Test rendering of fields with type integer
+    QUnit.test("integer input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 0,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-full_days">Number of full days of travel: </label><div class="col-sm-6"><input name="full_days" id="section-1-full_days" type="number" class="form-control" step="1" min="0"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
+    });
+
+    QUnit.test("integer input group initialized to default", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 0,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-full_days").value;
+        assert.deepEqual(value, "", "integer input initialized to 0 has null value");	
+    });
+
+    QUnit.test("integer input group initialized to value", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 1234,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-full_days").value;
+        assert.deepEqual(value, field.value.toString(), "integer input initialized to 1234 has string value 1234");	
+    });
+    // END: Test rendering of fields with type integer
+
+
+    // BEGIN: Test rendering of fields with type file
+    QUnit.test("file input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "",
+            "field_type": "file",
+            "label": "Screenshot of invoice",
+            "field_name": "invoice_screenshot"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-invoice_screenshot">Screenshot of invoice: </label><div class="col-sm-6"><input name="invoice_screenshot" id="section-1-invoice_screenshot" type="file" class="form-control-file"><p class="form-text"></p></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");	
+    });
+
+    QUnit.test("file input group form text assignment", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "screenshot.jpg",
+            "field_type": "file",
+            "label": "Screenshot of invoice",
+            "field_name": "invoice_screenshot"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector(".form-text").innerHTML;
+        assert.deepEqual(value, field.value, "file input initialized to screenshot.jpg has string value screenshot.jpg");	
+    });
+    // END: Test rendering of fields with type file
+
+    // BEGIN createCollapsibleCard unit tests
+    QUnit.module("createCollapsibleCard");
 
     </script>
 </body>
