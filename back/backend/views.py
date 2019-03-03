@@ -52,7 +52,7 @@ def get_sections(r_id):
         # append the fields for corresponding section
         data.update(get_fields(i.id))
         # process rules from the policy file if the section is completed
-        if i.completed:
+        if i.completed and not i.approved:
             rules = pol.sections[index].rules
             for rule in rules:
                 try:
@@ -344,7 +344,7 @@ def section(request, report_pk, section_pk):
     }
     data.update(get_fields(s.id))
     # process rules from the policy file if the section is completed
-    if s.completed:
+    if s.completed and not s.approved:
         rules = pol.sections[s.number].rules
         for rule in rules:
             try:
