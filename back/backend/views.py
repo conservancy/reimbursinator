@@ -3,8 +3,6 @@ from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
-from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FileUploadParser, MultiPartParser
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from decouple import config
@@ -98,7 +96,6 @@ def get_fields(s_id):
         field_set["fields"].append(data.copy())
 
     return field_set
-
 
 def generate_named_fields_for_section(fields):
     """
@@ -205,17 +202,17 @@ def report_detail(request, report_pk):
         return JsonResponse(data)
 
     # PUT: Submits a report to the administrator for review,
-    # and marks it as "submitted", after which changes may
-    # not be made.
+    # but is still allowed to make further changes
     elif request.method == 'PUT':
-        rep = Report.objects.get(id=report_pk)
-        if rep.submitted == True:
-            return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
-        rep.submitted = True;
-        rep.save()
+        # rep = Report.objects.get(id=report_pk)
+        # if rep.submitted:
+        #     return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
+        # rep.submitted = True
+        # rep.save()
+
         # Send email
         send_report_to_admin(request, report_pk)
-        return JsonResponse({"message": "Report submitted."})
+        return JsonResponse({"message": "Report submitted for review."})
 
     # DELETE: Deletes a report from the user's account.
     elif request.method == 'DELETE':
@@ -236,6 +233,26 @@ def report_detail(request, report_pk):
         title = r.title
         r.delete()
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
+
+@api_view(['PUT'])
+def finalize_report(request, report_pk):
+    """
+    This function serves as an API endpoint for submitting
+    the final report.
+
+    :param request: incoming request packet
+    :param report_pk: report ID
+    :return: JSON response containing user message
+    """
+    r = Report.objects.get(id=report_pk)
+    if r.submitted:
+        return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
+    r.submitted = True
+    r.save()
+    # Send email
+    send_report_to_admin(request, report_pk)
+    return JsonResponse({"message": "Final report submitted."})
+
 
 def user_owns_section(user, section):
     """
