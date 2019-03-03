@@ -13,6 +13,7 @@ class Report(models.Model):
     date_created = models.DateTimeField('date created', default=datetime.date.today)
     date_submitted = models.DateTimeField('date submitted', default=datetime.date.today)
     submitted = models.BooleanField(default=False)
+    reference_number = models.CharField(max_length=32, default='')
 
     def __str__(self):
         """
