@@ -112,7 +112,7 @@ def generate_named_fields_for_section(fields):
     return result
 
 @api_view(['POST'])
-def report(request):
+def create_report(request):
     """
     Generates a new empty report for the current user and returns it
     in json format. The title of the report should be provided as
