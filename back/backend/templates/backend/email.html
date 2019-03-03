@@ -4,6 +4,7 @@
     </head>
     <body>
         <h1>Title: {{ title }}</h1>
+	<p>Reference #: {{ reference_number }}</p>
         {% for section in sections %}
 	{% if section.completed %}
 	<h2>{{section.title}} (SID: {{section.id}})</h2>

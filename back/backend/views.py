@@ -23,6 +23,7 @@ def get_report(report_pk):
             "date_created": i.date_created,
             "submitted": i.submitted,
             "date_submitted": i.date_submitted,
+            "reference_number": i.reference_number,
         }
         # append the sections for each report
         data.update(get_sections(i.id))
@@ -121,8 +122,12 @@ def report(request):
     }
     """
     # Create the report
-    report = Report.objects.create(user_id=request.user, title=request.data['title'],
-                                   date_created=datetime.date.today())
+    report = Report.objects.create(
+        user_id=request.user,
+        title=request.data['title'],
+        date_created=datetime.date.today(),
+        reference_number=request.data['reference']
+    )
     report.save()
 
     # Create the sections
@@ -161,6 +166,7 @@ def reports(request):
             "date_created": i.date_created,
             "submitted": i.submitted,
             "date_submitted": i.date_submitted,
+            "reference_number": i.reference_number,
         }
         # append the sections for each report
         report_set["reports"].append(data.copy())
@@ -385,13 +391,23 @@ def send_report_to_admin(request, report_pk):
     cc = request.user.email
     msg_html = render_to_string('backend/email.html', params)
     msg_plain = render_to_string('backend/email.txt', params)
-    message = EmailMultiAlternatives(
-        "Reimbursinator - {}".format(params['title']),
-        msg_plain,
-        from_email,
-        [to_email],
-        cc=[request.user.email],
-    )
+    message = None
+    if params['reference_number'] == '':
+        message = EmailMultiAlternatives(
+            "{}".format(params['title']),
+            msg_plain,
+            from_email,
+            [to_email],
+            cc=[request.user.email],
+        )
+    else:
+        message = EmailMultiAlternatives(
+            "[RT - Request Tracker #{}] {}".format(params['reference_number'], params['title']),
+            msg_plain,
+            from_email,
+            [to_email],
+            cc=[request.user.email],
+        )
     message.attach_alternative(msg_html, "text/html")
     for f in get_files(report_pk):
         message.attach_file(f)

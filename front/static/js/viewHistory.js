@@ -560,7 +560,7 @@ if (newReportForm) {
     newReportForm.addEventListener("submit", function(event) {
         event.preventDefault();
         const url = getEndpointDomain() + "api/v1/report";
-        const payload = JSON.stringify({ "title": event.target.elements.title.value });
+        const payload = JSON.stringify({ "title": event.target.elements.title.value, "reference": event.target.elements.reference.value });
         console.log("Payload:\n" + payload);
         const type = reportType.NEW;
         makeAjaxRequest("POST", url, createReportForm, type, payload);
