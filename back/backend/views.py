@@ -53,19 +53,22 @@ def get_sections(r_id):
         data.update(get_fields(i.id))
         # process rules from the policy file if the section is completed
         if i.completed and not i.approved:
-            rules = pol.sections[index].rules
-            for rule in rules:
-                try:
-                    named_fields = generate_named_fields_for_section(data['fields'])
-                    result = rule['rule'](data, named_fields)
-                    if not result is None:
-                        info = {
-                            "label": rule['title'],
-                            "rule_break_text": result,
-                        }
-                        data['rule_violations'].append(info)
-                except Exception as e:
-                    print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
+            try:
+                rules = pol.sections[index].rules
+                for rule in rules:
+                    try:
+                        named_fields = generate_named_fields_for_section(data['fields'])
+                        result = rule['rule'](data, named_fields)
+                        if not result is None:
+                            info = {
+                                "label": rule['title'],
+                                "rule_break_text": result,
+                            }
+                            data['rule_violations'].append(info)
+                    except Exception as e:
+                        print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
+            except Exception as e:
+                print('Error accessing policy section {}. Policy file may have changed.'.format(index))
         # append section to the array
         section_set["sections"].append(data.copy())
 
@@ -345,19 +348,22 @@ def section(request, report_pk, section_pk):
     data.update(get_fields(s.id))
     # process rules from the policy file if the section is completed
     if s.completed and not s.approved:
-        rules = pol.sections[s.number].rules
-        for rule in rules:
-            try:
-                named_fields = generate_named_fields_for_section(data['fields'])
-                result = rule['rule'](data, named_fields)
-                if not result is None:
-                    info = {
-                        "label": rule['title'],
-                        "rule_break_text": result,
-                    }
-                    data['rule_violations'].append(info)
-            except Exception as e:
-                print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
+        try:
+            rules = pol.sections[s.number].rules
+            for rule in rules:
+                try:
+                    named_fields = generate_named_fields_for_section(data['fields'])
+                    result = rule['rule'](data, named_fields)
+                    if not result is None:
+                        info = {
+                            "label": rule['title'],
+                            "rule_break_text": result,
+                        }
+                        data['rule_violations'].append(info)
+                except Exception as e:
+                    print('Rule "{}" encountered an error. {}'.format(rule['title'], e))
+        except Exception as e:
+            print('Error accessing policy section {}. Policy file may have been changed.'.format(s.number))
     return JsonResponse(data)
 
 def section_complete(section_pk):
