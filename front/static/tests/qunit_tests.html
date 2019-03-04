@@ -5,10 +5,61 @@
     <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="../js/viewHistory.js"></script>
+    <script src="../js/testObjects.js"></script>
 </head>
 <body>
     <div id="qunit"></div>
-    <div id="qunit-fixture"></div>
+    <div id="qunit-fixture">
+        <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newReportModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="newReportModalBody">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-3x fa-spin"></i>
+                            <br>
+                            <br>
+                            <h5>Creating Report ...</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editReportModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="editReportModalBody">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-3x fa-spin"></i>
+                            <br>
+                            <br>
+                            <h5>Loading Report ...</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger delete-report">Delete Report</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
     <script>
 
@@ -322,6 +373,29 @@
         let cardFooter = createCardFooter(ruleViolations);
         let expectedHTML = `<div class="card-footer"><div class="alert alert-danger"><div class="alert-heading">Rule Violations</div><hr><p><strong>Fare limits</strong><br>You did a bad thing</p><p><strong>Fare limits</strong><br>Now you've done it</p></div></div>`;
         assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
+    });
+
+    QUnit.module("createReportForm");
+
+    QUnit.test("new report renders", function(assert) {
+        createReportForm(testReport, reportType.NEW);
+        let newReportModal = document.getElementById("newReportModal");
+        let expectedHTML = typeNewExpectedHTML;
+        assert.deepEqual(newReportModal.outerHTML, expectedHTML, "new report form and expectedHTML are identical")
+    });
+
+    QUnit.test("edit report renders", function(assert) {
+        createReportForm(testReport, reportType.EDIT);
+        let editReportModal = document.getElementById("editReportModal");
+        let expectedHTML = typeEditExpectedHTML;
+        assert.deepEqual(editReportModal.outerHTML, expectedHTML, "edit report form and expectedHTML are identical")
+    });
+
+    QUnit.test("undefined report does not render", function(assert) {
+        let qunitFixture = document.getElementById("qunit-fixture");
+        let expectedHTML = qunitFixture.outerHTML;
+        createReportForm(testReport, undefined);
+        assert.deepEqual(qunitFixture.outerHTML, expectedHTML, "report forms and expectedHTML are identical")
     });
     </script>
 </body>
