@@ -86,7 +86,7 @@ function updateSection(parsedData, saveButton) {
 
     saveButton.innerHTML = "Save";
     saveButton.disabled = false;
-    
+
 }
 
 // Wraps a Bootstrap form group around a field
@@ -214,7 +214,7 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, rul
             sectionState.classList.add("fas", "fa-exclamation-triangle");
         }
     }
-    
+
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
     h2.classList.add("mb-0");
@@ -232,7 +232,7 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, rul
     return card;
 }
 
-function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
+function createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
     // Create wrapper div
     const collapseDiv = document.createElement("div");
     collapseDiv.id = sectionIdStr + "collapse";
@@ -284,7 +284,7 @@ function createCardFooter(ruleViolations) {
         violation.appendChild(ruleBreakText);
         violationMessage.appendChild(violation);
     }
-    
+
     cardFooter.appendChild(violationMessage);
     return cardFooter;
 }
@@ -358,7 +358,7 @@ function createReportForm(parsedData, type) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
+        let cardBody = createCollapsibleCardBody(form, sectionIdStr,
             sections[i].html_description, sections[i].completed, sections[i].rule_violations);
         let cardFooter = createCardFooter(sections[i].rule_violations);
         if (cardFooter) {
