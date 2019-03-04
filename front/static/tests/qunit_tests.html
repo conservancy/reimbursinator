@@ -267,7 +267,6 @@
 
     // BEGIN createCollapsibleCard unit tests
     QUnit.module("createCollapsibleCardBody");
-    // form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations
 
     QUnit.test("incomplete section renders", function(assert) {
         let form = document.createElement("form");
@@ -300,6 +299,29 @@
         let collapseDiv = createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations);
         let expectedHTML = `<div id="section-1-collapse" class="collapse show"><div class="card-body"><div></div><p>Section Description</p><form></form></div></div>`;
         assert.deepEqual(collapseDiv.outerHTML, expectedHTML, "collapseDiv html and expectedHTML are identical");
+    });
+
+    // BEGIN createCardFooter unit tests
+    QUnit.module("createCardFooter");
+
+    QUnit.test("card footer no rule violations does not render", function(assert) {
+        let ruleViolations = [];
+        let cardFooter = createCardFooter(ruleViolations);
+        assert.strictEqual(cardFooter, null, "cardFooter is null");
+    });
+
+    QUnit.test("card footer with one rule violation renders", function(assert) {
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}];
+        let cardFooter = createCardFooter(ruleViolations);
+        let expectedHTML = `<div class="card-footer"><div class="alert alert-danger"><div class="alert-heading">Rule Violations</div><hr><p><strong>Fare limits</strong><br>You did a bad thing</p></div></div>`;
+        assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
+    });
+
+    QUnit.test("card footer with multiple rule violation renders", function(assert) {
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}, {"label": "Fare limits", "rule_break_text": "Now you've done it"}];
+        let cardFooter = createCardFooter(ruleViolations);
+        let expectedHTML = `<div class="card-footer"><div class="alert alert-danger"><div class="alert-heading">Rule Violations</div><hr><p><strong>Fare limits</strong><br>You did a bad thing</p><p><strong>Fare limits</strong><br>Now you've done it</p></div></div>`;
+        assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
     });
     </script>
 </body>
