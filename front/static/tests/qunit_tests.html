@@ -10,6 +10,23 @@
 <body>
     <div id="qunit"></div>
     <div id="qunit-fixture">
+        <div class="card-body">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-3x fa-spin"></i>
+            </div>
+            <table class="table table-striped table-responsive-sm" style="visibility:hidden">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date Created</th>
+                        <th class="d-none d-md-table-cell">Date Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -96,9 +113,6 @@
         assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean true renders as yes option selected");
     });
 
-    // END: Test rendering of fields with type boolean
-
-
     // BEGIN: Test rendering of fields with type date
     QUnit.test("date input group renders", function(assert) {
         let sectionIdStr = "section-1-";
@@ -138,7 +152,6 @@
         let value = formGroup.querySelector("#section-1-departure_date").value;
         assert.deepEqual(value, field.value, "date input initialized to a value is rendered with that value");
     });
-    // END: Test rendering of fields with type date
 
     // BEGIN: Test rendering of fields with type string
     QUnit.test("string input group renders", function(assert) {
@@ -166,7 +179,6 @@
         let value = formGroup.querySelector("#section-1-city").value;
         assert.deepEqual(value, field.value, "text input initialized to a value is rendered with that value");
     });
-    // END: Test rendering of fields with type date
 
     // BEGIN: Test rendering of fields with type decimal
     QUnit.test("decimal input group renders", function(assert) {
@@ -207,7 +219,6 @@
         let value = formGroup.querySelector("#section-1-lowest_fare").value;
         assert.deepEqual(value, field.value, "decimal input initialized to 1337 has value 1337");
     });
-    // END: Test rendering of fields with type decimal
 
     // BEGIN: Test rendering of fields with type integer
     QUnit.test("integer input group renders", function(assert) {
@@ -248,8 +259,6 @@
         let value = formGroup.querySelector("#section-1-full_days").value;
         assert.deepEqual(value, field.value.toString(), "integer input initialized to 1234 has string value 1234");
     });
-    // END: Test rendering of fields with type integer
-
 
     // BEGIN: Test rendering of fields with type file
     QUnit.test("file input group renders", function(assert) {
@@ -277,7 +286,7 @@
         let value = formGroup.querySelector(".form-text").innerHTML;
         assert.deepEqual(value, field.value, "file input initialized to screenshot.jpg has string value screenshot.jpg");
     });
-    // END: Test rendering of fields with type file
+
 
     // BEGIN createCollapsibleCard unit tests
     QUnit.module("createCollapsibleCard");
@@ -352,6 +361,7 @@
         assert.deepEqual(collapseDiv.outerHTML, expectedHTML, "collapseDiv html and expectedHTML are identical");
     });
 
+
     // BEGIN createCardFooter unit tests
     QUnit.module("createCardFooter");
 
@@ -375,6 +385,8 @@
         assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
     });
 
+
+    // BEGIN createReportForm unit tests
     QUnit.module("createReportForm");
 
     QUnit.test("new report renders", function(assert) {
@@ -396,6 +408,35 @@
         let expectedHTML = qunitFixture.outerHTML;
         createReportForm(testReport, undefined);
         assert.deepEqual(qunitFixture.outerHTML, expectedHTML, "report forms and expectedHTML are identical")
+    });
+
+
+    // BEGIN displayListOfReports unit tests
+    QUnit.module("displayListOfReports");
+
+    QUnit.test("empty reports", function(assert) {
+        let expectedHTML = `<div class="card-body"><h5 class="text-center">No reports found.</h5></div>`;
+        let parsedData = {"reports": []};
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+    QUnit.test("one report", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}]};
+        let expectedHTML = displayReportsOneReportExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+
+    QUnit.test("two reports", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}, {"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 5}]};
+        let expectedHTML = displayReportsTwoReportsExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
     });
     </script>
 </body>

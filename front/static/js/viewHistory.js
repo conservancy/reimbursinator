@@ -295,12 +295,6 @@ function createReportForm(parsedData, type) {
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
 
-    //submit button
-    const submitButton = document.querySelector(".submit-report-button");
-    if (submitButton) {
-        submitButton.setAttribute("data-rid", parsedData.report_pk);
-    }
-
     if (type === reportType.EDIT) {
         modalBody = document.querySelector("#editReportModalBody");
         modalLabel = document.querySelector("#editReportModalLabel");
@@ -315,6 +309,11 @@ function createReportForm(parsedData, type) {
         accordion.id = "newReportAccordion";
     } else {
         return;
+    }
+
+    const submitButton = document.querySelector(".submit-report-button");
+    if (submitButton) {
+        submitButton.setAttribute("data-rid", parsedData.report_pk);
     }
 
     while (modalBody.firstChild) {
@@ -339,13 +338,6 @@ function createReportForm(parsedData, type) {
         // Traverse the fields of this section
         let fields = sections[i].fields;
         for (let j = 0; j < fields.length; j++) {
-
-            /*
-            console.log("Field label: " + fields[j].label);
-            console.log("Field type: " + fields[j].field_type);
-            console.log("Field value: " + fields[j].value);
-            */
-
             // Create a form group for each field and add it to the form
             form.appendChild(createFormGroup(sectionIdStr, fields[j]));
         }
