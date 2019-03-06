@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .policy import pol
 from unittest import mock
+import datetime
 
 class PolicyTests(TestCase):
     report = {"key":"value"}
@@ -50,7 +51,9 @@ class PolicyTests(TestCase):
         result = pol.sections[1].rules[2]['rule'](self.report, fields)
         self.assertEqual(result, "Flights must be booked at least 14 days in advance.")
 
-    def test_pre_flight_section_departure_date_too_early(self):
+    @mock.patch('datetime.date')
+    def test_pre_flight_section_departure_date_too_early(self, mocked_date):
+        mocked_date.today = mock.Mock(return_value=datetime.date(2019,1,1))
         fields = {'departure_date':'2020-03-10','screenshot_date':'2019-03-01'}
         result = pol.sections[1].rules[2]['rule'](self.report, fields)
         self.assertEqual(result, "Flights must be booked no more than 365 days in advance.")
