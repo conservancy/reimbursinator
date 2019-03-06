@@ -422,7 +422,7 @@
         assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
     });
 
-    QUnit.test("one report", function(assert) {
+    QUnit.test("one editable report", function(assert) {
         let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}]};
         let expectedHTML = displayReportsOneReportExpected;
         displayListOfReports(parsedData);
@@ -431,9 +431,17 @@
     });
 
 
-    QUnit.test("two reports", function(assert) {
+    QUnit.test("two editable reports", function(assert) {
         let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}, {"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 5}]};
         let expectedHTML = displayReportsTwoReportsExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+    QUnit.test("one viewable report", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": true, "report_pk": 5}]};
+        let expectedHTML = displayReportsOneViewableExpected;
         displayListOfReports(parsedData);
         let cardBody = document.querySelector(".card-body");
         assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
