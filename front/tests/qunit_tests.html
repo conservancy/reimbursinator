@@ -1,0 +1,451 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QUnit Tests</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="../static/js/viewHistory.js"></script>
+    <script src="testObjects.js"></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+        <div class="card-body">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-3x fa-spin"></i>
+            </div>
+            <table class="table table-striped table-responsive-sm" style="visibility:hidden">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date Created</th>
+                        <th class="d-none d-md-table-cell">Date Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newReportModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="newReportModalBody">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-3x fa-spin"></i>
+                            <br>
+                            <br>
+                            <h5>Creating Report ...</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editReportModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="editReportModalBody">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-3x fa-spin"></i>
+                            <br>
+                            <br>
+                            <h5>Loading Report ...</h5>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger delete-report">Delete Report</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+    <script>
+
+    // BEGIN createFormGroup unit tests
+    QUnit.module("createFormGroup");
+
+    // BEGIN: Test rendering of fields with type boolean
+    QUnit.test("boolean input group false renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "Have you taken this trip already?",
+            "field_name": "after_trip",
+            "field_type": "boolean",
+            "value": false
+        };
+
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label><div class="col-sm-6"><select name="after_trip" id="section-1-after_trip" class="form-control"><option value="true">Yes</option><option value="false" selected="selected">No</option></select></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean false renders as no option selected");
+
+    });
+
+    QUnit.test("boolean input group true renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "Have you taken this trip already?",
+            "field_name": "after_trip",
+            "field_type": "boolean",
+            "value": true
+        };
+
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label><div class="col-sm-6"><select name="after_trip" id="section-1-after_trip" class="form-control"><option value="true" selected="selected">Yes</option><option value="false">No</option></select></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "boolean true renders as yes option selected");
+    });
+
+    // BEGIN: Test rendering of fields with type date
+    QUnit.test("date input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "None"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-departure_date">Departure date: </label><div class="col-sm-6"><input name="departure_date" id="section-1-departure_date" type="date" placeholder="mm-dd-yyyy" class="form-control"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");
+    });
+
+    QUnit.test("date value None", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "None"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-departure_date").value;
+        assert.deepEqual(value, "", "date initialized to None has null value");
+    });
+
+    QUnit.test("date value assignment", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+              "label": "Departure date",
+              "field_name": "departure_date",
+              "field_type": "date",
+              "value": "2019-02-28"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-departure_date").value;
+        assert.deepEqual(value, field.value, "date input initialized to a value is rendered with that value");
+    });
+
+    // BEGIN: Test rendering of fields with type string
+    QUnit.test("string input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "City",
+            "field_name": "city",
+            "field_type": "string",
+            "value": "Portland"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-city">City: </label><div class="col-sm-6"><input name="city" id="section-1-city" type="text" class="form-control"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");
+    });
+
+    QUnit.test("string value assignment", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "label": "City",
+            "field_name": "city",
+            "field_type": "string",
+            "value": "Portland"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-city").value;
+        assert.deepEqual(value, field.value, "text input initialized to a value is rendered with that value");
+    });
+
+    // BEGIN: Test rendering of fields with type decimal
+    QUnit.test("decimal input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "0.00",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-lowest_fare">Lowest fare: </label><div class="col-sm-6"><input name="lowest_fare" id="section-1-lowest_fare" type="number" class="form-control" step="0.01" min="0"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");
+    });
+
+    QUnit.test("decimal input group initialized to default", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "0.00",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-lowest_fare").value;
+        assert.deepEqual(value, "", "decimal input initialized to 0.00 has null value");
+    });
+
+    QUnit.test("decimal input group initialized to value", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "1337",
+            "field_type": "decimal",
+            "label": "Lowest fare",
+            "field_name": "lowest_fare"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-lowest_fare").value;
+        assert.deepEqual(value, field.value, "decimal input initialized to 1337 has value 1337");
+    });
+
+    // BEGIN: Test rendering of fields with type integer
+    QUnit.test("integer input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 0,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-full_days">Number of full days of travel: </label><div class="col-sm-6"><input name="full_days" id="section-1-full_days" type="number" class="form-control" step="1" min="0"></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");
+    });
+
+    QUnit.test("integer input group initialized to default", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 0,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-full_days").value;
+        assert.deepEqual(value, "", "integer input initialized to 0 has null value");
+    });
+
+    QUnit.test("integer input group initialized to value", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": 1234,
+            "field_type": "integer",
+            "label": "Number of full days of travel",
+            "field_name": "full_days"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector("#section-1-full_days").value;
+        assert.deepEqual(value, field.value.toString(), "integer input initialized to 1234 has string value 1234");
+    });
+
+    // BEGIN: Test rendering of fields with type file
+    QUnit.test("file input group renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "",
+            "field_type": "file",
+            "label": "Screenshot of invoice",
+            "field_name": "invoice_screenshot"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let expectedHTML = `<div class="form-group row"><label class="col-sm-4 col-form" for="section-1-invoice_screenshot">Screenshot of invoice: </label><div class="col-sm-6"><input name="invoice_screenshot" id="section-1-invoice_screenshot" type="file" class="form-control-file"><p class="form-text"></p></div></div>`
+        assert.deepEqual(formGroup.outerHTML, expectedHTML, "formGroup string matches expectedHTML string");
+    });
+
+    QUnit.test("file input group form text assignment", function(assert) {
+        let sectionIdStr = "section-1-";
+        let field = {
+            "value": "screenshot.jpg",
+            "field_type": "file",
+            "label": "Screenshot of invoice",
+            "field_name": "invoice_screenshot"
+        };
+        let formGroup = createFormGroup(sectionIdStr, field);
+        let value = formGroup.querySelector(".form-text").innerHTML;
+        assert.deepEqual(value, field.value, "file input initialized to screenshot.jpg has string value screenshot.jpg");
+    });
+
+
+    // BEGIN createCollapsibleCard unit tests
+    QUnit.module("createCollapsibleCard");
+
+    QUnit.test("incomplete section renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let sectionTitle = "General Info";
+        let sectionCompleted = false;
+        let ruleViolations = [];
+
+        let card = createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div class="card"><div class="card-header"><h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button><i id="section-1-state"></i></h2></div></div>`;
+        assert.deepEqual(card.outerHTML, expectedHTML, "card html and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with no rule violations renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let sectionTitle = "General Info";
+        let sectionCompleted = true;
+        let ruleViolations = [];
+
+        let card = createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div class="card"><div class="card-header"><h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button><i id="section-1-state" class="fas fa-check-square"></i></h2></div></div>`
+        assert.deepEqual(card.outerHTML, expectedHTML, "card html and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with a violation renders", function(assert) {
+        let sectionIdStr = "section-1-";
+        let sectionTitle = "General Info";
+        let sectionCompleted = true;
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}]
+
+        let card = createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div class="card"><div class="card-header"><h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button><i id="section-1-state" class="fas fa-exclamation-triangle"></i></h2></div></div>`
+        assert.deepEqual(card.outerHTML, expectedHTML, "card html and expectedHTML are identical");
+    });
+
+
+    // BEGIN createCollapsibleCard unit tests
+    QUnit.module("createCollapsibleCardBody");
+
+    QUnit.test("incomplete section renders", function(assert) {
+        let form = document.createElement("form");
+        let sectionIdStr = "section-1-";
+        let sectionDescription = "<p>Section Description</p>";
+        let sectionCompleted = false;
+        let ruleViolations = [];
+        let collapseDiv = createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div id="section-1-collapse" class="collapse show"><div class="card-body"><div class="alert alert-danger section-alert">This section is not complete</div><p>Section Description</p><form></form></div></div>`;
+        assert.deepEqual(collapseDiv.outerHTML, expectedHTML, "collapseDiv html and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with no rule violations renders", function(assert) {
+        let form = document.createElement("form");
+        let sectionIdStr = "section-1-";
+        let sectionDescription = "<p>Section Description</p>";
+        let sectionCompleted = true;
+        let ruleViolations = [];
+        let collapseDiv = createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div id="section-1-collapse" class="collapse"><div class="card-body"><div></div><p>Section Description</p><form></form></div></div>`;
+        assert.deepEqual(collapseDiv.outerHTML, expectedHTML, "collapseDiv html and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with rule violation renders", function(assert) {
+        let form = document.createElement("form");
+        let sectionIdStr = "section-1-";
+        let sectionDescription = "<p>Section Description</p>";
+        let sectionCompleted = true;
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}]
+        let collapseDiv = createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations);
+        let expectedHTML = `<div id="section-1-collapse" class="collapse show"><div class="card-body"><div></div><p>Section Description</p><form></form></div></div>`;
+        assert.deepEqual(collapseDiv.outerHTML, expectedHTML, "collapseDiv html and expectedHTML are identical");
+    });
+
+
+    // BEGIN createCardFooter unit tests
+    QUnit.module("createCardFooter");
+
+    QUnit.test("card footer no rule violations does not render", function(assert) {
+        let ruleViolations = [];
+        let cardFooter = createCardFooter(ruleViolations);
+        assert.strictEqual(cardFooter, null, "cardFooter is null");
+    });
+
+    QUnit.test("card footer with one rule violation renders", function(assert) {
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}];
+        let cardFooter = createCardFooter(ruleViolations);
+        let expectedHTML = `<div class="card-footer"><div class="alert alert-danger"><div class="alert-heading">Rule Violations</div><hr><p><strong>Fare limits</strong><br>You did a bad thing</p></div></div>`;
+        assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
+    });
+
+    QUnit.test("card footer with multiple rule violation renders", function(assert) {
+        let ruleViolations = [{"label": "Fare limits", "rule_break_text": "You did a bad thing"}, {"label": "Fare limits", "rule_break_text": "Now you've done it"}];
+        let cardFooter = createCardFooter(ruleViolations);
+        let expectedHTML = `<div class="card-footer"><div class="alert alert-danger"><div class="alert-heading">Rule Violations</div><hr><p><strong>Fare limits</strong><br>You did a bad thing</p><p><strong>Fare limits</strong><br>Now you've done it</p></div></div>`;
+        assert.deepEqual(cardFooter.outerHTML, expectedHTML, "cardFooter html and expectedHTML are identical");
+    });
+
+
+    // BEGIN createReportForm unit tests
+    QUnit.module("createReportForm");
+
+    QUnit.test("new report renders", function(assert) {
+        createReportForm(testReport, reportType.NEW);
+        let newReportModal = document.getElementById("newReportModal");
+        let expectedHTML = typeNewExpectedHTML;
+        assert.deepEqual(newReportModal.outerHTML, expectedHTML, "new report form and expectedHTML are identical")
+    });
+
+    QUnit.test("edit report renders", function(assert) {
+        createReportForm(testReport, reportType.EDIT);
+        let editReportModal = document.getElementById("editReportModal");
+        let expectedHTML = typeEditExpectedHTML;
+        assert.deepEqual(editReportModal.outerHTML, expectedHTML, "edit report form and expectedHTML are identical")
+    });
+
+    QUnit.test("undefined report does not render", function(assert) {
+        let qunitFixture = document.getElementById("qunit-fixture");
+        let expectedHTML = qunitFixture.outerHTML;
+        createReportForm(testReport, undefined);
+        assert.deepEqual(qunitFixture.outerHTML, expectedHTML, "report forms and expectedHTML are identical")
+    });
+
+
+    // BEGIN displayListOfReports unit tests
+    QUnit.module("displayListOfReports");
+
+    QUnit.test("empty reports", function(assert) {
+        let expectedHTML = `<div class="card-body"><h5 class="text-center">No reports found.</h5></div>`;
+        let parsedData = {"reports": []};
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+    QUnit.test("one editable report", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}]};
+        let expectedHTML = displayReportsOneReportExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+
+    QUnit.test("two editable reports", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}, {"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 5}]};
+        let expectedHTML = displayReportsTwoReportsExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+
+    QUnit.test("one viewable report", function(assert) {
+        let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": true, "report_pk": 5}]};
+        let expectedHTML = displayReportsOneViewableExpected;
+        displayListOfReports(parsedData);
+        let cardBody = document.querySelector(".card-body");
+        assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
+    });
+    </script>
+</body>
+</html>
