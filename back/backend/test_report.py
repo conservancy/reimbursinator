@@ -23,8 +23,8 @@ class ReportTests(TestCase):
         return r
 
     def setUp(self):
-        self.test_user = self.create_test_user('one@one.com', 'One', 'Mr. One', '1password')
-        self.test_user.save()
+        self.test_user_1 = self.create_test_user('one@one.com', 'One', 'Mr. One', '1password')
+        self.test_user_1.save()
  
     def test_create_report_logged_in(self):
         factory = APIRequestFactory()
