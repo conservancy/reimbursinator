@@ -145,7 +145,7 @@ def departure_date_limit_rule(report, fields):
 planning_section.add_rule(title="Departure date limit", rule=departure_date_limit_rule)
 
 def economy_class_rule(report, fields):
-    if not fields[economy_class]:
+    if not fields['economy_class']:
         return "Only economy or coach class tickets are within policy."
 
 planning_section.add_rule(title="Economy class check", rule=economy_class_rule)
