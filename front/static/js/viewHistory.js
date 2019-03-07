@@ -540,9 +540,9 @@ document.addEventListener("click", function(event) {
                 animateButton(event.target, "  Submitting...");
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
                 makeAjaxRequest("PUT", url, function(parsedData) {
-                    alert(parsedData.message);
                     event.target.disabled = false;
                     event.target.innerHTML = "Submit for Review";
+                    alert(parsedData.message);
                     location.reload(true);
                 });
             }
@@ -554,9 +554,9 @@ document.addEventListener("click", function(event) {
                 animateButton(event.target, "  Submitting...");
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/final";
                 makeAjaxRequest("PUT", url, function(parsedData) {
-                    alert(parsedData.message);
                     event.target.disabled = false;
                     event.target.innerHTML = "Finalize Report";
+                    alert(parsedData.message);
                     location.reload(true);
                 });
             }
@@ -568,15 +568,20 @@ document.addEventListener("click", function(event) {
                 animateButton(event.target, "  Deleting...");
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
                 makeAjaxRequest("DELETE", url, function(parsedData) {
-                    alert(parsedData.message);
                     event.target.disabled = false;
                     event.target.innerHTML = "Delete Report";
+                    alert(parsedData.message);
                     location.reload(true);
                 });
             }
         }
     }
 });
+
+function successMessage(parsedData) {
+    alert(parsedData.message);
+    location.reload(true);
+}
 
 const newReportForm = document.querySelector(".new-report-form");
 if (newReportForm) {
