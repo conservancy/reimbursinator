@@ -578,11 +578,6 @@ document.addEventListener("click", function(event) {
     }
 });
 
-function successMessage(parsedData) {
-    alert(parsedData.message);
-    location.reload(true);
-}
-
 const newReportForm = document.querySelector(".new-report-form");
 if (newReportForm) {
     newReportForm.addEventListener("submit", function(event) {
