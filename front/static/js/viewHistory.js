@@ -86,7 +86,7 @@ function updateSection(parsedData, saveButton) {
 
     saveButton.innerHTML = "Save";
     saveButton.disabled = false;
-    
+
 }
 
 // Wraps a Bootstrap form group around a field
@@ -214,7 +214,7 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, rul
             sectionState.classList.add("fas", "fa-exclamation-triangle");
         }
     }
-    
+
     // Create h2, button. Append button to h2, h2 to header, and header to card
     const h2 = document.createElement("h2");
     h2.classList.add("mb-0");
@@ -284,7 +284,7 @@ function createCardFooter(ruleViolations) {
         violation.appendChild(ruleBreakText);
         violationMessage.appendChild(violation);
     }
-    
+
     cardFooter.appendChild(violationMessage);
     return cardFooter;
 }
@@ -294,12 +294,6 @@ function createReportForm(parsedData, type) {
     let modalLabel;
     const accordion = document.createElement("div");
     accordion.classList.add("accordion");
-
-    //submit button
-    const submitButton = document.querySelector(".submit-report-button");
-    if (submitButton) {
-        submitButton.setAttribute("data-rid", parsedData.report_pk);
-    }
 
     if (type === reportType.EDIT) {
         modalBody = document.querySelector("#editReportModalBody");
@@ -315,6 +309,15 @@ function createReportForm(parsedData, type) {
         accordion.id = "newReportAccordion";
     } else {
         return;
+    }
+
+    const reviewButton = document.querySelector(".review-report");
+    if (reviewButton) {
+        reviewButton.setAttribute("data-rid", parsedData.report_pk);
+    }
+    const finalizeButton = document.querySelector(".finalize-report");
+    if (finalizeButton) {
+        finalizeButton.setAttribute("data-rid", parsedData.report_pk);
     }
 
     while (modalBody.firstChild) {
@@ -529,12 +532,23 @@ document.addEventListener("click", function(event) {
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             makeAjaxRequest("GET", url, displayReport);
-        } else if (event.target.classList.contains("submit-report-button")) {
+        } else if (event.target.classList.contains("review-report")) {
             event.preventDefault();
-            //const title = document.querySelector("#editReportModalLabel").textContent;
-            const result = confirm("Are you sure you want to submit the report ?");
+            console.log("review-report");
+            const result = confirm("Are you sure you want to submit this report for review?");
             if (result) {
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
+                makeAjaxRequest("PUT", url, function(parsedData) {
+                    alert(parsedData.message);
+                    location.reload(true);
+                });
+            }
+        } else if (event.target.classList.contains("finalize-report")) {
+            event.preventDefault();
+            console.log("finalize-report");
+            const result = confirm("Are you sure you want to finalize this report? This means you will no longer be able to modify it.");
+            if (result) {
+                const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/final";
                 makeAjaxRequest("PUT", url, function(parsedData) {
                     alert(parsedData.message);
                     location.reload(true);
