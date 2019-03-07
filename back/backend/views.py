@@ -204,6 +204,9 @@ def report_detail(request, report_pk):
     # PUT: Submits a report to the administrator for review,
     # but is still allowed to make further changes
     elif request.method == 'PUT':
+        r = Report.objects.get(id=report_pk)
+        if r.submitted:
+            return JsonResponse({"message": "Cannot review a report that has already been submitted."}, status=409)
         # Send email
         send_report_to_admin(request, report_pk, status="REVIEW")
         return JsonResponse({"message": "Request for review is submitted."})
@@ -211,8 +214,8 @@ def report_detail(request, report_pk):
     # DELETE: Deletes a report from the user's account.
     elif request.method == 'DELETE':
         r = Report.objects.get(id=report_pk)
-        if r.submitted == True:
-            return JsonResponse({"message": "Cannot delete a report that has been submitted."}, status=409)
+        if r.submitted:
+            return JsonResponse({"message": "Cannot delete a report that has already been submitted."}, status=409)
         # get corresponding sections
         section_set = Section.objects.filter(report_id=report_pk)
         for i in section_set:
@@ -248,13 +251,13 @@ def finalize_report(request, report_pk):
     return JsonResponse({"message": "Final report submitted."})
 
 
-def user_owns_section(user, section):
+def user_owns_section(user, section_id):
     """
     Returns true if the specified user is owner of the section.
     
     section -- ID of the section to check.
     """
-    section_to_check = Section.objects.filter(id=section)
+    section_to_check = Section.objects.filter(id=section_id)
     if len(section_to_check) < 1:
         return False
     report_to_check = section_to_check[0].report_id
@@ -268,7 +271,7 @@ def section(request, report_pk, section_pk):
     section_pk -- Section for which the data should be updated.
     """
     # Check that the user owns the report
-    if not user_owns_section(user=request.user, section=section_pk):
+    if not user_owns_section(user=request.user, section_id=section_pk):
         return JsonResponse({"message": "Current user does not own the specified section."}, status=401)
 
     # Check that the report isn't submitted
@@ -411,7 +414,7 @@ def send_report_to_admin(request, report_pk, status):
     message = None
     if params['reference_number'] == '':
         message = EmailMultiAlternatives(
-            "{} ({})".format(params['title'], status),
+            "[Reimbursinator {}] ({})".format(params['title'], status),
             msg_plain,
             from_email,
             [to_email],
