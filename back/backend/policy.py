@@ -1,10 +1,11 @@
 import datetime
+import datetime as mydate
 
 #### Classes for policy, sections. Do not edit these.
 #####################################################
 
 def to_date(iso8601):
-    return datetime.datetime.strptime(iso8601, "%Y-%m-%d")
+    return mydate.datetime.strptime(iso8601, "%Y-%m-%d")
 
 class Policy():
     """
