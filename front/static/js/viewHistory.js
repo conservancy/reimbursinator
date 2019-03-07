@@ -50,8 +50,7 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
     xhr.send(payload);
 }
 
-function animateButton(target, buttonText) {
-    let button = target;
+function animateButton(button, buttonText) {
     button.disabled = true;
     button.innerHTML = "";
     let span = document.createElement("span");
