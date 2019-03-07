@@ -232,7 +232,7 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, rul
     return card;
 }
 
-function createCollapsibleCardBody(form, type, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
+function createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
     // Create wrapper div
     const collapseDiv = document.createElement("div");
     collapseDiv.id = sectionIdStr + "collapse";
@@ -342,13 +342,6 @@ function createReportForm(parsedData, type) {
         // Traverse the fields of this section
         let fields = sections[i].fields;
         for (let j = 0; j < fields.length; j++) {
-
-            /*
-            console.log("Field label: " + fields[j].label);
-            console.log("Field type: " + fields[j].field_type);
-            console.log("Field value: " + fields[j].value);
-            */
-
             // Create a form group for each field and add it to the form
             form.appendChild(createFormGroup(sectionIdStr, fields[j]));
         }
@@ -361,7 +354,7 @@ function createReportForm(parsedData, type) {
         form.appendChild(saveButton);
 
         // Create collapsible card body, append form to it, append card to accordion
-        let cardBody = createCollapsibleCardBody(form, type, sectionIdStr,
+        let cardBody = createCollapsibleCardBody(form, sectionIdStr,
             sections[i].html_description, sections[i].completed, sections[i].rule_violations);
         let cardFooter = createCardFooter(sections[i].rule_violations);
         if (cardFooter) {

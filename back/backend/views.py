@@ -3,8 +3,6 @@ from django.http import JsonResponse
 from .models import *
 from .policy import pol
 import os
-from rest_framework.exceptions import ParseError
-from rest_framework.parsers import FileUploadParser, MultiPartParser
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from decouple import config
@@ -99,7 +97,6 @@ def get_fields(s_id):
 
     return field_set
 
-
 def generate_named_fields_for_section(fields):
     """
     Prepares a dictionary of key-value pairs based on the raw fields
@@ -115,7 +112,7 @@ def generate_named_fields_for_section(fields):
     return result
 
 @api_view(['POST'])
-def report(request):
+def create_report(request):
     """
     Generates a new empty report for the current user and returns it
     in json format. The title of the report should be provided as
@@ -205,17 +202,11 @@ def report_detail(request, report_pk):
         return JsonResponse(data)
 
     # PUT: Submits a report to the administrator for review,
-    # and marks it as "submitted", after which changes may
-    # not be made.
+    # but is still allowed to make further changes
     elif request.method == 'PUT':
-        rep = Report.objects.get(id=report_pk)
-        if rep.submitted == True:
-            return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
-        rep.submitted = True;
-        rep.save()
         # Send email
-        send_report_to_admin(request, report_pk)
-        return JsonResponse({"message": "Report submitted."})
+        send_report_to_admin(request, report_pk, status="REVIEW")
+        return JsonResponse({"message": "Request for review is submitted."})
 
     # DELETE: Deletes a report from the user's account.
     elif request.method == 'DELETE':
@@ -236,6 +227,26 @@ def report_detail(request, report_pk):
         title = r.title
         r.delete()
         return JsonResponse({"message": "Deleted report: {0}.".format(title)})
+
+@api_view(['PUT'])
+def finalize_report(request, report_pk):
+    """
+    This function serves as an API endpoint for submitting
+    the final report.
+
+    :param request: incoming request packet
+    :param report_pk: report ID
+    :return: JSON response containing user message
+    """
+    r = Report.objects.get(id=report_pk)
+    if r.submitted:
+        return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
+    r.submitted = True
+    r.save()
+    # Send email
+    send_report_to_admin(request, report_pk, status="FINAL")
+    return JsonResponse({"message": "Final report submitted."})
+
 
 def user_owns_section(user, section):
     """
@@ -383,7 +394,7 @@ def section_complete(section_pk):
             return True
     return False
 
-def send_report_to_admin(request, report_pk):
+def send_report_to_admin(request, report_pk, status):
     """
     Sends an email message to admin with html/txt version of report,
     along with file attachments. Cc sent to user.
@@ -400,7 +411,7 @@ def send_report_to_admin(request, report_pk):
     message = None
     if params['reference_number'] == '':
         message = EmailMultiAlternatives(
-            "{}".format(params['title']),
+            "{} ({})".format(params['title'], status),
             msg_plain,
             from_email,
             [to_email],
@@ -408,7 +419,7 @@ def send_report_to_admin(request, report_pk):
         )
     else:
         message = EmailMultiAlternatives(
-            "[RT - Request Tracker #{}] {}".format(params['reference_number'], params['title']),
+            "[Reimbursinator #{}] {} ({})".format(params['reference_number'], params['title'], status),
             msg_plain,
             from_email,
             [to_email],

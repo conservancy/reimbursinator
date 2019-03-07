@@ -1,7 +1,11 @@
-from datetime import date
+import datetime
+import datetime as mydate
 
 #### Classes for policy, sections. Do not edit these.
 #####################################################
+
+def to_date(iso8601):
+    return mydate.datetime.strptime(iso8601, "%Y-%m-%d")
 
 class Policy():
     """
@@ -97,6 +101,7 @@ planning_section = Section(
         "preferred_flight_fare": {"number": 6, "label": "Fare of your preferred flight", "field_type": "decimal"},
         "preferred_flight_duration": {"number": 7, "label": "Flight duration of your preferred flight (hours)", "field_type": "decimal"},
 	"international_flight": {"number": 8, "label": "Is this an international flight?", "field_type": "boolean"},
+        "economy_class": {"number": 9, "label": "Is your ticket in economy/coach?", "field_type": "boolean"},
     }
 )
 
@@ -127,21 +132,27 @@ def lowest_fare_rule(report, fields):
         maximum = lowest_fare + 350
     else:
         maximum = lowest_fare + 600
-    if fields['preferred_fare'] > maximum:
+    if fields['preferred_flight_fare'] > maximum:
         return "For the lowest fare you have provided, your maximum in-policy fare amount is {} USD.".format(maximum)
     return None
 
 planning_section.add_rule(title="Lowest fare check", rule=lowest_fare_rule)
 
 def departure_date_limit_rule(report, fields):
-    days_to_departure = date(fields['departure_date']) - date(fields['screenshot_date'])
-    if days_to_departure < 14:
+    days_to_departure = to_date(fields['departure_date']) - to_date(fields['screenshot_date'])
+    if days_to_departure < datetime.timedelta(days=14):
         return "Flights must be booked at least 14 days in advance."
-    if days_to_departure > 365:
+    if days_to_departure > datetime.timedelta(days=365):
         return "Flights must be booked no more than 365 days in advance."
     return None
 
 planning_section.add_rule(title="Departure date limit", rule=departure_date_limit_rule)
+
+def economy_class_rule(report, fields):
+    if not fields['economy_class']:
+        return "Only economy or coach class tickets are within policy."
+
+planning_section.add_rule(title="Economy class check", rule=economy_class_rule)
 pol.add_section(planning_section)
 
 #### Flight Info
@@ -173,9 +184,9 @@ def actual_fare_limit_rule(report, fields):
 flight_section.add_rule(title="Fare limits", rule=actual_fare_limit_rule)
 
 def request_date_rule(report, fields):
-    now = date.today()
-    last_travel = date(fields['return_date'])
-    if now - last_travel > 90:
+    now = datetime.datetime.now()
+    last_travel = to_date(fields['return_date'])
+    if now - last_travel > datetime.timedelta(days=90):
         return "Reimbursement requests must be made within 90 days of the last day of travel."
     return None
 
@@ -198,9 +209,9 @@ lodging_section = Section(
 )
 
 def nightly_rate_check(report, fields):
-    checkin_date = date(fields['check_in_date'])
-    checkout_date = date(fields['check_out_date'])
-    duration = checkout_date - checkin_date
+    check_in_date = to_date(fields['check_in_date'])
+    check_out_date = to_date(fields['check_out_date'])
+    duration = (check_out_date - check_in_date).days
     if fields['cost'] > duration * fields['per_diem_rate']:
         return "The average nightly rate cannot exceed the U.S. GSA rate."
     return None
