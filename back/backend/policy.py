@@ -101,6 +101,7 @@ planning_section = Section(
         "preferred_flight_fare": {"number": 6, "label": "Fare of your preferred flight", "field_type": "decimal"},
         "preferred_flight_duration": {"number": 7, "label": "Flight duration of your preferred flight (hours)", "field_type": "decimal"},
 	"international_flight": {"number": 8, "label": "Is this an international flight?", "field_type": "boolean"},
+        "economy_class": {"number": 9, "label": "Is your ticket in economy/coach?", "field_type": "boolean"},
     }
 )
 
@@ -146,6 +147,12 @@ def departure_date_limit_rule(report, fields):
     return None
 
 planning_section.add_rule(title="Departure date limit", rule=departure_date_limit_rule)
+
+def economy_class_rule(report, fields):
+    if not fields['economy_class']:
+        return "Only economy or coach class tickets are within policy."
+
+planning_section.add_rule(title="Economy class check", rule=economy_class_rule)
 pol.add_section(planning_section)
 
 #### Flight Info
