@@ -470,7 +470,7 @@ function displayReport(parsedData){
                 let p1Value = "";
                 if(field.field_type == "boolean")
                 {
-                    if(field.value == "true")
+                    if(field.value == true)
                     {
                         p1Value = document.createTextNode(field.label + ": " + "Yes");
                         p1.appendChild(p1Value);
