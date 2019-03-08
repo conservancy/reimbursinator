@@ -31,10 +31,12 @@ class ReportTests(TestCase):
 
     def setUp(self):
         """
-        Create a test user and save it in the database.
+        Create a couple test users and save them in the database.
         """
         self.test_user_1 = self.create_test_user('one@one.com', 'One', 'Mr. One', '1password')
         self.test_user_1.save()
+        self.test_user_2 = self.create_test_user('two@two.com', 'Two', 'Mr. Two', '1password')
+        self.test_user_2.save()
  
     def test_create_report_logged_in(self):
         """
@@ -124,9 +126,31 @@ class ReportTests(TestCase):
         """
         factory = APIRequestFactory()
         request = factory.put('/api/v1/report/1/final')
-        response = finalize_report(request)
+        response = finalize_report(request, 1)
         self.assertEqual(response.status_code, 401)
 
+    def test_report_finalize_wrong_owner(self):
+        """
+        Test for when an authenticated user tries to finalize someone else's report.
+        """
+        factory = APIRequestFactory()
+
+        # Create a report for user One
+        add_report_1_request = factory.post('/api/v1/report', {'title':'One\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_1_request, user=self.test_user_1)
+        create_report(add_report_1_request)
+
+        # Create a report for user Two
+        add_report_2_request = factory.post('/api/v1/report', {'title':'Two\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_2_request, user=self.test_user_2)
+        create_report(add_report_2_request)
+        
+        # Try finalizing user Two's report with user One
+        request = factory.put('/api/v1/report/2/final')
+        force_authenticate(request, user=self.test_user_1)
+        response = finalize_report(request, 2)
+        self.assertEqual(response.status_code, 401)
+ 
     def test_report_finalize_logged_in_not_finalized(self):
         """
         Test for when an authenticated user tries to finalize a report
