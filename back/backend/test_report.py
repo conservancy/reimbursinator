@@ -5,6 +5,7 @@ from users.models import CustomUser
 from unittest.mock import Mock, patch
 from datetime import date
 from backend.views import *
+import json
 
 class ReportTests(TestCase):
 
@@ -160,3 +161,37 @@ class ReportTests(TestCase):
         force_authenticate(review_request, user=user)
         response = finalize_report(review_request, 1)
         self.assertEqual(response.status_code, 409)
+
+    def test_report_get_report_logged_in(self):
+        """
+        Test for when an authenticated user tries to view a report.
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'Test Report', 'reference':'12345'})
+        user = CustomUser.objects.get(email='one@one.com')
+        force_authenticate(add_report_request, user=user)
+        create_report(add_report_request)
+        get_request = factory.get('/api/v1/report/1')
+        force_authenticate(get_request, user=user)
+        response = report_detail(get_request, 1)
+        self.assertEqual(response.status_code, 200)
+        report = Report.objects.get(user_id=user)
+        # Check that the json response contains the title of the report we want
+        j = json.loads(response.content.decode("utf-8", "strict"))
+        self.assertEqual(report.title, j['title'])
+
+    def test_report_delete_report_logged_in(self):
+        """
+        Test for when an authenticated user tries to delete a report.
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'Test Report', 'reference':'12345'})
+        user = CustomUser.objects.get(email='one@one.com')
+        force_authenticate(add_report_request, user=user)
+        create_report(add_report_request)
+        delete_request = factory.delete('/api/v1/report/1')
+        force_authenticate(delete_request, user=user)
+        response = report_detail(delete_request, 1)
+        self.assertEqual(response.status_code, 200)
+        reports = Report.objects.filter(user_id=user)
+        self.assertEqual(len(reports), 0)
