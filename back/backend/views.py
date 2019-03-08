@@ -6,6 +6,7 @@ import os
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from decouple import config
+from django.utils import timezone
 
 def get_report(report_pk):
     """
@@ -125,7 +126,7 @@ def create_report(request):
     report = Report.objects.create(
         user_id=request.user,
         title=request.data['title'],
-        date_created=datetime.date.today(),
+        date_created=timezone.now(),
         reference_number=request.data['reference']
     )
     report.save()

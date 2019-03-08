@@ -116,3 +116,48 @@ class ReportTests(TestCase):
         force_authenticate(review_request, user=user)
         response = report_detail(review_request, 1)
         self.assertEqual(response.status_code, 409)
+
+    def test_report_finalize_logged_out(self):
+        """
+        Test for when an unauthenticated user tries to finalize a report.
+        """
+        factory = APIRequestFactory()
+        request = factory.put('/api/v1/report/1/final')
+        response = create_report(request)
+        self.assertEqual(response.status_code, 401)
+
+    def test_report_finalize_logged_in_not_finalized(self):
+        """
+        Test for when an authenticated user tries to finalize a report
+        that has not been finalized yet.
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'Test Report', 'reference':'12345'})
+        user = CustomUser.objects.get(email='one@one.com')
+        force_authenticate(add_report_request, user=user)
+        create_report(add_report_request)
+        review_request = factory.put('/api/v1/report/1/final')
+        force_authenticate(review_request, user=user)
+        response = report_detail(review_request, 1)
+        self.assertEqual(response.status_code, 200)
+        reports = Report.objects.filter(user_id=user)
+        print("reports=",len(reports))
+        self.assertTrue(report.submitted)
+
+    def test_report_finalize_logged_in_already_finalized(self):
+        """
+        Test for when an authenticated user tries to finalize a report
+        that has already been finalized.
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'Test Report', 'reference':'12345'})
+        user = CustomUser.objects.get(email='one@one.com')
+        force_authenticate(add_report_request, user=user)
+        create_report(add_report_request)
+        report = Report.objects.get(user_id=user)
+        report.submitted = True
+        report.save()
+        review_request = factory.put('/api/v1/report/1/final')
+        force_authenticate(review_request, user=user)
+        response = report_detail(review_request, 1)
+        self.assertEqual(response.status_code, 409)
