@@ -79,7 +79,7 @@ class ReportTests(TestCase):
         """
         factory = APIRequestFactory()
         request = factory.put('/api/v1/report/1')
-        response = create_report(request)
+        response = report_detail(request)
         self.assertEqual(response.status_code, 401)
 
     def test_report_submit_for_review_logged_in_not_finalized(self):
@@ -123,7 +123,7 @@ class ReportTests(TestCase):
         """
         factory = APIRequestFactory()
         request = factory.put('/api/v1/report/1/final')
-        response = create_report(request)
+        response = finalize_report(request)
         self.assertEqual(response.status_code, 401)
 
     def test_report_finalize_logged_in_not_finalized(self):
