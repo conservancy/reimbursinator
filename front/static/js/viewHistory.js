@@ -50,6 +50,15 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
     xhr.send(payload);
 }
 
+function animateButton(button, buttonText) {
+    button.disabled = true;
+    button.innerHTML = "";
+    let span = document.createElement("span");
+    span.classList.add("spinner-border", "spinner-border-sm");
+    button.appendChild(span);
+    button.appendChild(document.createTextNode(buttonText));
+}
+
 function updateSection(parsedData, saveButton) {
     const sectionIdStr = "#section-" + parsedData.id + "-";
     const sectionState = document.querySelector(sectionIdStr + "state");
@@ -58,7 +67,6 @@ function updateSection(parsedData, saveButton) {
     // A completed section gets a header icon
     if (parsedData.completed) {
         const sectionAlert = collapseDiv.querySelector(".section-alert");
-        console.log(sectionAlert);
         if (sectionAlert) {
             collapseDiv.firstChild.removeChild(sectionAlert);
         }
@@ -311,9 +319,13 @@ function createReportForm(parsedData, type) {
         return;
     }
 
-    const submitButton = document.querySelector(".submit-report-button");
-    if (submitButton) {
-        submitButton.setAttribute("data-rid", parsedData.report_pk);
+    const reviewButton = document.querySelector(".review-report");
+    if (reviewButton) {
+        reviewButton.setAttribute("data-rid", parsedData.report_pk);
+    }
+    const finalizeButton = document.querySelector(".finalize-report");
+    if (finalizeButton) {
+        finalizeButton.setAttribute("data-rid", parsedData.report_pk);
     }
 
     while (modalBody.firstChild) {
@@ -521,13 +533,29 @@ document.addEventListener("click", function(event) {
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             makeAjaxRequest("GET", url, displayReport);
-        } else if (event.target.classList.contains("submit-report-button")) {
+        } else if (event.target.classList.contains("review-report")) {
             event.preventDefault();
-            //const title = document.querySelector("#editReportModalLabel").textContent;
-            const result = confirm("Are you sure you want to submit the report ?");
+            const result = confirm("Are you sure you want to submit this report for review?");
             if (result) {
+                animateButton(event.target, "  Submitting...");
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
                 makeAjaxRequest("PUT", url, function(parsedData) {
+                    event.target.disabled = false;
+                    event.target.innerHTML = "Submit for Review";
+                    alert(parsedData.message);
+                    location.reload(true);
+                });
+            }
+        } else if (event.target.classList.contains("finalize-report")) {
+            event.preventDefault();
+            console.log("finalize-report");
+            const result = confirm("Are you sure you want to finalize this report? This means you will no longer be able to modify it.");
+            if (result) {
+                animateButton(event.target, "  Submitting...");
+                const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/final";
+                makeAjaxRequest("PUT", url, function(parsedData) {
+                    event.target.disabled = false;
+                    event.target.innerHTML = "Finalize Report";
                     alert(parsedData.message);
                     location.reload(true);
                 });
@@ -537,8 +565,11 @@ document.addEventListener("click", function(event) {
             const title = document.querySelector("#editReportModalLabel").textContent;
             const result = confirm("Are you sure you want to delete the report \"" + title + "\"?");
             if (result) {
+                animateButton(event.target, "  Deleting...");
                 const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
                 makeAjaxRequest("DELETE", url, function(parsedData) {
+                    event.target.disabled = false;
+                    event.target.innerHTML = "Delete Report";
                     alert(parsedData.message);
                     location.reload(true);
                 });
@@ -573,12 +604,7 @@ document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {
         event.preventDefault();
         let saveButton = event.target.lastElementChild;
-        saveButton.disabled = true;
-        saveButton.innerHTML = "";
-        let span = document.createElement("span");
-        span.classList.add("spinner-border", "spinner-border-sm");
-        saveButton.appendChild(span);
-        saveButton.appendChild(document.createTextNode("  Saving..."));
+        animateButton(saveButton, "  Saving...");
         const formData = new FormData(event.target);
         const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
         makeAjaxRequest("PUT", url, updateSection, saveButton, formData);
