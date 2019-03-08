@@ -138,10 +138,9 @@ class ReportTests(TestCase):
         create_report(add_report_request)
         review_request = factory.put('/api/v1/report/1/final')
         force_authenticate(review_request, user=user)
-        response = report_detail(review_request, 1)
+        response = finalize_report(review_request, 1)
         self.assertEqual(response.status_code, 200)
-        reports = Report.objects.filter(user_id=user)
-        print("reports=",len(reports))
+        report = Report.objects.get(user_id=user)
         self.assertTrue(report.submitted)
 
     def test_report_finalize_logged_in_already_finalized(self):
@@ -159,5 +158,5 @@ class ReportTests(TestCase):
         report.save()
         review_request = factory.put('/api/v1/report/1/final')
         force_authenticate(review_request, user=user)
-        response = report_detail(review_request, 1)
+        response = finalize_report(review_request, 1)
         self.assertEqual(response.status_code, 409)
