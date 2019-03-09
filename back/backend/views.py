@@ -270,7 +270,7 @@ def user_owns_section(user, section_id):
     return report_to_check.user_id == user
 
 @api_view(['PUT'])
-def section(request, report_pk, section_pk):
+def section(request, section_pk):
     """
     Updates the specified section with new data.
     
