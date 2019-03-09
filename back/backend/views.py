@@ -246,6 +246,7 @@ def finalize_report(request, report_pk):
     if r.submitted:
         return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
     r.submitted = True
+    r.date_submitted = timezone.now()
     r.save()
     # Send email
     send_report_to_admin(request, report_pk, status="FINAL")
