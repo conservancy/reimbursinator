@@ -415,7 +415,7 @@ def send_report_to_admin(request, report_pk, status):
     message = None
     if params['reference_number'] == '':
         message = EmailMultiAlternatives(
-            "[Reimbursinator {}] ({})".format(params['title'], status),
+            "[Reimbursinator] {} ({})".format(params['title'], status),
             msg_plain,
             from_email,
             [to_email],

@@ -2,7 +2,6 @@
 # Edit at https://www.gitignore.io/?templates=linux,macos,python,django,windows,pycharm,intellij,visualstudio
 
 ### Django ###
-*.env
 *.log
 *.pot
 *.pyc
@@ -101,7 +100,6 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
