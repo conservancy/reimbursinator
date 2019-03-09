@@ -242,6 +242,10 @@ def finalize_report(request, report_pk):
     :param report_pk: report ID
     :return: JSON response containing user message
     """
+    # Check that the user owns the report
+    if not user_owns_report(user=request.user, report=report_pk):
+        return JsonResponse({"message": "Current user does not own the specified report."}, status=401)
+
     r = Report.objects.get(id=report_pk)
     if r.submitted:
         return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
