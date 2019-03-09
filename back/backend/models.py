@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-import datetime
+from django.utils import timezone
 import ntpath
 
 class Report(models.Model):
@@ -10,8 +10,8 @@ class Report(models.Model):
     """
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
-    date_created = models.DateTimeField('date created', default=datetime.date.today)
-    date_submitted = models.DateTimeField('date submitted', default=datetime.date.today)
+    date_created = models.DateTimeField('date created', default=timezone.now)
+    date_submitted = models.DateTimeField('date submitted', default=timezone.now)
     submitted = models.BooleanField(default=False)
     reference_number = models.CharField(max_length=32, default='')
 
