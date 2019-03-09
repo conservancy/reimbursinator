@@ -6,6 +6,7 @@ import os
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from decouple import config
+from django.utils import timezone
 
 def get_report(report_pk):
     """
@@ -125,7 +126,7 @@ def create_report(request):
     report = Report.objects.create(
         user_id=request.user,
         title=request.data['title'],
-        date_created=datetime.date.today(),
+        date_created=timezone.now(),
         reference_number=request.data['reference']
     )
     report.save()
@@ -249,6 +250,7 @@ def finalize_report(request, report_pk):
     if r.submitted:
         return JsonResponse({"message": "Cannot submit a report that has already been submitted."}, status=409)
     r.submitted = True
+    r.date_submitted = timezone.now()
     r.save()
     # Send email
     send_report_to_admin(request, report_pk, status="FINAL")
