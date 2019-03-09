@@ -5,12 +5,12 @@
 
 Title: {{title}}
 Reference #: {{reference_number}}
-{% for section in sections %}
+{% for section in sections %}{% if section.completed %}
     {{section.title}}(SID: {{section.id}})
     {% for field in section.fields %}
-        {{field.label}}:  {{field.value|default:"empty"}}
+        {{field.label}}:  {% if field.field_type == 'boolean' %}{{field.value|yesno:"yes,no"}}{% else %}{{field.value|default:" "}}{% endif %}
     {% endfor %}
     {% for rule in section.rule_violations %}
         [RULE] {{rule.label}}:  {{rule.rule_break_text}}
     {% endfor %}
-{% endfor %}    
+{% endif %}{% endfor %}    

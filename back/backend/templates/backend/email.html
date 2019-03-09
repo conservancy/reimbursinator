@@ -12,7 +12,11 @@
             {% for field in section.fields %}
                 <tr>
                     <td>{{field.label}}</td>
-                    <td>{{field.value|default:""}}</td>
+		    <td>{% if field.field_type == 'boolean' %}
+			    {{field.value|yesno:"yes,no"}}
+			{% else %}
+			    {{field.value|default:" "}}
+			{% endif %}</td>
                 </tr>
             {% endfor %}
             {% for rule in section.rule_violations %}
