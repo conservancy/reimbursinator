@@ -606,7 +606,7 @@ document.addEventListener("submit", function(event) {
         let saveButton = event.target.lastElementChild;
         animateButton(saveButton, "  Saving...");
         const formData = new FormData(event.target);
-        const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid + "/section/" + event.target.dataset.sid;
+        const url = getEndpointDomain() + "api/v1/section/" + event.target.dataset.sid;
         makeAjaxRequest("PUT", url, updateSection, saveButton, formData);
     }
 });

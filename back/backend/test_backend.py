@@ -2,12 +2,15 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 from backend.models import Report
 from users.models import CustomUser
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 from datetime import date
 from backend.views import *
 import json
 
-class ReportTests(TestCase):
+class BackendTests(TestCase):
+
+    # Set up functions
+    ##################
 
     def create_test_user(self, email, first, last, password):
         """
@@ -15,6 +18,18 @@ class ReportTests(TestCase):
         """
         user = CustomUser.objects.create_user(username=email, email=email, first_name=first, last_name=last, password=password)
         return user
+
+    def setUp(self):
+        """
+        Create a couple test users and save them in the database.
+        """
+        self.test_user_1 = self.create_test_user('one@one.com', 'One', 'Mr. One', '1password')
+        self.test_user_1.save()
+        self.test_user_2 = self.create_test_user('two@two.com', 'Two', 'Mr. Two', '1password')
+        self.test_user_2.save()
+
+    # Report-related Tests
+    ######################
 
     def mock_report():
         """
@@ -29,15 +44,6 @@ class ReportTests(TestCase):
         r.reference_number = '12345'
         return r
 
-    def setUp(self):
-        """
-        Create a couple test users and save them in the database.
-        """
-        self.test_user_1 = self.create_test_user('one@one.com', 'One', 'Mr. One', '1password')
-        self.test_user_1.save()
-        self.test_user_2 = self.create_test_user('two@two.com', 'Two', 'Mr. Two', '1password')
-        self.test_user_2.save()
- 
     def test_create_report_logged_in(self):
         """
         Test when an authenticated user tries to submit a report.
@@ -219,3 +225,119 @@ class ReportTests(TestCase):
         self.assertEqual(response.status_code, 200)
         reports = Report.objects.filter(user_id=user)
         self.assertEqual(len(reports), 0)
+
+    def test_user_owns_report_true(self):
+        """
+        Test when a user owns a report
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'One\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_request, user=self.test_user_1)
+        create_report(add_report_request)
+        self.assertTrue(user_owns_report(self.test_user_1, 1))
+
+    def test_user_owns_report_false(self):
+        """
+        Test when a user doesn't own a report
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'One\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_request, user=self.test_user_1)
+        create_report(add_report_request)
+        self.assertFalse(user_owns_report(self.test_user_2, 1))
+
+    # Section-related Tests
+    #######################
+
+    def test_user_owns_section_true(self):
+        """
+        Test when a user owns a section
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'One\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_request, user=self.test_user_1)
+        create_report(add_report_request)
+        report = Report.objects.get(id=1)
+        section = Section.objects.create(report_id=report, auto_submit=False, required=False, completed=False, title='Section Title', html_description='<p>Description.</p>', number=0)
+        section.save()
+        section_id = section.id
+        self.assertTrue(user_owns_section(self.test_user_1, section_id))
+
+    def test_user_owns_section_false(self):
+        """
+        Test when a user doesn't own a section
+        """
+        factory = APIRequestFactory()
+        add_report_request = factory.post('/api/v1/report', {'title':'One\'s Report', 'reference':'12345'})
+        force_authenticate(add_report_request, user=self.test_user_1)
+        create_report(add_report_request)
+        report = Report.objects.get(id=1)
+        section = Section.objects.create(report_id=report, auto_submit=False, required=False, completed=False, title='Section Title', html_description='<p>Description.</p>', number=0)
+        section.save()
+        section_id = section.id
+        self.assertFalse(user_owns_section(self.test_user_2, section_id))
+
+    @patch('backend.models.Field.objects.filter')
+    def test_section_complete_true(self, mocked):
+        """
+        Test if a section has been completed.
+        """
+        mocked.return_value = [
+            Mock(completed=True),
+            Mock(completed=False),
+            Mock(completed=False)
+        ]
+        self.assertTrue(section_complete(1))
+
+    @patch('backend.models.Field.objects.filter')
+    def test_section_complete_false(self, mocked):
+        """
+        Test if a section has been completed.
+        """
+        mocked.return_value = [
+            Mock(completed=False),
+            Mock(completed=False),
+            Mock(completed=False)
+        ]
+        self.assertFalse(section_complete(1))
+
+    # Field-related Tests
+    #####################
+
+    def generate_test_fields(self):
+        test_boolean = models.BooleanField(default=False)
+        test_boolean = True
+        test_decimal = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+        test_decimal = 100.10
+        test_date = models.DateField(null=True, blank=True)
+        test_date = date(2019,3,1)
+        test_file = MagicMock()
+        test_file.__str__.return_value = '/path/to/the/file.jpg'
+        test_string = models.TextField(default='', blank=True)
+        test_string = 'Some String'
+        test_integer = models.IntegerField(default=0, blank=True)
+        test_integer = 100
+        fields = [
+            {'field_name':'boolean', 'value':test_boolean, 'field_type':'boolean'},
+            {'field_name':'decimal', 'value':test_decimal, 'field_type':'decimal'},
+            {'field_name':'date', 'value':'{}'.format(test_date), 'field_type':'date'},
+            {'field_name':'file', 'value':'{}'.format(test_file), 'field_type':'file'},
+            {'field_name':'string', 'value':'{}'.format(test_string), 'field_type':'string'},
+            {'field_name':'integer', 'value':test_integer, 'field_type':'integer'}
+        ]
+        return fields
+
+    def test_generate_named_fields_for_section(self):
+        """
+        Test the generation of key-value dictionary from fields.
+        """
+        test_fields = self.generate_test_fields()
+        result = generate_named_fields_for_section(test_fields)
+        self.assertEqual(result, {
+            'boolean':True,
+            'decimal':100.10,
+            'date':'2019-03-01',
+            'file':'/path/to/the/file.jpg',
+            'string':'Some String',
+            'integer':100
+        })
