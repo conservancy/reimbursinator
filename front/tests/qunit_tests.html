@@ -9,7 +9,9 @@
 </head>
 <body>
     <div id="qunit"></div>
-    <div id="qunit-fixture">
+    <div id="qunit-fixture"></div>
+
+    <template id="report-table">
         <div class="card-body">
             <div class="text-center">
                 <i class="fas fa-spinner fa-3x fa-spin"></i>
@@ -27,6 +29,9 @@
                 </tbody>
             </table>
         </div>
+    </template>
+
+    <template id="new-report">
         <div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -46,11 +51,15 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                        <button type="button" class="btn btn-primary finalize-report">Finalize Report</button>
+                        <button type="button" class="btn btn-primary review-report">Submit for Review</button>
                     </div>
                 </div>
             </div>
         </div>
+    </template>
+
+    <template id="edit-report">
         <div class="modal fade" id="editReportModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -71,12 +80,14 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger delete-report">Delete Report</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary submit-report-button">Submit Report</button>
+                        <button type="button" class="btn btn-primary finalize-report">Finalize Report</button>
+                        <button type="button" class="btn btn-primary review-report">Submit for Review</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
+
     <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
     <script>
 
@@ -390,6 +401,10 @@
     QUnit.module("createReportForm");
 
     QUnit.test("new report renders", function(assert) {
+        let qunitFixture = document.getElementById("qunit-fixture");
+        let newReport = document.getElementById("new-report");
+        let clone = document.importNode(newReport.content, true);
+        qunitFixture.appendChild(clone);
         createReportForm(testReport, reportType.NEW);
         let newReportModal = document.getElementById("newReportModal");
         let expectedHTML = typeNewExpectedHTML;
@@ -397,6 +412,10 @@
     });
 
     QUnit.test("edit report renders", function(assert) {
+        let qunitFixture = document.getElementById("qunit-fixture");
+        let editReport = document.getElementById("edit-report");
+        let clone = document.importNode(editReport.content, true);
+        qunitFixture.appendChild(clone);
         createReportForm(testReport, reportType.EDIT);
         let editReportModal = document.getElementById("editReportModal");
         let expectedHTML = typeEditExpectedHTML;
@@ -405,6 +424,9 @@
 
     QUnit.test("undefined report does not render", function(assert) {
         let qunitFixture = document.getElementById("qunit-fixture");
+        let newReport = document.getElementById("new-report");
+        let clone = document.importNode(newReport.content, true);
+        qunitFixture.appendChild(clone);
         let expectedHTML = qunitFixture.outerHTML;
         createReportForm(testReport, undefined);
         assert.deepEqual(qunitFixture.outerHTML, expectedHTML, "report forms and expectedHTML are identical")
@@ -412,7 +434,14 @@
 
 
     // BEGIN displayListOfReports unit tests
-    QUnit.module("displayListOfReports");
+    QUnit.module("displayListOfReports", {
+        beforeEach: function() {
+            let qunitFixture = document.getElementById("qunit-fixture");
+            let reportTable = document.getElementById("report-table");
+            let clone = document.importNode(reportTable.content, true);
+            qunitFixture.appendChild(clone);
+        }
+    });
 
     QUnit.test("empty reports", function(assert) {
         let expectedHTML = `<div class="card-body"><h5 class="text-center">No reports found.</h5></div>`;
@@ -429,7 +458,6 @@
         let cardBody = document.querySelector(".card-body");
         assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
     });
-
 
     QUnit.test("two editable reports", function(assert) {
         let parsedData = {"reports": [{"date_created": "2019-03-05T08:00:00Z", "title": "TEST1", "reference_number": "1234", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 4}, {"date_created": "2019-03-05T08:00:00Z", "title": "TEST2", "reference_number": "12345", "date_submitted": "2019-03-05T08:00:00Z", "user_id": 2, "submitted": false, "report_pk": 5}]};

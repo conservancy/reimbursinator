@@ -404,12 +404,6 @@ function displayListOfReports(parsedData) {
             bodyRow.insertCell(0).innerHTML = title;
             bodyRow.insertCell(1).innerHTML = dateCreated;
 
-            /*
-            let stateCell = bodyRow.insertCell(2);
-            stateCell.innerHTML = state;
-            stateCell.classList.add("d-none", "d-lg-table-cell"); // Column visible only on large displays
-            */
-
             // Create edit/view button
             let actionButton = document.createElement("button");
             actionButton.type = "submit";
