@@ -44,3 +44,89 @@ const displayReportsOneReportExpected = `<div class="card-body"><table class="ta
 const displayReportsTwoReportsExpected = `<div class="card-body"><table class="table table-striped table-responsive-sm" style="visibility: visible;"><thead><tr><th>Title</th><th>Date Created</th><th class="d-none d-md-table-cell">Date Submitted</th><th>Action</th></tr></thead><tbody><tr><td>TEST1</td><td>3/5/2019</td><td class="d-none d-md-table-cell">TBD</td><td><button type="submit" data-rid="4" class="btn btn-primary edit-report-button" data-toggle="modal" data-target="#editReportModal">Edit</button></td></tr><tr><td>TEST2</td><td>3/5/2019</td><td class="d-none d-md-table-cell">TBD</td><td><button type="submit" data-rid="5" class="btn btn-primary edit-report-button" data-toggle="modal" data-target="#editReportModal">Edit</button></td></tr></tbody></table></div>`;
 
 const displayReportsOneViewableExpected = `<div class="card-body"><table class="table table-striped table-responsive-sm" style="visibility: visible;"><thead><tr><th>Title</th><th>Date Created</th><th class="d-none d-md-table-cell">Date Submitted</th><th>Action</th></tr></thead><tbody><tr><td>TEST2</td><td>3/5/2019</td><td class="d-none d-md-table-cell">3/5/2019</td><td><button type="submit" data-rid="5" class="btn btn-success view-report-button" data-toggle="modal" data-target="#viewReportModal">View</button></td></tr></tbody></table></div>`;
+
+const updateSectionExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse show">
+                <div class="card-body">
+                    <div class="alert alert-danger section-alert">This section is not complete</div>
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+
+const updateSectionCompleteNoRuleViolationsExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state" class="fas fa-check-square"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse">
+                <div class="card-body">
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+
+const updateSectionCompleteOneRuleViolationsExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state" class="fas fa-exclamation-triangle"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse show">
+                <div class="card-body">
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="alert alert-danger">
+                        <div class="alert-heading">Rule Violations</div>
+                        <hr>
+                        <p><strong>Fare limit</strong><br>You did a bad thing</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;

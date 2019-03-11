@@ -88,6 +88,35 @@
         </div>
     </template>
 
+    <template id="collapse-card">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse show">
+                <div class="card-body">
+                    <div class="alert alert-danger section-alert">This section is not complete</div>
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
     <script>
 
@@ -474,6 +503,63 @@
         let cardBody = document.querySelector(".card-body");
         assert.deepEqual(cardBody.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card body and expectedHTML are identical");
     });
+
+    // BEGIN updateSection unit tests
+    QUnit.module("updateSection", {
+        beforeEach : function() {
+            let qunitFixture = document.getElementById("qunit-fixture");
+            let collapseCard = document.getElementById("collapse-card");
+            let clone = document.importNode(collapseCard.content, true);
+            qunitFixture.appendChild(clone);
+        }
+    });
+
+    QUnit.test("incomplete section with no rule violations", function(assert) {
+        let parsedData = {"id" : 1, "completed": false, "rule_violations" : []};
+        let saveButton = document.createElement("button");
+        saveButton.classList.add("btn", "btn-primary", "save-section");
+        saveButton.innerHTML = "Saving ...";
+        updateSection(parsedData, saveButton);
+        let collapseCard = document.querySelector(".card");
+        let expectedHTML = updateSectionExpected;
+        assert.deepEqual(collapseCard.outerHTML, expectedHTML, "card and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with no rule violations", function(assert) {
+        let parsedData = {"id" : 1, "completed": true, "rule_violations" : []};
+        let saveButton = document.createElement("button");
+        saveButton.classList.add("btn", "btn-primary", "save-section");
+        saveButton.innerHTML = "Saving ...";
+        updateSection(parsedData, saveButton);
+        let collapseCard = document.querySelector(".card");
+        let expectedHTML = updateSectionCompleteNoRuleViolationsExpected.replace(/>\s+</g, "><");
+        assert.deepEqual(collapseCard.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with one new rule violation", function(assert) {
+        let parsedData = {"id" : 1, "completed": true, "rule_violations" : [{"label": "Fare limit", "rule_break_text": "You did a bad thing"}]};
+        let saveButton = document.createElement("button");
+        saveButton.classList.add("btn", "btn-primary", "save-section");
+        saveButton.innerHTML = "Saving ...";
+        updateSection(parsedData, saveButton);
+        let collapseCard = document.querySelector(".card");
+        let expectedHTML = updateSectionCompleteOneRuleViolationsExpected.replace(/>\s+</g, "><");
+        assert.deepEqual(collapseCard.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card and expectedHTML are identical");
+    });
+
+    QUnit.test("complete section with one pre-existing rule violation", function(assert) {
+        let parsedData = {"id" : 1, "completed": true, "rule_violations" : [{"label": "Fare limit", "rule_break_text": "You did a bad thing"}]};
+        let saveButton = document.createElement("button");
+        saveButton.classList.add("btn", "btn-primary", "save-section");
+        saveButton.innerHTML = "Saving ...";
+        let collapseCard = document.querySelector(".card");
+        let collapseDiv = document.querySelector("#section-1-collapse");
+        collapseDiv.appendChild(createCardFooter(parsedData.rule_violations));
+        updateSection(parsedData, saveButton);
+        let expectedHTML = updateSectionCompleteOneRuleViolationsExpected.replace(/>\s+</g, "><");
+        assert.deepEqual(collapseCard.outerHTML.replace(/>\s+</g, "><"), expectedHTML, "card and expectedHTML are identical");
+    });
+
     </script>
 </body>
 </html>
