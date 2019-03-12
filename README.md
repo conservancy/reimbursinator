@@ -64,6 +64,14 @@ Qunit
 
 ...
 
+## Tests
+
+Testing works that have been done so far:
+
+⋅⋅* Bulletpoint
+
+⋅⋅⋅ Explanation
+
 ## Supports
 
 ⋅⋅* Bulletpoint
