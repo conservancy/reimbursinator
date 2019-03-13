@@ -68,7 +68,7 @@ function updateSection(parsedData, saveButton) {
     if (parsedData.completed) {
         const sectionAlert = collapseDiv.querySelector(".section-alert");
         if (sectionAlert) {
-            collapseDiv.firstChild.removeChild(sectionAlert);
+            collapseDiv.firstElementChild.removeChild(sectionAlert);
         }
         if (parsedData.rule_violations.length === 0) {
             // Complete with no rule violations
@@ -94,7 +94,6 @@ function updateSection(parsedData, saveButton) {
 
     saveButton.innerHTML = "Save";
     saveButton.disabled = false;
-
 }
 
 // Wraps a Bootstrap form group around a field

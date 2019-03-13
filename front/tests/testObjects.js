@@ -1,4 +1,356 @@
-const testReport = {"title": "New Report 1", "report_pk": 2, "date_submitted": "2019-03-04T08:00:00Z", "sections": [{"title": "General Info", "rule_violations": [], "fields": [{"field_type": "boolean", "label": "Have you taken this trip already?", "field_name": "after_trip", "value": false}], "completed": false, "id": 10, "html_description": "<p>Each section of this report is designed to guide you through the reimbursement process. Please read through each and answer as many questions as you can that apply to you.</p><p>Be sure to click 'Save' after completing each section. Your entered data will be saved as you progress. You may also receive feedback from sections regarding policy restrictions and special requirements.</p>"}, {"title": "Pre-trip Planning", "rule_violations": [], "fields": [{"field_type": "date", "label": "Departure date", "field_name": "departure_date", "value": "None"}, {"field_type": "date", "label": "Return date", "field_name": "return_date", "value": "None"}, {"field_type": "file", "label": "Screenshot of least expensive ticket fare", "field_name": "screenshot", "value": ""}, {"field_type": "date", "label": "Date of screenshot", "field_name": "screenshot_date", "value": "None"}, {"field_type": "decimal", "label": "Lowest fare", "field_name": "lowest_fare", "value": "0.00"}, {"field_type": "decimal", "label": "Flight duration of lowest fare (hours)", "field_name": "lowest_fare_duration", "value": "0.00"}, {"field_type": "decimal", "label": "Fare of your preferred flight", "field_name": "preferred_flight_fare", "value": "0.00"}, {"field_type": "decimal", "label": "Flight duration of your preferred flight (hours)", "field_name": "preferred_flight_duration", "value": "0.00"}, {"field_type": "boolean", "label": "Is this an international flight?", "field_name": "international_flight", "value": false}], "completed": false, "id": 11, "html_description": "<p>At least 14 days before buying tickets for your trip, take a screenshot of a flight search showing the least expensive fare available for the dates you need to travel. Include fares from multiple airlines if possible. This information will be used to calculate reimbursable fare amounts.</p>"}, {"title": "Flight Info", "rule_violations": [], "fields": [{"field_type": "date", "label": "Actual departure date", "field_name": "departure_date", "value": "None"}, {"field_type": "date", "label": "Actual return date", "field_name": "return_date", "value": "None"}, {"field_type": "decimal", "label": "Ticket fare", "field_name": "fare", "value": "0.00"}, {"field_type": "file", "label": "Screenshot of confirmation of purchase", "field_name": "confirmation_screenshot", "value": ""}, {"field_type": "boolean", "label": "Was this an international flight?", "field_name": "international_flight", "value": false}], "completed": false, "id": 12, "html_description": "<p>Enter the details of your flight once you have made your purchase.</p>"}, {"title": "Hotel / Lodging", "rule_violations": [], "fields": [{"field_type": "decimal", "label": "USGSA Per diem rate", "field_name": "per_diem_rate", "value": "0.00"}, {"field_type": "decimal", "label": "Total cost for lodging", "field_name": "cost", "value": "0.00"}, {"field_type": "date", "label": "Check-in date", "field_name": "check_in_date", "value": "None"}, {"field_type": "date", "label": "Check-out date", "field_name": "check_out_date", "value": "None"}, {"field_type": "file", "label": "Screenshot of invoice", "field_name": "invoice_screenshot", "value": ""}], "completed": false, "id": 13, "html_description": "<p>Please submit a receipt from your hotel including both the total amount and the dates of your stay. Per diem rates can be found on <a href='https://www.gsa.gov/travel/plan-book/per-diem-rates' target='_blank'>the U.S. GSA website</a>.</p>"}, {"title": "Local Transportation", "rule_violations": [], "fields": [{"field_type": "decimal", "label": "Total cost of local transportation", "field_name": "cost", "value": "0.00"}], "completed": false, "id": 14, "html_description": "<p>This amount includes taxis, uber, and public transportation.</p>"}, {"title": "Per Diem and Other Expenses", "rule_violations": [], "fields": [{"field_type": "decimal", "label": "Per diem rate", "field_name": "rate", "value": "0.00"}, {"field_type": "integer", "label": "Number of full days of travel", "field_name": "full_days", "value": 0}, {"field_type": "integer", "label": "Number of partial days of travel", "field_name": "partial_days", "value": 0}, {"field_type": "decimal", "label": "Total Cost for meals and incidentals", "field_name": "cost", "value": "0.00"}], "completed": false, "id": 15, "html_description": "<p>Your per diem allowance is used to cover meals and incidental expenses. The rate for your travel destination can be found on the following websites:</p><ul><li><a href='https://www.gsa.gov/perdiem' target='_blank'>US General Serices Administration</a> for travel in the United States</li><li><a href='https://aoprals.state.gov/web920/per_diem.asp' target='_blank'>US Department of State</a> for travel outside the United States</li></ul><p>You may request up to 100% of the listed rate for a full day of travel, or 75% for a partial day of travel."}, {"title": "Payment Option - Paypal", "rule_violations": [], "fields": [{"field_type": "string", "label": "Email address used with Paypal", "field_name": "paypal_email", "value": ""}, {"field_type": "string", "label": "Preferred currency", "field_name": "preferred_currency", "value": ""}], "completed": false, "id": 16, "html_description": "<p>Complete this section if you wish to be reimbursed via Paypal. This is the preferred reimbursement method of Software Freedom Conservancy.</p>"}, {"title": "Payment Option - Check", "rule_violations": [], "fields": [{"field_type": "string", "label": "Street address", "field_name": "address_1", "value": ""}, {"field_type": "string", "label": "Street address 2", "field_name": "address_2", "value": ""}, {"field_type": "string", "label": "City", "field_name": "city", "value": ""}, {"field_type": "string", "label": "State", "field_name": "state", "value": ""}, {"field_type": "string", "label": "Zip code", "field_name": "zip", "value": ""}], "completed": false, "id": 17, "html_description": "<p>Complete this section if you wish to be reimbursed in USD via check sent by mail.</p>"}, {"title": "Payment Option - Bank Wire", "rule_violations": [], "fields": [{"field_type": "string", "label": "Full name of account holder", "field_name": "name", "value": ""}, {"field_type": "string", "label": "Street address", "field_name": "address_1", "value": ""}, {"field_type": "string", "label": "Street address 2", "field_name": "address_2", "value": ""}, {"field_type": "string", "label": "City", "field_name": "city", "value": ""}, {"field_type": "string", "label": "State", "field_name": "state", "value": ""}, {"field_type": "string", "label": "Zip code", "field_name": "zip", "value": ""}, {"field_type": "string", "label": "Account number", "field_name": "account", "value": ""}, {"field_type": "string", "label": "Preferred currency", "field_name": "currency", "value": ""}, {"field_type": "string", "label": "Bank name", "field_name": "bank_name", "value": ""}, {"field_type": "string", "label": "Bank address", "field_name": "bank_address", "value": ""}, {"field_type": "string", "label": "Bank ACH/ABA routing number (US) or SWIFT/BIC code (non-US)", "field_name": "routing_number", "value": ""}, {"field_type": "string", "label": "Additional information (see SFC policy)", "field_name": "additional_info", "value": ""}], "completed": false, "id": 18, "html_description": "<p>Complete this section if you wish to be wired the amount to your bank in your local currency. Please fill in as much of the following information as is possible. Please refer to the <a href='https://sfconservancy.org/projects/policies/conservancy-travel-policy.html' target='_blank'>SFC travel policy</a> for additional bank information required for certain countries.</p>"}], "submitted": false, "reference_number": "1234", "date_created": "2019-03-04T08:00:00Z"};
+const testReport = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "General Info",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "boolean",
+                    "label": "Have you taken this trip already?",
+                    "field_name": "after_trip",
+                    "value": false
+                }
+            ],
+            "completed": false,
+            "id": 10,
+            "html_description": "<p>Each section of this report is designed to guide you through the reimbursement process. Please read through each and answer as many questions as you can that apply to you.</p><p>Be sure to click 'Save' after completing each section. Your entered data will be saved as you progress. You may also receive feedback from sections regarding policy restrictions and special requirements.</p>"
+        },
+        {
+            "title": "Pre-trip Planning",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "date",
+                    "label": "Departure date",
+                    "field_name": "departure_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Return date",
+                    "field_name": "return_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "file",
+                    "label": "Screenshot of least expensive ticket fare",
+                    "field_name": "screenshot",
+                    "value": ""
+                },
+                {
+                    "field_type": "date",
+                    "label": "Date of screenshot",
+                    "field_name": "screenshot_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Lowest fare",
+                    "field_name": "lowest_fare",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Flight duration of lowest fare (hours)",
+                    "field_name": "lowest_fare_duration",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Fare of your preferred flight",
+                    "field_name": "preferred_flight_fare", "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Flight duration of your preferred flight (hours)",
+                    "field_name": "preferred_flight_duration",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "boolean",
+                    "label": "Is this an international flight?",
+                    "field_name": "international_flight",
+                    "value": false
+                }
+            ],
+            "completed": false,
+            "id": 11,
+            "html_description": "<p>At least 14 days before buying tickets for your trip, take a screenshot of a flight search showing the least expensive fare available for the dates you need to travel. Include fares from multiple airlines if possible. This information will be used to calculate reimbursable fare amounts.</p>"
+        },
+        {
+            "title": "Flight Info",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "date",
+                    "label": "Actual departure date",
+                    "field_name": "departure_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Actual return date",
+                    "field_name": "return_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Ticket fare",
+                    "field_name": "fare",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "file",
+                    "label": "Screenshot of confirmation of purchase",
+                    "field_name": "confirmation_screenshot",
+                    "value": ""
+                },
+                {
+                    "field_type": "boolean",
+                    "label": "Was this an international flight?",
+                    "field_name": "international_flight",
+                    "value": false
+                }
+            ],
+            "completed": false,
+            "id": 12,
+            "html_description": "<p>Enter the details of your flight once you have made your purchase.</p>"
+        },
+        {
+            "title": "Hotel / Lodging",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "decimal",
+                    "label": "USGSA Per diem rate",
+                    "field_name": "per_diem_rate",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Total cost for lodging",
+                    "field_name": "cost",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-in date",
+                    "field_name": "check_in_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-out date",
+                    "field_name": "check_out_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "file",
+                    "label": "Screenshot of invoice",
+                    "field_name": "invoice_screenshot",
+                    "value": ""
+                }
+            ],
+            "completed": false,
+            "id": 13,
+            "html_description": "<p>Please submit a receipt from your hotel including both the total amount and the dates of your stay. Per diem rates can be found on <a href='https://www.gsa.gov/travel/plan-book/per-diem-rates' target='_blank'>the U.S. GSA website</a>.</p>"},
+            {
+                "title": "Local Transportation",
+                "rule_violations": [],
+                "fields": [
+                    {
+                        "field_type": "decimal",
+                        "label": "Total cost of local transportation",
+                        "field_name": "cost",
+                        "value": "0.00"
+                    }
+                ],
+                "completed": false,
+                "id": 14,
+                "html_description": "<p>This amount includes taxis, uber, and public transportation.</p>"
+            },
+            {
+                "title": "Per Diem and Other Expenses",
+                "rule_violations": [],
+                "fields": [
+                    {
+                        "field_type": "decimal",
+                        "label": "Per diem rate",
+                        "field_name": "rate",
+                        "value": "0.00"
+                    },
+                    {
+                        "field_type": "integer",
+                        "label": "Number of full days of travel",
+                        "field_name": "full_days",
+                        "value": 0
+                    },
+                    {
+                        "field_type": "integer",
+                        "label": "Number of partial days of travel",
+                        "field_name": "partial_days",
+                        "value": 0
+                    },
+                    {
+                        "field_type": "decimal",
+                        "label": "Total Cost for meals and incidentals",
+                        "field_name": "cost",
+                        "value": "0.00"
+                    }
+                ],
+                "completed": false,
+                "id": 15,
+                "html_description": "<p>Your per diem allowance is used to cover meals and incidental expenses. The rate for your travel destination can be found on the following websites:</p><ul><li><a href='https://www.gsa.gov/perdiem' target='_blank'>US General Serices Administration</a> for travel in the United States</li><li><a href='https://aoprals.state.gov/web920/per_diem.asp' target='_blank'>US Department of State</a> for travel outside the United States</li></ul><p>You may request up to 100% of the listed rate for a full day of travel, or 75% for a partial day of travel."
+            },
+            {
+                "title": "Payment Option - Paypal",
+                "rule_violations": [],
+                "fields": [
+                    {
+                        "field_type": "string",
+                        "label": "Email address used with Paypal",
+                        "field_name": "paypal_email",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Preferred currency",
+                        "field_name": "preferred_currency",
+                        "value": ""
+                    }
+                ],
+                "completed": false,
+                "id": 16,
+                "html_description": "<p>Complete this section if you wish to be reimbursed via Paypal. This is the preferred reimbursement method of Software Freedom Conservancy.</p>"
+            },
+            {
+                "title": "Payment Option - Check",
+                "rule_violations": [],
+                "fields": [
+                    {
+                        "field_type": "string",
+                        "label": "Street address",
+                        "field_name": "address_1",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Street address 2",
+                        "field_name": "address_2",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "City",
+                        "field_name": "city",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "State",
+                        "field_name": "state",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Zip code",
+                        "field_name": "zip",
+                        "value": ""
+                    }
+                ],
+                "completed": false,
+                "id": 17,
+                "html_description": "<p>Complete this section if you wish to be reimbursed in USD via check sent by mail.</p>"
+            },
+            {
+                "title": "Payment Option - Bank Wire",
+                "rule_violations": [],
+                "fields": [
+                    {
+                        "field_type": "string",
+                        "label": "Full name of account holder",
+                        "field_name": "name",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Street address",
+                        "field_name": "address_1",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Street address 2",
+                        "field_name": "address_2",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "City",
+                        "field_name": "city",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "State",
+                        "field_name": "state",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Zip code",
+                        "field_name": "zip",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Account number",
+                        "field_name": "account",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Preferred currency",
+                        "field_name": "currency",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Bank name",
+                        "field_name": "bank_name",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Bank address",
+                        "field_name": "bank_address",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Bank ACH/ABA routing number (US) or SWIFT/BIC code (non-US)",
+                        "field_name": "routing_number",
+                        "value": ""
+                    },
+                    {
+                        "field_type": "string",
+                        "label": "Additional information (see SFC policy)",
+                        "field_name": "additional_info",
+                        "value": ""
+                    }
+                ],
+                "completed": false,
+                "id": 18,
+                "html_description": "<p>Complete this section if you wish to be wired the amount to your bank in your local currency. Please fill in as much of the following information as is possible. Please refer to the <a href='https://sfconservancy.org/projects/policies/conservancy-travel-policy.html' target='_blank'>SFC travel policy</a> for additional bank information required for certain countries.</p>"
+            }
+        ],
+        "submitted": false,
+        "reference_number": "1234",
+        "date_created": "2019-03-04T08:00:00Z"
+};
 
 const typeNewExpectedHTML = `<div class="modal fade" id="newReportModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg" role="document">
@@ -44,3 +396,313 @@ const displayReportsOneReportExpected = `<div class="card-body"><table class="ta
 const displayReportsTwoReportsExpected = `<div class="card-body"><table class="table table-striped table-responsive-sm" style="visibility: visible;"><thead><tr><th>Title</th><th>Date Created</th><th class="d-none d-md-table-cell">Date Submitted</th><th>Action</th></tr></thead><tbody><tr><td>TEST1</td><td>3/5/2019</td><td class="d-none d-md-table-cell">TBD</td><td><button type="submit" data-rid="4" class="btn btn-primary edit-report-button" data-toggle="modal" data-target="#editReportModal">Edit</button></td></tr><tr><td>TEST2</td><td>3/5/2019</td><td class="d-none d-md-table-cell">TBD</td><td><button type="submit" data-rid="5" class="btn btn-primary edit-report-button" data-toggle="modal" data-target="#editReportModal">Edit</button></td></tr></tbody></table></div>`;
 
 const displayReportsOneViewableExpected = `<div class="card-body"><table class="table table-striped table-responsive-sm" style="visibility: visible;"><thead><tr><th>Title</th><th>Date Created</th><th class="d-none d-md-table-cell">Date Submitted</th><th>Action</th></tr></thead><tbody><tr><td>TEST2</td><td>3/5/2019</td><td class="d-none d-md-table-cell">3/5/2019</td><td><button type="submit" data-rid="5" class="btn btn-success view-report-button" data-toggle="modal" data-target="#viewReportModal">View</button></td></tr></tbody></table></div>`;
+
+const updateSectionExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse show">
+                <div class="card-body">
+                    <div class="alert alert-danger section-alert">This section is not complete</div>
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+
+const updateSectionCompleteNoRuleViolationsExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state" class="fas fa-check-square"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse">
+                <div class="card-body">
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>`;
+
+const updateSectionCompleteOneRuleViolationsExpected = `<div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#section-1-collapse">General Info</button>
+                    <i id="section-1-state" class="fas fa-exclamation-triangle"></i>
+                </h2>
+            </div>
+            <div id="section-1-collapse" class="collapse show">
+                <div class="card-body">
+                    <p>Description</p>
+                    <form class="form section-form" id="section-1-form" data-rid="2" data-sid="1">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form" for="section-1-after_trip">Have you taken this trip already?: </label>
+                            <div class="col-sm-6">
+                                <select name="after_trip" id="section-1-after_trip" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false" selected="selected">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary save-section">Save</button>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="alert alert-danger">
+                        <div class="alert-heading">Rule Violations</div>
+                        <hr>
+                        <p><strong>Fare limit</strong><br>You did a bad thing</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest1 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "General Info",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "boolean",
+                    "label": "Havel you taken this trip already?",
+                    "field_name": "after_trip",
+                    "value": false
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest1Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>General Info</h4><p>Havel you taken this trip already?: No</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest2 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "General Info",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "boolean",
+                    "label": "Havel you taken this trip already?",
+                    "field_name": "after_trip",
+                    "value": true
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest2Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>General Info</h4><p>Havel you taken this trip already?: Yes</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest3 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Payment Option - Check",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "string",
+                    "label": "City",
+                    "field_name": "city",
+                    "value": ""
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest3Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Payment Option - Check</h4><p>City: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest4 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Pre-trip Planning",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "date",
+                    "label": "Departure date",
+                    "field_name": "departure_date",
+                    "value": "None"
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest4Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Pre-trip Planning</h4><p>Departure date: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest5 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Hotel / Lodging",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "decimal",
+                    "label": "USGSA Per diem rate",
+                    "field_name": "per_diem_rate",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Total cost for lodging",
+                    "field_name": "cost",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-in date",
+                    "field_name": "check_in_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-out date",
+                    "field_name": "check_out_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "file",
+                    "label": "Screenshot of invoice",
+                    "field_name": "invoice_screenshot",
+                    "value": ""
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest5Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Hotel / Lodging</h4><p>USGSA Per diem rate: 0.00</p><p>Total cost for lodging: 0.00</p><p>Check-in date: None</p><p>Check-out date: None</p><p>Screenshot of invoice: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
