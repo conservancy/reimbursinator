@@ -522,3 +522,187 @@ let viewReportTest1Expected = `<div class="modal fade" id="viewReportModal" tabi
                 </div>
             </div>
         </div>`;
+
+let viewReportTest2 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "General Info",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "boolean",
+                    "label": "Havel you taken this trip already?",
+                    "field_name": "after_trip",
+                    "value": true
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest2Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>General Info</h4><p>Havel you taken this trip already?: Yes</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest3 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Payment Option - Check",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "string",
+                    "label": "City",
+                    "field_name": "city",
+                    "value": ""
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest3Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Payment Option - Check</h4><p>City: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest4 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Pre-trip Planning",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "date",
+                    "label": "Departure date",
+                    "field_name": "departure_date",
+                    "value": "None"
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest4Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Pre-trip Planning</h4><p>Departure date: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;
+
+let viewReportTest5 = {
+    "title": "New Report 1",
+    "report_pk": 2,
+    "date_submitted": "2019-03-04T08:00:00Z",
+    "sections": [
+        {
+            "title": "Hotel / Lodging",
+            "rule_violations": [],
+            "fields": [
+                {
+                    "field_type": "decimal",
+                    "label": "USGSA Per diem rate",
+                    "field_name": "per_diem_rate",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "decimal",
+                    "label": "Total cost for lodging",
+                    "field_name": "cost",
+                    "value": "0.00"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-in date",
+                    "field_name": "check_in_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "date",
+                    "label": "Check-out date",
+                    "field_name": "check_out_date",
+                    "value": "None"
+                },
+                {
+                    "field_type": "file",
+                    "label": "Screenshot of invoice",
+                    "field_name": "invoice_screenshot",
+                    "value": ""
+                }
+            ],
+            "completed": true,
+            "id": 10,
+            "html_description": "<p>Description</p>"
+        }
+    ],
+    "submitted": false,
+    "reference_number": "1234",
+    "date_created": "2019-03-04T08:00:00Z"
+};
+
+let viewReportTest5Expected = `<div class="modal fade" id="viewReportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewReportModalLabel">New Report 1 3/4/2019</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-view"><div class="card"><div class="card-header"><div class="card-body"><h4>Hotel / Lodging</h4><p>USGSA Per diem rate: 0.00</p><p>Total cost for lodging: 0.00</p><p>Check-in date: None</p><p>Check-out date: None</p><p>Screenshot of invoice: None</p></div></div></div></div>
+                </div>
+            </div>
+        </div>`;

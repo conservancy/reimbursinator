@@ -613,6 +613,38 @@
         let expectedHTML = viewReportTest1Expected;
         assert.deepEqual(viewReport.outerHTML, expectedHTML, "view report and expectedHTML are identical");
     });
+
+    QUnit.test("field type is boolean and value is true", function(assert) {
+        let parsedData = viewReportTest2;
+        displayReport(parsedData);
+        let viewReport = document.getElementById("viewReportModal");
+        let expectedHTML = viewReportTest2Expected;
+        assert.deepEqual(viewReport.outerHTML, expectedHTML, "view report and expectedHTML are identical");
+    });
+
+    QUnit.test("field type is non-boolean and value is the empty string", function(assert) {
+        let parsedData = viewReportTest3;
+        displayReport(parsedData);
+        let viewReport = document.getElementById("viewReportModal");
+        let expectedHTML = viewReportTest3Expected;
+        assert.deepEqual(viewReport.outerHTML, expectedHTML, "view report and expectedHTML are identical");
+    });
+
+    QUnit.test("field type is non-boolean and value is not the empty string", function(assert) {
+        let parsedData = viewReportTest4;
+        displayReport(parsedData);
+        let viewReport = document.getElementById("viewReportModal");
+        let expectedHTML = viewReportTest4Expected;
+        assert.deepEqual(viewReport.outerHTML, expectedHTML, "view report and expectedHTML are identical");
+    });
+
+    QUnit.test("multiple fields", function(assert) {
+        let parsedData = viewReportTest5;
+        displayReport(parsedData);
+        let viewReport = document.getElementById("viewReportModal");
+        let expectedHTML = viewReportTest5Expected;
+        assert.deepEqual(viewReport.outerHTML, expectedHTML, "view report and expectedHTML are identical");
+    });
     </script>
 </body>
 </html>
