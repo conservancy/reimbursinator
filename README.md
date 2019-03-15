@@ -45,6 +45,7 @@ Edit the `back/reimbursinator/settings.py` file and change the following lines t
 - `ALLOWED_HOSTS` - This tells Django which front end addresses should be served. It should include the address of the server providing the content of `front/`.
 - `CORS_ORIGIN_WHITELIST` - This tells Django which front end addresses to provide CORS headers for. Include the same information here. (include port if necessary)
 - `STATIC_URL` - This tells Django where admin css/js will be served from.
+- `LOGIN_URL` and `LOGIN_REDIRECT_URL` - These should point to your front page, including port if necessary. e.g. `https://192.168.99.100:8443`
 
 Also replace the `SECRET_KEY` value with your own and set `DEBUG` to False.
 
