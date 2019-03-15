@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, Mock, patch
 from datetime import date
 from backend.views import *
 from .policy import pol
+from decimal import Decimal
 import json
 
 class BackendTests(TestCase):
@@ -357,6 +358,137 @@ class BackendTests(TestCase):
 
     # Field-related Tests
     #####################
+
+    def test_get_fields(self):
+        """
+        Test gettings fields for a section.
+        """
+
+        self.maxDiff = 5000
+        # create sample report
+        report = Report.objects.create(
+            user_id=self.test_user_1,
+            title="Report Title",
+            date_created=timezone.now(),
+            reference_number="1234"
+        )
+        report.save()
+
+        # create sample section
+        section_0 = Section.objects.create(
+            report_id=report,
+            auto_submit=False,
+            required=False,
+            completed=False,
+            title='Section Zero',
+            html_description='<p>Description zero</p>',
+            number=0
+        )
+        section_0.save()
+
+        # create sample fields
+        field_0 = Field.objects.create(
+            section_id=section_0,
+            field_name='boolean',
+            label='A boolean',
+            number=0,
+            field_type='boolean',
+            completed=True,
+            data_bool=True
+        )
+        field_0.save()
+        field_1 = Field.objects.create(
+            section_id=section_0,
+            field_name='decimal',
+            label='A decimal',
+            number=1,
+            field_type='decimal',
+            completed=True,
+            data_decimal=10.1
+        )
+        field_1.save()
+        field_2 = Field.objects.create(
+            section_id=section_0,
+            field_name='date',
+            label='A date',
+            number=2,
+            field_type='date',
+            completed=True,
+            data_date=date(2019,3,1)
+        )
+        field_2.save()
+        field_3 = Field.objects.create(
+            section_id=section_0,
+            field_name='file',
+            label='A file',
+            number=3,
+            field_type='file',
+            completed=True,
+            data_file='uploads/2019/03/01/file.jpg'
+        )
+        field_3.save()
+        field_4 = Field.objects.create(
+            section_id=section_0,
+            field_name='string',
+            label='A string',
+            number=4,
+            field_type='string',
+            completed=True,
+            data_string='string data'
+        )
+        field_4.save()
+        field_5 = Field.objects.create(
+            section_id=section_0,
+            field_name='integer',
+            label='An integer',
+            number=5,
+            field_type='integer',
+            completed=True,
+            data_integer=10
+        )
+        field_5.save()
+        expected = {
+            'fields': [
+                {
+                    'field_name': 'boolean',
+                    'field_type': 'boolean',
+                    'label': 'A boolean',
+                    'value': True
+                },
+                {
+                    'field_name': 'decimal',
+                    'field_type': 'decimal',
+                    'label': 'A decimal',
+                    'value': Decimal('10.10')
+                },
+                {
+                    'field_name': 'date',
+                    'field_type': 'date',
+                    'label': 'A date',
+                    'value': '{}'.format(date(2019,3,1))
+                },
+                {
+                    'field_name': 'file',
+                    'field_type': 'file',
+                    'label': 'A file',
+                    'value': 'file.jpg'
+                },
+                {
+                    'field_name': 'string',
+                    'field_type': 'string',
+                    'label': 'A string',
+                    'value': 'string data'
+                },
+                {
+                    'field_name': 'integer',
+                    'field_type': 'integer',
+                    'label': 'An integer',
+                    'value': 10
+                }
+            ]
+        }
+        result = get_fields(1)
+        self.assertEqual(expected, result)
 
     def generate_test_fields(self):
         test_boolean = models.BooleanField(default=False)
