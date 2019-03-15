@@ -527,3 +527,56 @@ class BackendTests(TestCase):
             'string':'Some String',
             'integer':100
         })
+
+    # Other tests
+    #############
+
+    def test_get_files(self):
+        """
+        Test getting files from a report.
+        """
+        # create sample report
+        report = Report.objects.create(
+            user_id=self.test_user_1,
+            title="Report Title",
+            date_created=timezone.now(),
+            reference_number="1234"
+        )
+        report.save()
+
+        # create sample section
+        section_0 = Section.objects.create(
+            report_id=report,
+            auto_submit=False,
+            required=False,
+            completed=False,
+            title='Section Zero',
+            html_description='<p>Description zero</p>',
+            number=0
+        )
+        section_0.save()
+
+        # create sample fields
+        field_0 = Field.objects.create(
+            section_id=section_0,
+            field_name='file 0',
+            label='A file',
+            number=0,
+            field_type='file',
+            completed=True,
+            data_file='uploads/2019/03/01/file0.jpg'
+        )
+        field_0.save()
+        field_1 = Field.objects.create(
+            section_id=section_0,
+            field_name='file 1',
+            label='A file',
+            number=1,
+            field_type='file',
+            completed=True,
+            data_file='uploads/2019/03/01/file1.jpg'
+        )
+        field_1.save()
+        expected = ['uploads/2019/03/01/file0.jpg', 'uploads/2019/03/01/file1.jpg']
+        result = get_files(1)
+        self.assertEqual(result, expected)
