@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from backend.models import Report
 from users.models import CustomUser
 from unittest.mock import MagicMock, Mock, patch
-from datetime import date
+from datetime import date, datetime, timezone
 from backend.views import *
 from .policy import pol
 from decimal import Decimal
@@ -227,6 +227,69 @@ class BackendTests(TestCase):
         self.assertEqual(response.status_code, 200)
         reports = Report.objects.filter(user_id=user)
         self.assertEqual(len(reports), 0)
+
+    def test_reports_user_with_two_reports(self):
+        """
+        Test retrieving a list of reports for a user with two created.
+        """
+        self.maxDiff = 5000
+        now = datetime(2019, 3, 1, 0, 0, 0, 0, tzinfo=timezone.utc)
+        # create two sample reports
+        report_1 = Report.objects.create(
+            user_id=self.test_user_1,
+            title="Report One",
+            date_created=now,
+            date_submitted=now,
+            reference_number="1234"
+        )
+        report_1.save()
+        report_2 = Report.objects.create(
+            user_id=self.test_user_1,
+            title="Report Two",
+            date_created=now,
+            date_submitted=now,
+            reference_number="1234"
+        )
+        report_2.save()
+        report_3 = Report.objects.create(
+            user_id=self.test_user_2,
+            title="Report Three",
+            date_created=now,
+            reference_number="1234"
+        )
+        report_3.save()
+        
+        # get reports with user 1
+        factory = APIRequestFactory()
+        get_reports_request = factory.get('/api/v1/reports')
+        force_authenticate(get_reports_request, user=self.test_user_1)
+        response = reports(get_reports_request)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.content.decode("utf-8", "strict"))
+        formatted_date = '2019-03-01T00:00:00Z'
+        expected = {
+            "reports": [
+                {
+                    "title": "Report One",
+                    "submitted": False,
+                    "report_pk": 1,
+                    "date_created": formatted_date,
+                    "date_submitted": formatted_date,
+                    "user_id": 1,
+                    "reference_number": "1234"
+                },
+                {
+                    "title": "Report Two",
+                    "submitted": False,
+                    "report_pk": 2,
+                    "date_created": formatted_date,
+                    "date_submitted": formatted_date,
+                    "user_id": 1,
+                    "reference_number": "1234"
+                }
+            ]
+        }
+        self.assertEqual(result, expected)
 
     def test_user_owns_report_true(self):
         """
