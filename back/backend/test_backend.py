@@ -5,6 +5,7 @@ from users.models import CustomUser
 from unittest.mock import MagicMock, Mock, patch
 from datetime import date
 from backend.views import *
+from .policy import pol
 import json
 
 class BackendTests(TestCase):
@@ -248,6 +249,59 @@ class BackendTests(TestCase):
 
     # Section-related Tests
     #######################
+
+    @patch('backend.views.get_fields', Mock(return_value={}))
+    def test_get_sections(self):
+        """
+        Test gettings sections for a report.
+        """
+        report = Report.objects.create(
+            user_id=self.test_user_1,
+            title="Report Title",
+            date_created=timezone.now(),
+            reference_number="1234"
+        )
+        report.save()
+        section_0 = Section.objects.create(
+            report_id=report,
+            auto_submit=False,
+            required=False,
+            completed=False,
+            title='Section Zero',
+            html_description='<p>Description zero</p>',
+            number=0
+        )
+        section_0.save()
+        section_1 = Section.objects.create(
+            report_id=report,
+            auto_submit=False,
+            required=False,
+            completed=False,
+            title='Section One',
+            html_description='<p>Description one</p>',
+            number=1
+        )
+        section_1.save()
+        expected = {
+            'sections': [
+                {
+                    'completed': False,
+                    'html_description': '<p>Description zero</p>',
+                    'id': 1,
+                    'rule_violations': [],
+                    'title': 'Section Zero'
+                },
+                {
+                    'completed': False,
+                    'html_description': '<p>Description one</p>',
+                    'id': 2,
+                    'rule_violations': [],
+                    'title': 'Section One'
+                }
+            ]
+        } 
+        result = get_sections(1)
+        self.assertEqual(expected, result)
 
     def test_user_owns_section_true(self):
         """
