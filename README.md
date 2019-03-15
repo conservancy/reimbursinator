@@ -67,6 +67,12 @@ Serve the contents of `back/` using a Python WSGI server. For example, in the ca
 
 `gunicorn --bind 0.0.0.0:444 --keyfile /etc/ssl/private/certificate.key --certfile /etc/ssl/private/certificate.crt reimbursinator.wsgi:application`
 
+#### Admin access
+
+Once the server is up and running, log in to `https://backendaddress.com:port/admin/` using the username `admin` and password `admin`, then change the administrative password using the "change password" link.
+
+Open the "Sites" view, and edit the one existing site's name to match your server name. This will be used in system emails.
+
 ### Admin Files
 
 In order to have CSS and JS working in the Django administrative pages, serve the contents of `admin/static` using the http server of your choice, and edit `back/reimbursinator/settings.py` to set the `STATIC_URL` address to the correct address to access these files.
