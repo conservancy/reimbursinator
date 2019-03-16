@@ -810,7 +810,7 @@ class BackendTests(TestCase):
         """
         Tests the get_data function in models.py
 
-        :return: no value
+        :return: None
         """
         test_obj = Mock()
 
@@ -843,6 +843,15 @@ class BackendTests(TestCase):
         test_obj.data_integer = 99
         result_int = Field.get_datatype(test_obj)
         self.assertEqual(result_int, 99)
+
+    def test_path_leaf(self):
+        """
+        Tests the path_leaf function in models.py
+
+        :return: None
+        """
+        result = Field.path_leaf(Mock(), "uploads/2018/01/01/file.jpg")
+        self.assertEqual(result, "file.jpg")
 
     def test_get_files(self):
         """
