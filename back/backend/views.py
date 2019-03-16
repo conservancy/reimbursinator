@@ -452,6 +452,5 @@ def get_files(report_pk):
         fields = Field.objects.filter(section_id=section.id, completed=True)
         for field in fields:
             if field.field_type == "file":
-                print("appending {}".format(field.data_file.name))
                 files.append(field.data_file.name)
     return files
