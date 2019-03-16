@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
-from backend.models import Report
+from backend.models import Report, Field
 from users.models import CustomUser
 from unittest.mock import MagicMock, Mock, patch
 from datetime import date, datetime, timezone
@@ -805,6 +805,44 @@ class BackendTests(TestCase):
 
     # Other tests
     #############
+
+    def test_get_data(self):
+        """
+        Tests the get_data function in models.py
+
+        :return: no value
+        """
+        test_obj = Mock()
+
+        test_obj.field_type = "boolean"
+        test_obj.data_bool = True
+        result_bool = Field.get_datatype(test_obj)
+        self.assertEqual(result_bool, True)
+
+        test_obj.field_type = "decimal"
+        test_obj.data_decimal = 1.0
+        result_dec = Field.get_datatype(test_obj)
+        self.assertEqual(result_dec, 1.0)
+
+        test_obj.field_type = "date"
+        test_obj.data_date = str(date(2018, 1, 1))
+        result_date = Field.get_datatype(test_obj)
+        self.assertEqual(result_date, str(date(2018, 1, 1)))
+
+        test_obj.field_type = "file"
+        test_obj.path_leaf = Mock(return_value="file.jpg")
+        result_file = Field.get_datatype(test_obj)
+        self.assertEqual(result_file, "file.jpg")
+
+        test_obj.field_type = "string"
+        test_obj.data_string = "hello"
+        result_str = Field.get_datatype(test_obj)
+        self.assertEqual(result_str, "hello")
+
+        test_obj.field_type = "integer"
+        test_obj.data_integer = 99
+        result_int = Field.get_datatype(test_obj)
+        self.assertEqual(result_int, 99)
 
     def test_get_files(self):
         """
