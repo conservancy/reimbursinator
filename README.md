@@ -96,5 +96,15 @@ The following are the versions used in development of Reimbursinator, and the ve
 
 ## Tests
 
-## Support
+### Front end
 
+Tests for front end code are implemented with Q-Unit, and are located in the `front/tests/` directory. To run them, open `qunit_tests.html` in a browser.
+
+### Back end
+
+Tests for back end code are implemented with Python and Django testing libraries. To run these:
+
+1. From the `back/` directory, run `pipenv shell` to load Django modules.
+2. Run `python manage.py test`.
+
+One test file, `test_backend.py`, covers Django models, views, etc. The other test file, `test_policy.py`, is specific to the rules implemented in the provided `policy.py` file, and need to be updated or removed as changes are made.
