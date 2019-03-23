@@ -107,4 +107,4 @@ Tests for back end code are implemented with Python and Django testing libraries
 1. From the `back/` directory, run `pipenv shell` to load Django modules.
 2. Run `python manage.py test`.
 
-One test file, `test_backend.py`, covers Django models, views, etc. The other test file, `test_policy.py`, is specific to the rules implemented in the provided `policy.py` file, and need to be updated or removed as changes are made.
+One test file, `test_backend.py`, covers Django models, views, etc. The other test file, `test_policy.py`, is specific to the rules implemented in the provided `policy.py` file, and needs to be updated or removed as changes are made.
