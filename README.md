@@ -90,10 +90,7 @@ Example python:
 ```
 lodging_section = Section(
     title="Hotel / Lodging",
-    html_description="<p>Please submit a receipt from your hotel including both the
-total amount and the dates of your stay. Per diem rates can be found on <a href='htt
-ps://www.gsa.gov/travel/plan-book/per-diem-rates' target='_blank'>the U.S. GSA websi
-te</a>.</p>",
+    html_description="<p>Please submit a receipt from your hotel including both the total amount and the dates of your stay. Per diem rates can be found on <a href='https://www.gsa.gov/travel/plan-book/per-diem-rates' target='_blank'>the U.S. GSA website</a>.</p>",
     fields={
         "per_diem_rate": {"number": 0, "label": "USGSA Per diem rate", "field_type": "decimal"},
         "cost": {"number": 1, "label": "Total cost for lodging", "field_type": "decimal"},
