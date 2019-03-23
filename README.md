@@ -95,16 +95,11 @@ total amount and the dates of your stay. Per diem rates can be found on <a href=
 ps://www.gsa.gov/travel/plan-book/per-diem-rates' target='_blank'>the U.S. GSA websi
 te</a>.</p>",
     fields={
-        "per_diem_rate": {"number": 0, "label": "USGSA Per diem rate", "field_type":
- "decimal"},
-        "cost": {"number": 1, "label": "Total cost for lodging", "field_type": "deci
-mal"},
-        "check_in_date": {"number": 2, "label": "Check-in date", "field_type": "date
-"},
-        "check_out_date": {"number": 3, "label": "Check-out date", "field_type": "da
-te"},
-        "invoice_screenshot": {"number": 4, "label": "Screenshot of invoice", "field
-_type": "file"},
+        "per_diem_rate": {"number": 0, "label": "USGSA Per diem rate", "field_type": "decimal"},
+        "cost": {"number": 1, "label": "Total cost for lodging", "field_type": "decimal"},
+        "check_in_date": {"number": 2, "label": "Check-in date", "field_type": "date"},
+        "check_out_date": {"number": 3, "label": "Check-out date", "field_type": "date"},
+        "invoice_screenshot": {"number": 4, "label": "Screenshot of invoice", "field_type": "file"},
     }
 )
 ```
