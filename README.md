@@ -139,10 +139,10 @@ An example of a simple rule that checks the boolean value of the field named 'ec
 ```
 my_flight_section.add_rule(
     title="Economy Check",
-    rule=lambda report, fields: "Only economy class tickets are allowed." if fields['economy'] else None
+    rule=lambda report, fields: "Only economy class tickets are allowed." if not fields['economy'] else None
 ```
 
-For more complex, multi-line rules, a temporary function may be defined and passed to the "rule" parameter when adding a rule. Currently, accessing fields from other sections via the "report" parameter is not supported.
+For more complex, multi-line rules, a temporary function may be defined and passed to the "rule" parameter when adding a rule. See the included `policy.py` file content for examples of more complex rules. Currently, accessing fields from other sections via the "report" parameter is not supported.
 
 ### Admin Files
 
