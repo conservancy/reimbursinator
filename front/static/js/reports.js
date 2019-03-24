@@ -8,6 +8,16 @@ function getEndpointDomain() {
     return "https://" + window.location.hostname + ":8444/";
 }
 
+/*
+XMLHttpRequest wrapper for requesting or sending data to/from the backend
+
+method (string): HTTP request type
+url (string): the url of an api endpoint
+callback (function): function to execute on success
+optional: optional argument
+payload (JSON): optional JSON payload
+returns: n/a
+*/
 function makeAjaxRequest(method, url, callback, optional, payload) {
     const token = localStorage.getItem("token");
     const xhr = new XMLHttpRequest();
@@ -50,6 +60,13 @@ function makeAjaxRequest(method, url, callback, optional, payload) {
     xhr.send(payload);
 }
 
+/*
+Disables a button and changes its display text
+
+button (object): the button to update
+buttonText (string): the new display text
+returns: n/a
+*/
 function animateButton(button, buttonText) {
     button.disabled = true;
     button.innerHTML = "";
@@ -59,6 +76,14 @@ function animateButton(button, buttonText) {
     button.appendChild(document.createTextNode(buttonText));
 }
 
+
+/*
+Updates a section's header and footer based on its current state
+
+parsedData (object): Object representing a section's data
+saveButton (object): the button to update
+returns: n/a
+*/
 function updateSection(parsedData, saveButton) {
     const sectionIdStr = "#section-" + parsedData.id + "-";
     const sectionState = document.querySelector(sectionIdStr + "state");
@@ -80,6 +105,7 @@ function updateSection(parsedData, saveButton) {
         }
     }
 
+    // Add card footer with rule violations if needed
     const cardFooter = createCardFooter(parsedData.rule_violations);
     if (collapseDiv.lastElementChild.classList.contains("card-footer")) {
         collapseDiv.removeChild(collapseDiv.lastElementChild);
@@ -96,7 +122,13 @@ function updateSection(parsedData, saveButton) {
     saveButton.disabled = false;
 }
 
-// Wraps a Bootstrap form group around a field
+/*
+Wraps a Bootstrap form group around a field
+
+sectionIdStr (string): section id prefix
+field (object): Object representing a field
+returns: div element with form group styling
+*/
 function createFormGroup(sectionIdStr, field) {
     const inputId = sectionIdStr + field.field_name;
     const formGroup = document.createElement("div")
@@ -204,6 +236,15 @@ function createFormGroup(sectionIdStr, field) {
     return formGroup;
 }
 
+/*
+Creates a card and card header
+
+sectionIdStr (string): section id prefix
+sectionTitle (string): section title for the collapse button
+sectionCompleted (boolean): flag indicating section state
+ruleViolations (array): list of policy rule violations for this section
+returns: div element with card styling
+*/
 function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, ruleViolations) {
     // Create card and header
     const card = document.createElement("div");
@@ -239,6 +280,16 @@ function createCollapsibleCard(sectionIdStr, sectionTitle, sectionCompleted, rul
     return card;
 }
 
+/*
+Creates a collapsible card body
+
+form (HTML element): form element
+sectionIdStr (string): section id prefix
+sectionDescription (string): HTML string description of this section
+sectionCompleted (boolean): flag indicating section state
+ruleViolations (array): list of policy rule violations for this section
+returns: div element with collapse styling
+*/
 function createCollapsibleCardBody(form, sectionIdStr, sectionDescription, sectionCompleted, ruleViolations) {
     // Create wrapper div
     const collapseDiv = document.createElement("div");
@@ -252,6 +303,7 @@ function createCollapsibleCardBody(form, sectionIdStr, sectionDescription, secti
     } else if (sectionCompleted && ruleViolations.length > 0) {
         collapseDiv.classList.add("collapse", "show");
     } else {
+        // Add section alert
         sectionAlert.classList.add("alert", "alert-danger", "section-alert");
         sectionAlert.innerHTML = "This section is not complete";
         collapseDiv.classList.add("collapse", "show");
@@ -266,6 +318,12 @@ function createCollapsibleCardBody(form, sectionIdStr, sectionDescription, secti
     return collapseDiv;
 }
 
+/*
+Creates a card footer and populates it with rule violations
+
+ruleViolations (array): a list of policy rule violations
+returns: div element with card footer styling
+*/
 function createCardFooter(ruleViolations) {
     if (ruleViolations.length === 0) {
         return null;
@@ -296,6 +354,13 @@ function createCardFooter(ruleViolations) {
     return cardFooter;
 }
 
+/*
+Creates a form within a modal popup
+
+parsedData (object): Object representing report data
+type (number): The report type (edit or new)
+returns: n/a
+*/
 function createReportForm(parsedData, type) {
     let modalBody;
     let modalLabel;
@@ -376,6 +441,12 @@ function createReportForm(parsedData, type) {
     modalBody.appendChild(accordion);
 }
 
+/*
+Displays a table containing all of a user's reports
+
+parsedData (object): Object representing report data
+returns: n/a
+*/
 function displayListOfReports(parsedData) {
     const reports = parsedData.reports;
     const cardBody = document.querySelector(".card-body");
@@ -435,9 +506,13 @@ function displayListOfReports(parsedData) {
     }
 }
 
+/*
+Populates modal popup with a readonly, finalized report
+
+parsedData (object): Object representing report data
+returns: n/a
+*/
 function displayReport(parsedData){
-    //Able to get the correct report ID now just needs to display the
-    //report as an modual
     const modalBody = document.querySelector(".modal-view");
     const modalLabel = document.querySelector("#viewReportModalLabel");
 
@@ -509,6 +584,7 @@ function displayReport(parsedData){
     modalBody.appendChild(card);
 }
 
+// Display list of reports on page load
 document.addEventListener("DOMContentLoaded", function(event) {
     if (window.location.pathname === "/edit_report.html") {
         const url = getEndpointDomain() + "api/v1/reports";
@@ -516,17 +592,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 });
 
+// Listens for button click events
 document.addEventListener("click", function(event) {
     if (event.target) {
         if (event.target.classList.contains("edit-report-button")) {
+            // Edit button clicked
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             const type = reportType.EDIT;
             makeAjaxRequest("GET", url, createReportForm, type);
         } else if (event.target.classList.contains("view-report-button")) {
+            // View button clicked
             console.log("View button clicked");
             const url = getEndpointDomain() + "api/v1/report/" + event.target.dataset.rid;
             makeAjaxRequest("GET", url, displayReport);
         } else if (event.target.classList.contains("review-report")) {
+            // Submit for review button clicked
             event.preventDefault();
             const result = confirm("Are you sure you want to submit this report for review?");
             if (result) {
@@ -540,6 +620,7 @@ document.addEventListener("click", function(event) {
                 });
             }
         } else if (event.target.classList.contains("finalize-report")) {
+            // Finalize report button clicked
             event.preventDefault();
             console.log("finalize-report");
             const result = confirm("Are you sure you want to finalize this report? This means you will no longer be able to modify it.");
@@ -554,6 +635,7 @@ document.addEventListener("click", function(event) {
                 });
             }
         } else if (event.target.classList.contains("delete-report")) {
+            // Delete report button clicked
             event.preventDefault();
             const title = document.querySelector("#editReportModalLabel").textContent;
             const result = confirm("Are you sure you want to delete the report \"" + title + "\"?");
@@ -571,6 +653,7 @@ document.addEventListener("click", function(event) {
     }
 });
 
+// Listens for a create report submission
 const newReportForm = document.querySelector(".new-report-form");
 if (newReportForm) {
     newReportForm.addEventListener("submit", function(event) {
@@ -583,6 +666,7 @@ if (newReportForm) {
     });
 }
 
+// Listens for a date input
 document.addEventListener("input", function(event) {
     if (event.target.type === "date") {
         if (!moment(event.target.value, "YYYY-MM-DD", true).isValid()) {
@@ -593,6 +677,7 @@ document.addEventListener("input", function(event) {
     }
 });
 
+// Listens for a section saving event
 document.addEventListener("submit", function(event) {
     if (event.target.classList.contains("section-form")) {
         event.preventDefault();
